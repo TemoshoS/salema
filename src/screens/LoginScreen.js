@@ -38,6 +38,7 @@ const LoginScreen = () => {
               
              
            </TouchableOpacity>
+           <Text style={{ color: '#FFF' }}>Forgot password</Text>
           </View>
     
           {/* Image at the bottom center */}
