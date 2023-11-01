@@ -45,13 +45,16 @@ const styles = StyleSheet.create({
     fontSize: 34,
     fontWeight: 'bold',
     marginBottom: 5,
+    color: "#f2f2f2",
   },
   title2: {
     fontSize: 20,
     marginBottom: 5,
+    color: "#f2f2f2",
   },
   contentText: {
     fontSize: 12,
+    color: "#f2f2f2",
   },
 });
 
