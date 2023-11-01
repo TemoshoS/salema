@@ -2,12 +2,15 @@ import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, Text, View } from 'react-native';
 import RegistrationScreen from './src/screens/RegistrationScreen';
 import LoginScreen from './src/screens/LoginScreen';
+import HomeScreen from './src/screens/HomeScreen';
 
 export default function App() {
   return (
     <View style={styles.container}>
+    {/* DO NOT REMOVE SCREENS YOU ARE NOT USING | COMMENT TTHEM OUT INSTEAD */}
      
-      <LoginScreen/>
+      {/* <LoginScreen/> */}
+      <HomeScreen/>
       
     </View>
   );
