@@ -3,7 +3,7 @@ import React from "react";
 import { View, StyleSheet, Text, Image } from "react-native";
 // Navigation Contents
 import { NavigationContainer } from "@react-navigation/native";
-import { createNativeStackNavigator } from "@react-navigation/native-stack";
+//import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { createStackNavigator } from "@react-navigation/stack";
 
 // components
@@ -11,7 +11,7 @@ import BottomNav from "../components/BottomNav";
 import ChipButton from "../components/Chip";
 import { Button } from "react-native-web";
 
-const Stack = createNativeStackNavigator(); //nav container
+ //const Stack = createNativeStackNavigator(); //nav container
 
 const HomeScreen = () => {
   return (

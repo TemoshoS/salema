@@ -1,7 +1,9 @@
 import React, { useEffect, useState } from 'react';
-import { Image, StyleSheet, Text, TextInput, View, TouchableOpacity } from 'react-native';
+import { Image, StyleSheet, Text, TextInput, View, TouchableOpacity, Modal } from 'react-native';
 import { auth } from '../server/firebaseService';
 import { createUserWithEmailAndPassword, updateProfile } from 'firebase/auth';
+import { Feather } from '@expo/vector-icons';
+import { useNavigation } from '@react-navigation/native';
 
 const RegistrationScreen = () => {
   const [name, setName] = useState('');
@@ -9,23 +11,29 @@ const RegistrationScreen = () => {
   const [phone, setPhoneNumber] = useState('');
   const [password, setPassword] = useState('');
   const [reenterPassword, setReenterPassword] = useState('');
-  const [nameError, setNameError] = useState('');
+  const [nameError, setNameError] = useState(null);
   const [emailError, setEmailError] = useState(null);
-  const [phoneError, setPhoneNumberError] = useState('');
+  const [phoneError, setPhoneNumberError] = useState(null);
   const [passwordError, setPasswordError] = useState(null);
   const [reenterPasswordError, setReenterPasswordError] = useState(null);
   const [userExistsMessage, setUserExistsMessage] = useState('');
   const [passwordStrength, setPasswordStrength] = useState('');
   const [showPassword, setShowPassword] = useState(false);
+  const [isConfirmationVisible, setIsConfirmationVisible] = useState(false);
+
+  const navigation = useNavigation();
+
 
   const handleRegister = async () => {
     try {
-      // Reset errors
-      setNameError('');
-      setEmailError('');
-      setPhoneNumberError('');
-      setPasswordError('');
-      setReenterPasswordError('')
+      //Reset previous validation errors and user exists message
+      setNameError(null);
+      setEmailError(null);
+      setPhoneNumberError(null);
+      setPasswordError(null);
+      setReenterPasswordError(null);
+      setUserExistsMessage('');
+
 
       // Validation (You can add more validation as needed)
       if (!name) {
@@ -33,30 +41,30 @@ const RegistrationScreen = () => {
         return;
       }
 
-      if (!email) {
+      else if  (!email) {
         setEmailError('Email is required');
         return;
       }
 
-      if (!phone) {
+      else if (!phone) {
         setPhoneNumberError('Phone is required');
         return;
       }
 
-      if (!password) {
+      else if (!password) {
         setPasswordError('Password is required');
         return;
       }
 
-      if (!reenterPassword) {
+      else if (!reenterPassword) {
         setReenterPasswordError('Re-enter password is required');
         return;
       }
 
       // Password strength validation
-      const passwordRegex = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*\W)(?!.*\s).{7,}$/;
+      const passwordRegex = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*\W)(?!.*\s).{8,}$/;
       if (!password.match(passwordRegex)) {
-        setPasswordError('Password must contain at least 7 characters, 1 number, 1 uppercase letter, 1 lowercase letter, and 1 special character');
+        setPasswordError('Password must contain at least 8 characters, 1 number, 1 uppercase letter, 1 lowercase letter, and 1 special character');
         return;
       }
 
@@ -74,17 +82,10 @@ const RegistrationScreen = () => {
         phoneNumber: phone,
       });
 
-      // You can do more after successful registration, e.g., navigate to the next screen
+    
+      setIsConfirmationVisible(true);
 
-      setName('');
-      setEmail('');
-      setPhoneNumber('');
-      setPassword('');
-      setReenterPassword('');
-      
-      setUserExistsMessage('Account created successfully.');
 
-      
 
     } catch (error) {
       if (error.code === 'auth/email-already-in-use') {
@@ -99,6 +100,12 @@ const RegistrationScreen = () => {
   const toggleShowPassword = () => {
     setShowPassword(!showPassword);
   };
+
+  const hideConfirmation =()=>{
+    navigation.navigate('Login');
+    setIsConfirmationVisible(false);
+  }
+
   return (
     <View style={styles.container}>
       <Image
@@ -140,21 +147,35 @@ const RegistrationScreen = () => {
         />
         {phoneError && <Text style={styles.errorText}>{phoneError}</Text>}
 
-        <TextInput
-          style={styles.input}
-          placeholder="Password"
-          onChangeText={(text) => setPassword(text)}
-          secureTextEntry={!showPassword}
-        />
+       
+          <TextInput
+            style={styles.input}
+            placeholder="Password"
+            onChangeText={(text) => setPassword(text)}
+            secureTextEntry={!showPassword}
+          />
+     
+
+        
+
         {passwordError && <Text style={styles.errorText}>{passwordError}</Text>}
 
+       
+          <TextInput
+            style={styles.input}
+            placeholder="Confirm Password"
+            onChangeText={(text) => setReenterPassword(text)}
+            secureTextEntry={!showPassword}
+          />
+          <TouchableOpacity style={styles.showPasswordButton} onPress={toggleShowPassword}>
+            <Feather
+              name={showPassword ? 'eye-off' : 'eye'}
+              size={19}
+              color='white'
+            />
+          </TouchableOpacity>
 
-        <TextInput
-          style={styles.input}
-          placeholder="Confirm Password"
-          onChangeText={(text) => setReenterPassword(text)}
-          secureTextEntry={!showPassword}
-        />
+        
         {reenterPasswordError && <Text style={styles.errorText}>{reenterPasswordError}</Text>}
 
         {userExistsMessage && <Text style={styles.successMessage}>{userExistsMessage}</Text>}
@@ -163,25 +184,25 @@ const RegistrationScreen = () => {
           {passwordStrength && <Text>Password Strength: {passwordStrength}</Text>}
         </View>
 
-        <TouchableOpacity style={styles.showPasswordButton} onPress={toggleShowPassword}>
-          <Text>{showPassword ? 'Hide Password' : 'Show Password'}</Text>
-        </TouchableOpacity>
-
-
-
-
-
-
-
-
 
         <TouchableOpacity style={styles.createAccountButton}
           onPress={handleRegister} >
           <Text style={styles.TextButton}>CREATE ACCOUNT</Text>
-
-
-
         </TouchableOpacity>
+
+        <Modal
+  animationType="slide"
+  transparent={true}
+  visible={isConfirmationVisible}
+  onRequestClose={hideConfirmation}
+>
+  <View style={styles.confirmationModal}>
+    <Text style={styles.confirmTxt}>User registered successfully</Text>
+    <TouchableOpacity onPress={hideConfirmation}>
+      <Text style={styles.confirmTxt}>Ok</Text>
+    </TouchableOpacity>
+  </View>
+</Modal>
       </View>
 
       {/* Image at the bottom center */}
@@ -274,6 +295,15 @@ const styles = StyleSheet.create({
     bottomBorderColor: 'white',
 
   },
+  inputContainer: {
+    flexDirection: 'row',
+    alignItems: 'center'
+  },
+  showPasswordButton:{
+  left: 135,
+    top: -42
+  },
+
   errorText: {
     color: 'red',
   },
@@ -336,6 +366,18 @@ const styles = StyleSheet.create({
     height: 10,
     marginLeft: 5,
   },
+  confirmationModal: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0,0,0,0.7)',
+    padding: 20,
+  },
+  confirmTxt: {
+    color: 'white',
+    fontSize: 20,
+    fontWeight: 'bold'
+  }
 });
 
 export default RegistrationScreen;
