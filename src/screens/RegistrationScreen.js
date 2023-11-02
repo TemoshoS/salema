@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Image, StyleSheet, Text, TextInput, View, TouchableOpacity, Modal } from 'react-native';
-import { auth } from '../server/firebaseService';
+import { auth } from '../services/firebaseService';
 import { createUserWithEmailAndPassword, updateProfile } from 'firebase/auth';
 import { Feather } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
