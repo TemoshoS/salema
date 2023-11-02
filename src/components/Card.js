@@ -20,7 +20,7 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     // backgroundColor: '#fff',
     backgroundColor: '#002E15',
-    shadowColor: '#000',
+    shadowColor: '#f2f2f2',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.3,
     shadowRadius: 4,
