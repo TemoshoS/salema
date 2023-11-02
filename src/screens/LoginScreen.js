@@ -9,33 +9,43 @@ const LoginScreen = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loginAttempts, setLoginAttempts] = useState(0);
+  const [errorMessage, setErrorMessage] = useState('');
+
+  const auth = getAuth(); // Get the Firebase Auth instance
+  const navigation = useNavigation();
 
   const handleLogin = () => {
-    firebase
-      .auth()
-      .signInWithEmailAndPassword(email, password)
+    // Clear previous error message
+    setErrorMessage('');
+  
+    // Check if email and password are not empty
+    if (!email || !password) {
+      setErrorMessage('Please enter both email and password.');
+      return;
+    }
+  
+    // Authenticate user with Firebase
+    signInWithEmailAndPassword(auth, email, password)
       .then((userCredential) => {
-        // Successful login
-        const user = userCredential.user;
-        // redirect the user to the main screen here
-        navigaton.navigate('Home');
+        // User successfully logged in
+        console.log('User logged in:', userCredential.user);
+        // You can navigate to another screen here, e.g., the home screen
+        navigation.navigate('Welcome');
       })
       .catch((error) => {
-        if (error.code === 'auth/wrong-password') {
-          // Incorrect password
-          setLoginAttempts(loginAttempts + 1);
-
-          if (loginAttempts >= 3) {
-            // Lock the user's account or implement your own logic
-            Alert.alert('Account Locked', 'You have exceeded the maximum login attempts.');
-          } else {
-            Alert.alert('Incorrect Password', 'Please try again.');
-          }
+        // Handle specific error cases
+        if (error.code === 'auth/user-not-found') {
+          setErrorMessage('User does not exist. Please sign up.');
+        } else if (error.code === 'auth/wrong-password') {
+          setErrorMessage('Wrong password. Please try again.');
         } else {
-          Alert.alert('Login Error', 'An error occurred while logging in.');
+          // Handle unexpected errors (you can log them for debugging)
+          console.error('Login error:', error);
+          setErrorMessage('An error occurred. Please try again later.');
         }
       });
   };
+  
     return (
         <View style={styles.container}>
           <Image
@@ -75,6 +85,8 @@ const LoginScreen = () => {
               
              
            </TouchableOpacity>
+
+           {errorMessage ? <Text style={styles.errorMessage}>{errorMessage}</Text> : null}
            <Text style={{ color: '#FFF' }}>Forgot password</Text>
           </View>
     
