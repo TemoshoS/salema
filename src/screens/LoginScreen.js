@@ -1,120 +1,132 @@
 import React, { useState } from 'react';
-import { Image, StyleSheet, Text, TextInput, View, Button, Touchable } from 'react-native';
-import { TouchableOpacity } from 'react-native-web';
-import { useNavigation } from '@react-navigation/native';
-import { getAuth, signInWithEmailAndPassword, sendPasswordResetEmail } from 'firebase/auth';
-import React from 'react';
-import { Image, StyleSheet, Text, TextInput, View, TouchableOpacity } from 'react-native';
+import { View, Text, TextInput, Image, TouchableOpacity, StyleSheet, Alert } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
+// import { useNavigation } from '@react-navigation/native';
+import { getAuth, signInWithEmailAndPassword } from 'firebase/auth'; // Import Firebase functions
 
 
 const LoginScreen = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loginAttempts, setLoginAttempts] = useState(0);
+  const [showPassword, setShowPassword] = useState(false);
+  const [passwordError, setPasswordError] = useState('');
+  // const navigation = useNavigation(); // Use the useNavigation hook for navigation
 
   const handleLogin = () => {
-    firebase
-      .auth()
-      .signInWithEmailAndPassword(email, password)
+    
+    const auth = getAuth(); // Get the Firebase auth instance
+
+    signInWithEmailAndPassword(auth, email, password)
       .then((userCredential) => {
         // Successful login
         const user = userCredential.user;
-        // redirect the user to the main screen here
-        navigaton.navigate('Home');
+        console.log('successfully login ')
+        Alert.alert('successfully login ');
+        // Redirect the user to the main screen here
+        // navigation.navigate('Home');
       })
       .catch((error) => {
-        if (error.code === 'auth/wrong-password') {
-          // Incorrect password
-          setLoginAttempts(loginAttempts + 1);
+        // Handle login errors here
+         // Handle login errors here
+      if (error.code === 'auth/user-not-found') {
+        setPasswordError('User does not exist.');
+      } else if (error.code === 'auth/wrong-password') {
+        setPasswordError('Incorrect password.');
+      } else if (error.code === 'auth/too-many-requests') {
+        setPasswordError('Too many login attempts. Please try again later.');
+      } else {
+    
+        console.error('Login error:', error);
+      }
 
-          if (loginAttempts >= 3) {
-            // Lock the user's account or implement your own logic
-            Alert.alert('Account Locked', 'You have exceeded the maximum login attempts.');
-          } else {
-            Alert.alert('Incorrect Password', 'Please try again.');
-          }
-        } else {
-          Alert.alert('Login Error', 'An error occurred while logging in.');
-        }
       });
   };
-    return (
-        <View style={styles.container}>
-          <Image
-            source={require('/assets/union.png')}
-            style={styles.image}
-          />
-          <Image
-            source={require('/assets/Vector.png')}
-            style={styles.imageVector}
-          />
-          <Text style={styles.boldText}>Shake to Alert</Text>
-          <Text style={styles.readyText}>READY</Text>
-    
-          {/* Signup Form */}
-          <View style={styles.signupForm}>
-            <Text style={[styles.signupText, { color: 'white' }]}>Login</Text>
-            
-            <TextInput
-              value={email}
-              onChangeText={(text) => setEmail(text)}
-              style={styles.input}
-              placeholder="Email"
-              placeholderTextColor="white"
+
+  const togglePasswordVisibility = () => {
+    setShowPassword(!showPassword); // Toggle the state
+  };
+
+  return (
+    <View style={styles.container}>
+      <Image source={require('/assets/Union.png')} style={styles.image} />
+      <Image source={require('/assets/Vector.png')} style={styles.imageVector} />
+      <Text style={styles.boldText}>Shake to Alert</Text>
+      <Text style={styles.readyText}>READY</Text>
+
+      {/* Signup Form */}
+      <View style={styles.signupForm}>
+        <Text style={[styles.signupText, { color: 'white' }]}>Login</Text>
+
+        <TextInput
+          value={email}
+          onChangeText={(text) => setEmail(text)}
+          style={styles.input}
+          placeholder="Email"
+          placeholderTextColor="white"
+        />
+
+        <TextInput
+          value={password}
+          onChangeText={(text) => setPassword(text)}
+          style={styles.input}
+          placeholder="Password"
+          secureTextEntry={!showPassword} // Hide the password with stars
+          placeholderTextColor="white"
+        />
+        {passwordError && (
+        <Text style={styles.errorMessage}>{passwordError}</Text>
+      )}
+
+
+        <TouchableOpacity onPress={handleLogin} style={styles.LoginButton}>
+          <Text style={styles.TextButton}>Login</Text>
+        </TouchableOpacity>
+        {/* {wrongPasswordError && (
+        <Text style={styles.errorMessage}>Incorrect Password. Please try again.</Text>
+      )}
+      {loginAttempts >= 3 && (
+        <Text style={styles.errorMessage}>You have exceeded the maximum login attempts.</Text>
+      )} */}
+        <TouchableOpacity onPress={togglePasswordVisibility} style={styles.togglePasswordButton}>
+          <Ionicons name={showPassword ? 'eye-off' : 'eye'} size={20} color="white" />
+        </TouchableOpacity>
+
+        <Text style={{ color: '#FFF' }}>Forgot password</Text>
+      </View>
+
+      {/* Image at the bottom center */}
+      <Image source={require('/assets/undraw_different_love_a-3-rg 1.png')} style={styles.bottomImage} />
+
+      {/* Bottom Tab */}
+      <View style={styles.bottomTab}>
+        <View style={styles.tabItem}>
+          <View style={styles.tabContent}>
+            <Text style={styles.greenTabText}>HELP</Text>
+            <Image
+              source={require('/assets/help_icon.png')}
+              style={styles.tabIcon}
             />
-            
-            <TextInput
-              value={password}
-              onChangeText={(text) => setPassword(text)}
-              style={styles.input}
-              placeholder="Password"
-              secureTextEntry={true} // Hide the password with stars
-              placeholderTextColor="white"
-            />
-            <TouchableOpacity onPress={handleLogin} style= {styles.LoginButton}>  
-             <Text style={styles.TextButton}>Login</Text>
-            
-              
-             
-           </TouchableOpacity>
-           <Text style={{ color: '#FFF' }}>Forgot password</Text>
-          </View>
-    
-          {/* Image at the bottom center */}
-          <Image
-            source={require('/assets/undraw_different_love_a-3-rg 1.png')}
-            style={styles.bottomImage}
-          />
-    
-          {/* Bottom Tab */}
-          <View style={styles.bottomTab}>
-            <View style={styles.tabItem}>
-              <View style={styles.tabContent}>
-                <Text style={styles.greenTabText}>HELP</Text>
-                <Image
-                  source={require('/assets/help_icon.png')}
-                  style={styles.tabIcon}
-                />
-              </View>
-            </View>
-            <View style={styles.tabItem}>
-              <View style={styles.tabContent}>
-                <Text style={styles.greenTabText}>SUPPORT</Text>
-                <Image
-                  source={require('/assets/support_icon.png')}
-                  style={styles.tabIcon}
-                />
-              </View>
-            </View>
-            <View style={styles.tabItem}>
-              <Text style={styles.greenTabText}>ABOUT US</Text>
-            </View>
           </View>
         </View>
-      );
-    };
+        <View style={styles.tabItem}>
+          <View style={styles.tabContent}>
+            <Text style={styles.greenTabText}>SUPPORT</Text>
+            <Image
+              source={require('/assets/support_icon.png')}
+              style={styles.tabIcon}
+            />
+          </View>
+        </View>
+        <View style={styles.tabItem}>
+          <Text style={styles.greenTabText}>ABOUT US</Text>
+        </View>
+      </View>
+    </View>
+  );
+};
 
-    export default LoginScreen;
+export default LoginScreen;
     
     const styles = StyleSheet.create({
       container: {
@@ -228,5 +240,18 @@ const LoginScreen = () => {
         width: 10,
         height: 10,
         marginLeft: 5,
+      },
+      togglePasswordButton: {
+        position: 'absolute',
+        right: 30,
+        top: 145,
+      },
+      errorMessage: {
+        color: 'red',
+        marginTop: 10,
+      },
+      eyeIcon: {
+        width: 30,
+        height: 30,
       },
     });
