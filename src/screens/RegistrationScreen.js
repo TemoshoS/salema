@@ -22,25 +22,29 @@ const RegistrationScreen = () => {
   const [isConfirmationVisible, setIsConfirmationVisible] = useState(false);
 
   const navigation = useNavigation();
-  
-  const handlePasswordChange = (text) => {
-    setPassword(text); // Update the password state.
 
-    // Password strength validation
-    const passwordRegex = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*\W)(?!.*\s).{8,}$/;
-    if (!text.match(passwordRegex)) {
-      setPasswordError('Password must contain at least 8 characters, 1 number, 1 uppercase letter, 1 lowercase letter, and 1 special character');
+  const handlePasswordChange = (text, isConfirmPassword = false) => {
+    if (!isConfirmPassword) {
+      // Handle changes for the "Password" field
+      setPassword(text);
+
+      // Password strength validation
+      const passwordRegex = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*\W)(?!.*\s).{8,}$/;
+      if (!text.match(passwordRegex)) {
+        setPasswordError('Password must contain at least 8 characters, 1 number, 1 uppercase letter, 1 lowercase letter, and 1 special character');
+      } else {
+        setPasswordError(null); // Clear the error message when the password is valid.
+      }
     } else {
-      setPasswordError(null); // Clear the error message when the password is valid.
-    }
+      // Handle changes for the "Confirm Password" field
+      setReenterPassword(text);
 
-
-
-    // Check if the Confirm Password field matches the Password field
-    if (reenterPassword && text !== reenterPassword) {
-      setReenterPasswordError('Passwords do not match');
-    } else {
-      setReenterPasswordError(null);
+      // Check if the Confirm Password field matches the Password field
+      if (text !== password) {
+        setReenterPasswordError('Passwords do not match');
+      } else {
+        setReenterPasswordError(null);
+      }
     }
   };
 
@@ -48,32 +52,36 @@ const RegistrationScreen = () => {
 
   const handleRegister = async () => {
     try {
-   
+
       // Reset previous validation errors and user exists message
-    setNameError(null);
-    setEmailError(null);
-    setPhoneNumberError(null);
-    setPasswordError(null);
-    setReenterPasswordError(null);
-    setUserExistsMessage('');
+      setNameError(null);
+      setEmailError(null);
+      setPhoneNumberError(null);
+      setPasswordError(null);
+      setReenterPasswordError(null);
+      setUserExistsMessage('');
 
-    // Validate all fields
-    if (!name || !email || !phone || !password || !reenterPassword) {
-      if (!name) setNameError('Name is required');
-      if (!email) setEmailError('Email is required');
-      if (!phone) setPhoneNumberError('Mobile number is required')
-      if (!password) setPasswordError('Password is required');
-      if (!reenterPassword) setReenterPasswordError('Re-enter password is required');
-      return;
-    }
+      // Validate all fields
+      if (!name || !email || !phone || !password || !reenterPassword) {
+        if (!name) setNameError('Name is required');
+        if (!email) setEmailError('Email is required');
+        if (!phone) setPhoneNumberError('Mobile number is required')
+        if (!password) setPasswordError('Password is required');
+        if (!reenterPassword) setReenterPasswordError('Re-enter password is required');
+        return;
+      }
 
-  
-
+      // Check if the password and the confirm password match
       if (password !== reenterPassword) {
         setReenterPasswordError('Passwords do not match');
         return;
-      } else{
-        setReenterPassword(null);
+      }
+
+      // Password strength validation
+      const passwordRegex = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*\W)(?!.*\s).{8,}$/;
+      if (!password.match(passwordRegex)) {
+        setPasswordError('Password must contain at least 8 characters, 1 number, 1 uppercase letter, 1 lowercase letter, and 1 special character');
+        return;
       }
 
       // Create a user using Firebase Authentication
@@ -84,13 +92,13 @@ const RegistrationScreen = () => {
         displayName: name,
         phoneNumber: phone,
       });
-      
+
       setName('');
       setEmail('');
       setPhoneNumber('');
       setPassword('');
       setReenterPassword('');
-    
+
       setIsConfirmationVisible(true);
 
 
@@ -109,7 +117,7 @@ const RegistrationScreen = () => {
     setShowPassword(!showPassword);
   };
 
-  const hideConfirmation =()=>{
+  const hideConfirmation = () => {
     navigation.navigate('Login');
     setIsConfirmationVisible(false);
   }
@@ -155,33 +163,32 @@ const RegistrationScreen = () => {
         />
         {phoneError && <Text style={styles.errorText}>{phoneError}</Text>}
 
-       
-          <TextInput
-            style={styles.input}
-            placeholder="Password"
-            onChangeText={handlePasswordChange}
-            secureTextEntry={!showPassword}
-          />
-     
-       
 
-       
-          <TextInput
-            style={styles.input}
-            placeholder="Confirm Password"
-            onChangeText={handlePasswordChange}
-            secureTextEntry={!showPassword}
-          />
-
+        <TextInput
+          style={styles.input}
+          placeholder="Password"
+          onChangeText={(text) => handlePasswordChange(text)}
+          secureTextEntry={!showPassword}
+        />
         {passwordError && <Text style={styles.errorText}>{passwordError}</Text>}
 
-          <TouchableOpacity style={styles.showPasswordButton} onPress={toggleShowPassword}>
-            <Feather
-              name={showPassword ? 'eye-off' : 'eye'}
-              size={19}
-              color='white'
-            />
-          </TouchableOpacity>
+
+
+        <TextInput
+          style={styles.input}
+          placeholder="Confirm Password"
+          onChangeText={(text) => handlePasswordChange(text, true)} // Pass true to indicate it's the Confirm Password field
+          secureTextEntry={!showPassword}
+        />
+        {reenterPasswordError && <Text style={styles.errorText}>{reenterPasswordError}</Text>}
+
+        <TouchableOpacity style={styles.showPasswordButton} onPress={toggleShowPassword}>
+          <Feather
+            name={showPassword ? 'eye-off' : 'eye'}
+            size={19}
+            color='white'
+          />
+        </TouchableOpacity>
 
 
         {userExistsMessage && <Text style={styles.successMessage}>{userExistsMessage}</Text>}
@@ -197,18 +204,18 @@ const RegistrationScreen = () => {
         </TouchableOpacity>
 
         <Modal
-  animationType="slide"
-  transparent={true}
-  visible={isConfirmationVisible}
-  onRequestClose={hideConfirmation}
->
-  <View style={styles.confirmationModal}>
-    <Text style={styles.confirmTxt}>User registered successfully</Text>
-    <TouchableOpacity onPress={hideConfirmation}>
-      <Text style={styles.confirmTxt}>Ok</Text>
-    </TouchableOpacity>
-  </View>
-</Modal>
+          animationType="slide"
+          transparent={true}
+          visible={isConfirmationVisible}
+          onRequestClose={hideConfirmation}
+        >
+          <View style={styles.confirmationModal}>
+            <Text style={styles.confirmTxt}>User registered successfully</Text>
+            <TouchableOpacity onPress={hideConfirmation}>
+              <Text style={styles.confirmTxt}>Ok</Text>
+            </TouchableOpacity>
+          </View>
+        </Modal>
       </View>
 
       {/* Image at the bottom center */}
@@ -305,8 +312,8 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center'
   },
-  showPasswordButton:{
-  left: 135,
+  showPasswordButton: {
+    left: 135,
     top: -42
   },
 
