@@ -1,5 +1,5 @@
 import React from "react";
-import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
+import { View, Text, TouchableOpacity, StyleSheet, Image } from "react-native";
 import { useNavigation } from "@react-navigation/native"; //get that nav hook
 
 const BottomNav = ({ supportLabel, helpLabel, aboutLabel }) => {
@@ -21,10 +21,22 @@ const BottomNav = ({ supportLabel, helpLabel, aboutLabel }) => {
     // Links
     <View style={styles.bottomNavContainer}>
       <TouchableOpacity style={styles.button} onPress={handleHelpPress}>
-        <Text style={styles.navLink}>{helpLabel}</Text>
+        <Text style={styles.navLink}>
+          {helpLabel}
+          <Image
+            source={require("/assets/help_icon.png")}
+            style={styles.tabIcon}
+          />
+        </Text>
       </TouchableOpacity>
       <TouchableOpacity style={styles.button} onPress={handleSupportPress}>
-        <Text style={styles.navLink}>{supportLabel}</Text>
+        <Text style={styles.navLink}>
+          {supportLabel}
+          <Image
+            source={require("/assets/support_icon.png")}
+            style={styles.tabIcon}
+          />
+        </Text>
       </TouchableOpacity>
 
       <TouchableOpacity style={styles.button} onPress={handleAboutPress}>
@@ -39,12 +51,14 @@ const styles = StyleSheet.create({
     height: 52,
     backgroundColor: "#f8f8f8",
     flexDirection: "row",
-    justifyContent: "space-around", //space evenly
+    // justifyContent: "space-around", //space evenly
+    justifyContent: "flex-end",
     alignItems: "center",
     // backgroundColor: '#3d3d3d',
     width: "100%",
     textTransform: "uppercase",
     letterSpacing: 0.5,
+    bottom: 0,
   },
   navLink: {
     fontSize: 12,
@@ -58,6 +72,11 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     flex: 1,
+  },
+  tabIcon: {
+    width: 10,
+    height: 10,
+    marginLeft: 5,
   },
 });
 

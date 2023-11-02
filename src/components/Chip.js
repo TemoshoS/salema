@@ -6,7 +6,6 @@ const ChipButton = ({ title, onPress, altText }) => {
   return (
     <View style={styles.container}>
       <>
-      
         <Chip
           style={styles.chip}
           title={
@@ -15,13 +14,12 @@ const ChipButton = ({ title, onPress, altText }) => {
               numberOfLines={1}
               ellipsizeMode="tail"
             >
-            
-              {title}                   
+              {title}
             </Text>
           }
           onPress={onPress}
-          type="outline"                    // currently our our default style (outline)
-          accessibilityLabel={altText}      //for accessibility purposes (screen reader)
+          type="outline" // currently our our default style (outline)
+          accessibilityLabel={altText} //for accessibility purposes (screen reader)
         />
       </>
     </View>
@@ -33,34 +31,37 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     justifyContent: "center",
-    marginHorizontal: 12,
+    // marginHorizontal: 8,     // will use gap instead
+    position: "relative",
   },
   button: {
     alignItems: "center",
     justifyContent: "center",
-    paddingVertical: 8,
-    paddingHorizontal: 28,
+    paddingVertical: 4,
+    paddingHorizontal: 12,
     borderRadius: 25,
     backgroundColor: "transparent",
     borderWidth: 2,
-
+    position: "relative",
     // Any Text inside Chip
     fontSize: 14,
-    lineHeight: 21,
+    // lineHeight: 16,
     fontWeight: "bold",
     letterSpacing: 0.25,
     color: "white",
   },
   chip: {
-    width: 120,
+    width: 100,
     height: "auto",
+    position: "relative",
+    borderColor: "white",
   },
   chipText: {
-    fontSize: 14,
-    lineHeight: 21,
-    fontWeight: "bold",
+    fontSize: 12,
+    // lineHeight: 16,
+    fontWeight: "normal",
     letterSpacing: 0.25,
-    // color: "white",
+    color: "white",
   },
 });
 

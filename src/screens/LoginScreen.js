@@ -1,8 +1,41 @@
-import React from 'react';
-import { Image, StyleSheet, Text, TextInput, View, Button, Touchable } from 'react-native';
-import { TouchableOpacity } from 'react-native-web';
+import React, { useState } from 'react';
+import { Image, StyleSheet, Text, TextInput, View, TouchableOpacity } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
+import { getAuth, signInWithEmailAndPassword, sendPasswordResetEmail } from 'firebase/auth';
+
+
 
 const LoginScreen = () => {
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [loginAttempts, setLoginAttempts] = useState(0);
+
+  const handleLogin = () => {
+    firebase
+      .auth()
+      .signInWithEmailAndPassword(email, password)
+      .then((userCredential) => {
+        // Successful login
+        const user = userCredential.user;
+        // redirect the user to the main screen here
+        navigaton.navigate('Home');
+      })
+      .catch((error) => {
+        if (error.code === 'auth/wrong-password') {
+          // Incorrect password
+          setLoginAttempts(loginAttempts + 1);
+
+          if (loginAttempts >= 3) {
+            // Lock the user's account or implement your own logic
+            Alert.alert('Account Locked', 'You have exceeded the maximum login attempts.');
+          } else {
+            Alert.alert('Incorrect Password', 'Please try again.');
+          }
+        } else {
+          Alert.alert('Login Error', 'An error occurred while logging in.');
+        }
+      });
+  };
     return (
         <View style={styles.container}>
           <Image
@@ -21,18 +54,22 @@ const LoginScreen = () => {
             <Text style={[styles.signupText, { color: 'white' }]}>Login</Text>
             
             <TextInput
+              value={email}
+              onChangeText={(text) => setEmail(text)}
               style={styles.input}
               placeholder="Email"
               placeholderTextColor="white"
             />
             
             <TextInput
+              value={password}
+              onChangeText={(text) => setPassword(text)}
               style={styles.input}
               placeholder="Password"
               secureTextEntry={true} // Hide the password with stars
               placeholderTextColor="white"
             />
-            <TouchableOpacity style= {styles.LoginButton}>  
+            <TouchableOpacity onPress={handleLogin} style= {styles.LoginButton}>  
              <Text style={styles.TextButton}>Login</Text>
             
               
@@ -75,7 +112,7 @@ const LoginScreen = () => {
       );
     };
 
-    export default LoginScreen;
+export default LoginScreen;
     
     const styles = StyleSheet.create({
       container: {
@@ -189,5 +226,18 @@ const LoginScreen = () => {
         width: 10,
         height: 10,
         marginLeft: 5,
+      },
+      togglePasswordButton: {
+        position: 'absolute',
+        right: 30,
+        top: 145,
+      },
+      errorMessage: {
+        color: 'red',
+        marginTop: 10,
+      },
+      eyeIcon: {
+        width: 30,
+        height: 30,
       },
     });
