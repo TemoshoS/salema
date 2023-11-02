@@ -22,55 +22,58 @@ const RegistrationScreen = () => {
   const [isConfirmationVisible, setIsConfirmationVisible] = useState(false);
 
   const navigation = useNavigation();
+  
+  const handlePasswordChange = (text) => {
+    setPassword(text); // Update the password state.
+
+    // Password strength validation
+    const passwordRegex = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*\W)(?!.*\s).{8,}$/;
+    if (!text.match(passwordRegex)) {
+      setPasswordError('Password must contain at least 8 characters, 1 number, 1 uppercase letter, 1 lowercase letter, and 1 special character');
+    } else {
+      setPasswordError(null); // Clear the error message when the password is valid.
+    }
+
+
+
+    // Check if the Confirm Password field matches the Password field
+    if (reenterPassword && text !== reenterPassword) {
+      setReenterPasswordError('Passwords do not match');
+    } else {
+      setReenterPasswordError(null);
+    }
+  };
+
 
 
   const handleRegister = async () => {
     try {
-      //Reset previous validation errors and user exists message
-      setNameError(null);
-      setEmailError(null);
-      setPhoneNumberError(null);
-      setPasswordError(null);
-      setReenterPasswordError(null);
-      setUserExistsMessage('');
+   
+      // Reset previous validation errors and user exists message
+    setNameError(null);
+    setEmailError(null);
+    setPhoneNumberError(null);
+    setPasswordError(null);
+    setReenterPasswordError(null);
+    setUserExistsMessage('');
 
+    // Validate all fields
+    if (!name || !email || !phone || !password || !reenterPassword) {
+      if (!name) setNameError('Name is required');
+      if (!email) setEmailError('Email is required');
+      if (!phone) setPhoneNumberError('Mobile number is required')
+      if (!password) setPasswordError('Password is required');
+      if (!reenterPassword) setReenterPasswordError('Re-enter password is required');
+      return;
+    }
 
-      // Validation (You can add more validation as needed)
-      if (!name) {
-        setNameError('Name is required');
-        return;
-      }
-
-      else if  (!email) {
-        setEmailError('Email is required');
-        return;
-      }
-
-      else if (!phone) {
-        setPhoneNumberError('Phone is required');
-        return;
-      }
-
-      else if (!password) {
-        setPasswordError('Password is required');
-        return;
-      }
-
-      else if (!reenterPassword) {
-        setReenterPasswordError('Re-enter password is required');
-        return;
-      }
-
-      // Password strength validation
-      const passwordRegex = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*\W)(?!.*\s).{8,}$/;
-      if (!password.match(passwordRegex)) {
-        setPasswordError('Password must contain at least 8 characters, 1 number, 1 uppercase letter, 1 lowercase letter, and 1 special character');
-        return;
-      }
+  
 
       if (password !== reenterPassword) {
         setReenterPasswordError('Passwords do not match');
         return;
+      } else{
+        setReenterPassword(null);
       }
 
       // Create a user using Firebase Authentication
@@ -81,7 +84,12 @@ const RegistrationScreen = () => {
         displayName: name,
         phoneNumber: phone,
       });
-
+      
+      setName('');
+      setEmail('');
+      setPhoneNumber('');
+      setPassword('');
+      setReenterPassword('');
     
       setIsConfirmationVisible(true);
 
@@ -91,7 +99,7 @@ const RegistrationScreen = () => {
       if (error.code === 'auth/email-already-in-use') {
         setEmailError('Email is already in use');
       } else {
-        console.error('Registration error:', error);
+        setEmailError(null);
       }
     }
   };
@@ -151,22 +159,22 @@ const RegistrationScreen = () => {
           <TextInput
             style={styles.input}
             placeholder="Password"
-            onChangeText={(text) => setPassword(text)}
+            onChangeText={handlePasswordChange}
             secureTextEntry={!showPassword}
           />
      
-
-        
-
-        {passwordError && <Text style={styles.errorText}>{passwordError}</Text>}
+       
 
        
           <TextInput
             style={styles.input}
             placeholder="Confirm Password"
-            onChangeText={(text) => setReenterPassword(text)}
+            onChangeText={handlePasswordChange}
             secureTextEntry={!showPassword}
           />
+
+        {passwordError && <Text style={styles.errorText}>{passwordError}</Text>}
+
           <TouchableOpacity style={styles.showPasswordButton} onPress={toggleShowPassword}>
             <Feather
               name={showPassword ? 'eye-off' : 'eye'}
@@ -175,8 +183,6 @@ const RegistrationScreen = () => {
             />
           </TouchableOpacity>
 
-        
-        {reenterPasswordError && <Text style={styles.errorText}>{reenterPasswordError}</Text>}
 
         {userExistsMessage && <Text style={styles.successMessage}>{userExistsMessage}</Text>}
 
