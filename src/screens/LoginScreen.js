@@ -1,34 +1,25 @@
 import React, { useState } from 'react';
-import { Image, StyleSheet, Text, TextInput, View, Button, Touchable } from 'react-native';
-import { TouchableOpacity } from 'react-native-web';
+import { Image, StyleSheet, Text, TextInput, View, TouchableOpacity, Alert } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-import { getAuth, signInWithEmailAndPassword, sendPasswordResetEmail } from 'firebase/auth';
-
-import { Image, StyleSheet, Text, TextInput, View, TouchableOpacity } from 'react-native';
-
+import { getAuth, signInWithEmailAndPassword } from 'firebase/auth';
 
 const LoginScreen = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [loginAttempts, setLoginAttempts] = useState(0);
+  const [loginAttempts, setLoginAttempts] = useState(1);
+  const navigation = useNavigation();
+  const auth = getAuth();
 
   const handleLogin = () => {
-    firebase
-      .auth()
-      .signInWithEmailAndPassword(email, password)
+    signInWithEmailAndPassword(auth, email, password)
       .then((userCredential) => {
-        // Successful login
-        const user = userCredential.user;
-        // redirect the user to the main screen here
-        navigaton.navigate('Home');
+        navigation.navigate('Home');
       })
       .catch((error) => {
         if (error.code === 'auth/wrong-password') {
-          // Incorrect password
-          setLoginAttempts(loginAttempts + 1);
+          setLoginAttempts(loginAttempts + 2);
 
-          if (loginAttempts >= 3) {
-            // Lock the user's account or implement your own logic
+          if (loginAttempts >= 4) {
             Alert.alert('Account Locked', 'You have exceeded the maximum login attempts.');
           } else {
             Alert.alert('Incorrect Password', 'Please try again.');
@@ -38,6 +29,9 @@ const LoginScreen = () => {
         }
       });
   };
+
+  // Rest of your code...
+
     return (
         <View style={styles.container}>
           <Image
