@@ -112,7 +112,7 @@ const LoginScreen = () => {
       );
     };
 
-    export default LoginScreen;
+export default LoginScreen;
     
     const styles = StyleSheet.create({
       container: {
@@ -226,5 +226,18 @@ const LoginScreen = () => {
         width: 10,
         height: 10,
         marginLeft: 5,
+      },
+      togglePasswordButton: {
+        position: 'absolute',
+        right: 30,
+        top: 145,
+      },
+      errorMessage: {
+        color: 'red',
+        marginTop: 10,
+      },
+      eyeIcon: {
+        width: 30,
+        height: 30,
       },
     });
