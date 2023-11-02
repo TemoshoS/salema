@@ -122,7 +122,13 @@ const RegistrationScreen = () => {
     setIsConfirmationVisible(false);
   }
 
+  const handleLogin = () => {
+    navigation.navigate('Login');
+  }
+
+
   return (
+
     <View style={styles.container}>
       <Image
         source={require('/assets/union.png')}
@@ -202,6 +208,15 @@ const RegistrationScreen = () => {
           onPress={handleRegister} >
           <Text style={styles.TextButton}>CREATE ACCOUNT</Text>
         </TouchableOpacity>
+
+
+        <View style={styles.loginNav}>
+          <Text>Already have an account?</Text>
+          <TouchableOpacity onPress={handleLogin}>
+            <Text style={styles.loginTxt}>Log in</Text>
+          </TouchableOpacity>
+        </View>
+
 
         <Modal
           animationType="slide"
@@ -378,6 +393,13 @@ const styles = StyleSheet.create({
     width: 10,
     height: 10,
     marginLeft: 5,
+  },
+  loginNav: {
+    flexDirection: 'row'
+  },
+  loginTxt: {
+    color: 'blue',
+    textDecorationLine: 'underline'
   },
   confirmationModal: {
     flex: 1,
