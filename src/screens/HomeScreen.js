@@ -1,7 +1,8 @@
 import React, {useEffect, useState} from "react";
-import { View, StyleSheet, Text, Image, Button, TouchableOpacity } from "react-native";
+import { View, StyleSheet, Text, Image, Button, TouchableOpacity,Modal, ScrollView } from "react-native";
 import ChipButton from "../components/Chip";
-import { getContacts } from "../services/homeServices";
+import { getContacts, updateContact, removeContact } from "../services/homeServices";
+
 
 
  
@@ -9,6 +10,8 @@ import { getContacts } from "../services/homeServices";
 const HomeScreen = () => {
 
   const [contacts, setContacts] = useState([]);
+  const [isConfirmationVisible, setConfirmationVisible] = useState(false);
+  const [selectedContact, setSelectedContact] = useState(null);
 
   useEffect(() => {
     async function fetchContacts() {
@@ -23,10 +26,18 @@ const HomeScreen = () => {
     fetchContacts();
   }, []);
 
-  console.log(contacts);
+  const showContactDetails = (contact) => {
+    setSelectedContact(contact);
+    setConfirmationVisible(true);
+  };
+  
+   // Function to hide the confirmation modal
+   const hideConfimation = () => {
+    setConfirmationVisible(false);
+  };
 
   return (
-    <View style={styles.container}>
+    <ScrollView contentContainerStyle ={styles.container}>
       <Image
         source={require("/assets/union.png")}
         style={styles.logoImg}
@@ -63,14 +74,11 @@ const HomeScreen = () => {
           {contacts ? (
           contacts.map((contact, index) => (
             <View key={index}>
-              <ChipButton
-                title={contact.Name}
-                onPress={() =>
-                  console.log("send me to view contact ||  edit contact")
-                }
-                type="outline"
-                altText={"contact"}
-              />
+            <ChipButton
+              key={index}
+              title={contact.name}
+              onPress={() => showContactDetails(contact)}
+            />
             </View>
           ))
         ) : (
@@ -81,8 +89,28 @@ const HomeScreen = () => {
         </View>
       </View>
 
+      <Modal
+        animationType="slide"
+        transparent={false}
+        visible={isConfirmationVisible}
+        onRequestClose={hideConfimation}
+      >
+        <View style={styles.confirmationModal}>
+          {selectedContact ? (
+            <View>
+              <Text style={styles.confirmTxt}>Name: {selectedContact.name}</Text>
+              <Text style={styles.confirmTxt}>Phone Number: {selectedContact.phoneNumber}</Text>
+            </View>
+          ) : (
+            <Text>No contact selected</Text>
+          )}
+          <TouchableOpacity onPress={hideConfimation}>
+            <Text style={styles.confirmTxt}>Close</Text>
+          </TouchableOpacity>
+        </View>
+      </Modal>
      
-    </View>
+    </ScrollView>
   );
 };
 
@@ -183,6 +211,19 @@ const styles = StyleSheet.create({
     alignItems: "center",
     gap: 4,
   },
+  confirmationModal: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'green',
+    height: '20%',
+    width: '90%',
+  },
+  confirmTxt: {
+    color: 'white',
+    fontSize: 20,
+    fontWeight: 'bold'
+  }
 });
 
 export default HomeScreen;
