@@ -21,7 +21,7 @@ const SplashScreen = () => {
 
       <View style={styles.textContent}>
         <Image
-          source={require("/assets/vector.png")}
+          source={require("/assets/Vector.png")}
           style={styles.signalImg}
           accessibilityLabel="status signalimage"
         />
@@ -45,13 +45,7 @@ const SplashScreen = () => {
        
       </View>
 
-        {/* navigation screens (bottom tab)*/}
-        <BottomNav
-          style={styles.bottom}
-          helpLabel="Help"
-          supportLabel="Support"
-          aboutLabel="About"
-        />
+        
     </View>
   );
 };

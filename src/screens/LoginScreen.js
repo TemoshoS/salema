@@ -96,30 +96,7 @@ const LoginScreen = () => {
             style={styles.bottomImage}
           />
     
-          {/* Bottom Tab */}
-          <View style={styles.bottomTab}>
-            <View style={styles.tabItem}>
-              <View style={styles.tabContent}>
-                <Text style={styles.greenTabText}>HELP</Text>
-                <Image
-                  source={require('/assets/help_icon.png')}
-                  style={styles.tabIcon}
-                />
-              </View>
-            </View>
-            <View style={styles.tabItem}>
-              <View style={styles.tabContent}>
-                <Text style={styles.greenTabText}>SUPPORT</Text>
-                <Image
-                  source={require('/assets/support_icon.png')}
-                  style={styles.tabIcon}
-                />
-              </View>
-            </View>
-            <View style={styles.tabItem}>
-              <Text style={styles.greenTabText}>ABOUT US</Text>
-            </View>
-          </View>
+          
         </View>
       );
     };
