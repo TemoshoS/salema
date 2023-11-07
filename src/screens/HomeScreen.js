@@ -1,17 +1,23 @@
-import React, {useEffect, useState} from "react";
-import { View, StyleSheet, Text, Image, Button, TouchableOpacity,Modal, ScrollView } from "react-native";
+import React, { useEffect, useState } from "react";
+import { View, StyleSheet, Text, Image, Button, TouchableOpacity, Modal, ScrollView } from "react-native";
 import ChipButton from "../components/Chip";
 import { getContacts, updateContact, removeContact } from "../services/homeServices";
+import UpdateModal from "../components/UpdateModal";
 
 
 
- 
 
 const HomeScreen = () => {
 
   const [contacts, setContacts] = useState([]);
   const [isConfirmationVisible, setConfirmationVisible] = useState(false);
+  const [isUpdateModalVisible, setUpdateModalVisible] = useState(false);
+
   const [selectedContact, setSelectedContact] = useState(null);
+  const [updatedContactData, setUpdatedContactData] = useState({
+    name: "",
+    phoneNumber: "",
+  });
 
   useEffect(() => {
     async function fetchContacts() {
@@ -28,16 +34,43 @@ const HomeScreen = () => {
 
   const showContactDetails = (contact) => {
     setSelectedContact(contact);
+    setUpdatedContactData(contact);
     setConfirmationVisible(true);
   };
+
+  const handleUpdateContact = async (contactId, updatedContact) => {
+    try {
+      await updateContact(contactId, updatedContact);
+    
+      hideConfirmation();
+      setUpdateModalVisible(true);
+    } catch (error) {
+      console.error("Error updating contact: ", error);
+    }
+  };
   
-   // Function to hide the confirmation modal
-   const hideConfimation = () => {
+
+
+  const handleRemoveContact = async (contactId) => {
+    try {
+      await removeContact(contactId);
+      
+      hideConfirmation();
+    } catch (error) {
+      console.error("Error removing contact: ", error);
+    }
+  };
+
+
+  // Function to hide the confirmation modal
+  const hideConfirmation = () => {
     setConfirmationVisible(false);
   };
 
+
+
   return (
-    <ScrollView contentContainerStyle ={styles.container}>
+    <ScrollView contentContainerStyle={styles.container}>
       <Image
         source={require("/assets/union.png")}
         style={styles.logoImg}
@@ -71,21 +104,21 @@ const HomeScreen = () => {
         <Text style={styles.title}>Trusted Contacts</Text>
         <View style={styles.contactCard}>
           <View style={styles.contactList}>
-          {contacts ? (
-          contacts.map((contact, index) => (
-            <View key={index}>
-            <ChipButton
-              key={index}
-              title={contact.name}
-              onPress={() => showContactDetails(contact)}
-            />
-            </View>
-          ))
-        ) : (
-          <Text>No contacts available</Text>
-        )}
+            {contacts ? (
+              contacts.map((contact, index) => (
+                <View key={index}>
+                  <ChipButton
+                    key={index}
+                    title={contact.name}
+                    onPress={() => showContactDetails(contact)}
+                  />
+                </View>
+              ))
+            ) : (
+              <Text>No contacts available</Text>
+            )}
           </View>
-          <Button title="Add Contact" onPress={() => {}} />
+          <Button title="Add Contact" onPress={() => { }} />
         </View>
       </View>
 
@@ -93,23 +126,48 @@ const HomeScreen = () => {
         animationType="slide"
         transparent={false}
         visible={isConfirmationVisible}
-        onRequestClose={hideConfimation}
+        onRequestClose={hideConfirmation}
       >
         <View style={styles.confirmationModal}>
           {selectedContact ? (
             <View>
-              <Text style={styles.confirmTxt}>Name: {selectedContact.name}</Text>
-              <Text style={styles.confirmTxt}>Phone Number: {selectedContact.phoneNumber}</Text>
+              <Text>Trusted Contacts</Text>
+              <Text style={styles.confirmTxt}>{selectedContact.name}</Text>
+              <Text style={styles.confirmTxt}>{selectedContact.phoneNumber}</Text>
+
+              <TouchableOpacity
+                onPress={() => handleUpdateContact(selectedContact.id, updatedContactData)}
+              >
+                <Text>Update contact</Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity onPress={() => handleRemoveContact(selectedContact.id)}>
+                <Text>Remove contact</Text>
+              </TouchableOpacity>
             </View>
           ) : (
             <Text>No contact selected</Text>
           )}
-          <TouchableOpacity onPress={hideConfimation}>
+          <TouchableOpacity onPress={hideConfirmation}>
             <Text style={styles.confirmTxt}>Close</Text>
           </TouchableOpacity>
         </View>
       </Modal>
-     
+
+      {isUpdateModalVisible && (
+  <UpdateModal
+    contact={selectedContact}
+    onUpdate={(updatedContact) => {
+      // Handle the update here if needed
+    }}
+    onCancel={() => {
+      setUpdateModalVisible(false); // Close the modal
+    }}
+  />
+)}
+
+
+
     </ScrollView>
   );
 };
