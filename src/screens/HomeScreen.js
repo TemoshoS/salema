@@ -1,19 +1,30 @@
-// import { Card } from "@rneui/themed";
-import React from "react";
-import { View, StyleSheet, Text, Image } from "react-native";
-// Navigation Contents
-import { NavigationContainer } from "@react-navigation/native";
-//import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import { createStackNavigator } from "@react-navigation/stack";
-
-// components
-import BottomNav from "../components/BottomNav";
+import React, {useEffect, useState} from "react";
+import { View, StyleSheet, Text, Image, Button, TouchableOpacity } from "react-native";
 import ChipButton from "../components/Chip";
-import { Button } from "react-native-web";
+import { getContacts } from "../services/homeServices";
 
- //const Stack = createNativeStackNavigator(); //nav container
+
+ 
 
 const HomeScreen = () => {
+
+  const [contacts, setContacts] = useState([]);
+
+  useEffect(() => {
+    async function fetchContacts() {
+      try {
+        const data = await getContacts();
+        setContacts(data);
+      } catch (error) {
+        console.error("Error fetching contacts:", error);
+      }
+    }
+
+    fetchContacts();
+  }, []);
+
+  console.log(contacts);
+
   return (
     <View style={styles.container}>
       <Image
@@ -46,35 +57,26 @@ const HomeScreen = () => {
 
       {/* CONTACT LIST CARD */}
       <View style={styles.cardContainer}>
-      <Text style={styles.title}>Trusted Contacts</Text>
+        <Text style={styles.title}>Trusted Contacts</Text>
         <View style={styles.contactCard}>
           <View style={styles.contactList}>
-            <ChipButton
-              title={"Name"}
-              onPress={() =>
-                console.log("send me to view contact ||  edit contact")
-              }
-              type="outline"
-              altText={"contact"}
-            />
-            <ChipButton
-              title={"Name"}
-              onPress={() =>
-                console.log("send me to view contact ||  edit contact")
-              }
-              type="outline"
-              altText={"contact"}
-            />
-            <ChipButton
-              title={"Name"}
-              onPress={() =>
-                console.log("send me to view contact ||  edit contact")
-              }
-              type="outline"
-              altText={"contact"}
-            />
+          {contacts ? (
+          contacts.map((contact, index) => (
+            <View key={index}>
+              <ChipButton
+                title={contact.Name}
+                onPress={() =>
+                  console.log("send me to view contact ||  edit contact")
+                }
+                type="outline"
+                altText={"contact"}
+              />
+            </View>
+          ))
+        ) : (
+          <Text>No contacts available</Text>
+        )}
           </View>
-
           <Button title="Add Contact" onPress={() => {}} />
         </View>
       </View>
