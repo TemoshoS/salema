@@ -75,7 +75,11 @@ const LoginScreen = () => {
               
              
            </TouchableOpacity>
+           
+           <View style={styles.linksContainer}>
            <Text style={{ color: '#FFF' }}>Forgot password</Text>
+           <Text style={{ color: '#FFF' }}>Register</Text>
+           </View>
           </View>
     
           {/* Image at the bottom center */}
@@ -185,6 +189,14 @@ export default LoginScreen;
         textAlign: 'center',
         color: 'black',
         bottom: -10,
+      },
+      linksContainer: {
+        
+          flexDirection: 'row',
+          justifyContent: 'space-between',
+          width: 300,
+          marginTop: 10,
+          
       },
         TextButton: {
         textAlign: 'center',

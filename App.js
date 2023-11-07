@@ -10,21 +10,14 @@ const Stack = createStackNavigator();
 
 export default function App() {
   return (
-<<<<<<< HEAD
-    <View style={styles.container}>
-     
-      <LoginScreen/>
-      
-    </View>
-=======
-    <NavigationContainer>
-      <Stack.Navigator initialRouteName='Register'>
-        <Stack.Screen name='Welcome' component={HomeScreen} options={{ headerShown: false }} />
-        <Stack.Screen name='Login' component={LoginScreen} options={{ headerShown: false }} />
-        <Stack.Screen name='Register' component={RegistrationScreen} options={{ headerShown: false }} />
-      </Stack.Navigator>
-    </NavigationContainer>
->>>>>>> 9a1e92f4ecf1cd5ba066367481b599dfb0c5c80d
+   <LoginScreen/>
+  //  <NavigationContainer>
+    //  <Stack.Navigator initialRouteName='Register'>
+     //   <Stack.Screen name='Welcome' component={HomeScreen} options={{ headerShown: false }} />
+     //   <Stack.Screen name='Login' component={LoginScreen} options={{ headerShown: false }} />
+     //   <Stack.Screen name='Register' component={RegistrationScreen} options={{ headerShown: false }} />
+     // </Stack.Navigator>
+   // </NavigationContainer>
   );
 }
 
