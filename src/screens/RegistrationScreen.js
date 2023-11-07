@@ -122,7 +122,13 @@ const RegistrationScreen = () => {
     setIsConfirmationVisible(false);
   }
 
+  const handleLogin = () => {
+    navigation.navigate('Login');
+  }
+
+
   return (
+
     <View style={styles.container}>
       <Image
         source={require('/assets/union.png')}
@@ -203,6 +209,15 @@ const RegistrationScreen = () => {
           <Text style={styles.TextButton}>CREATE ACCOUNT</Text>
         </TouchableOpacity>
 
+
+        <View style={styles.loginNav}>
+          <Text>Already have an account?</Text>
+          <TouchableOpacity onPress={handleLogin}>
+            <Text style={styles.loginTxt}>Log in</Text>
+          </TouchableOpacity>
+        </View>
+
+
         <Modal
           animationType="slide"
           transparent={true}
@@ -224,30 +239,7 @@ const RegistrationScreen = () => {
         style={styles.bottomImage}
       />
 
-      {/* Bottom Tab */}
-      <View style={styles.bottomTab}>
-        <View style={styles.tabItem}>
-          <View style={styles.tabContent}>
-            <Text style={styles.greenTabText}>HELP</Text>
-            <Image
-              source={require('/assets/help_icon.png')}
-              style={styles.tabIcon}
-            />
-          </View>
-        </View>
-        <View style={styles.tabItem}>
-          <View style={styles.tabContent}>
-            <Text style={styles.greenTabText}>SUPPORT</Text>
-            <Image
-              source={require('/assets/support_icon.png')}
-              style={styles.tabIcon}
-            />
-          </View>
-        </View>
-        <View style={styles.tabItem}>
-          <Text style={styles.greenTabText}>ABOUT US</Text>
-        </View>
-      </View>
+      
     </View>
   );
 };
@@ -378,6 +370,13 @@ const styles = StyleSheet.create({
     width: 10,
     height: 10,
     marginLeft: 5,
+  },
+  loginNav: {
+    flexDirection: 'row'
+  },
+  loginTxt: {
+    color: 'blue',
+    textDecorationLine: 'underline'
   },
   confirmationModal: {
     flex: 1,
