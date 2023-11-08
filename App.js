@@ -11,73 +11,73 @@ import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityI
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
 export default function App() {
-  function MainStack(){
-    return(
-      
-      <Stack.Navigator initialRouteName='Login'>
+  function MainStack() {
+    return (
+
+      <Stack.Navigator initialRouteName='Home'>
         <Stack.Screen name='Home' component={HomeScreen} options={{ headerShown: false }} />
-       <Stack.Screen name='Splash' component={SplashScreen} options={{ headerShown: false }} />
-      <Stack.Screen name='Login' component={LoginScreen} options={{ headerShown: false }} />
-    <Stack.Screen name='Register' component={RegistrationScreen} options={{ headerShown: false }} />
-    <Stack.Screen name='About' component={AboutScreen} options={{ headerShown: false }} />
+        <Stack.Screen name='Splash' component={SplashScreen} options={{ headerShown: false }} />
+        <Stack.Screen name='Login' component={LoginScreen} options={{ headerShown: false }} />
+        <Stack.Screen name='Register' component={RegistrationScreen} options={{ headerShown: false }} />
+        <Stack.Screen name='About' component={AboutScreen} options={{ headerShown: false }} />
       </Stack.Navigator>
-      
+
     );
   }
   function TabNavigator() {
     return (
       <Tab.Navigator
-      tabBarOptions={{
-        activeTintColor: '#808080',
-        inactiveTintColor: '#AFEEEE',
-      }}
+        tabBarOptions={{
+          activeTintColor: '#808080',
+          inactiveTintColor: '#AFEEEE',
+        }}
       >
         <Tab.Screen
-        name="Splash"
-        component={MainStack}
-        options={{
-          headerShown: false,
-          tabBarIcon: ({ color, size }) => (
-            <MaterialCommunityIcons
-              name="home"
-              color={color}
-              size={size}
-            />
-          ),
-        }}
+          name="Splash"
+          component={MainStack}
+          options={{
+            headerShown: false,
+            tabBarIcon: ({ color, size }) => (
+              <MaterialCommunityIcons
+                name="home"
+                color={color}
+                size={size}
+              />
+            ),
+          }}
         />
         <Tab.Screen
-        name="Help"
-        component={HomeScreen}
-        options={{
-          headerShown: false,
-          tabBarIcon: ({ color, size }) => (
-            <MaterialCommunityIcons
-              name="help-circle"
-              color={color}
-              size={size}
-            />
-          ),
-        }}/>
-<Tab.Screen
-        name="About Us"
-        component={AboutScreen}
-        options={{
-          headerShown: false,
-          tabBarIcon: ({ color, size }) => (
-            <MaterialCommunityIcons
-              name="information-outline"
-              color={color}
-              size={size}
-            />
-          ),
-        }}/>
+          name="Help"
+          component={HomeScreen}
+          options={{
+            headerShown: false,
+            tabBarIcon: ({ color, size }) => (
+              <MaterialCommunityIcons
+                name="help-circle"
+                color={color}
+                size={size}
+              />
+            ),
+          }} />
+        <Tab.Screen
+          name="About Us"
+          component={AboutScreen}
+          options={{
+            headerShown: false,
+            tabBarIcon: ({ color, size }) => (
+              <MaterialCommunityIcons
+                name="information-outline"
+                color={color}
+                size={size}
+              />
+            ),
+          }} />
       </Tab.Navigator>
     );
   }
   return (
     <NavigationContainer>
-      <TabNavigator/>
+      <TabNavigator />
     </NavigationContainer>
   );
 }

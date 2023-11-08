@@ -131,7 +131,7 @@ const RegistrationScreen = () => {
 
     <View style={styles.container}>
       <Image
-        source={require('/assets/union.png')}
+        source={require('/assets/Union.png')}
         style={styles.image}
       />
       <Image

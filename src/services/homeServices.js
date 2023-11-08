@@ -19,17 +19,21 @@ async function getContacts() {
   }
 }
 
-async function addContact(newContact){
+async function addContact(newContact) {
   try {
     const collectionRef = collection(db, "emergency_contacts");
-    await addDoc(collectionRef,newContact);
-    const documentId = docRef.id; 
+    const docRef = await addDoc(collectionRef, newContact);
+
+    const documentId = docRef.id;
+    await updateDoc(docRef, { id: documentId });
+
     console.log('Contact added successfully with ID:', documentId);
   } catch (error) {
     console.error('Error adding contact: ', error);
-    
   }
-} 
+}
+
+
 
 
 async function updateContact(contactId, updatedContact) {
