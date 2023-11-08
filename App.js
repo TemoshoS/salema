@@ -8,12 +8,9 @@ import { createStackNavigator } from '@react-navigation/stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import SplashScreen from './src/screens/SplashScreen';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
-
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
-
 export default function App() {
-
   function MainStack(){
     return(
       <Stack.Navigator initialRouteName='Home'>
@@ -25,21 +22,17 @@ export default function App() {
       </Stack.Navigator>
     );
   }
-
-
   function TabNavigator() {
     return (
-      <Tab.Navigator 
+      <Tab.Navigator
       tabBarOptions={{
         activeTintColor: '#808080',
         inactiveTintColor: '#AFEEEE',
-        
       }}
-     
       >
-        <Tab.Screen 
-        name="Splash" 
-        component={MainStack} 
+        <Tab.Screen
+        name="Splash"
+        component={MainStack}
         options={{
           headerShown: false,
           tabBarIcon: ({ color, size }) => (
@@ -47,15 +40,13 @@ export default function App() {
               name="home"
               color={color}
               size={size}
-              
             />
           ),
         }}
         />
-        <Tab.Screen 
-        name="Help" 
-        
-        component={HomeScreen} 
+        <Tab.Screen
+        name="Help"
+        component={HomeScreen}
         options={{
           headerShown: false,
           tabBarIcon: ({ color, size }) => (
@@ -66,11 +57,9 @@ export default function App() {
             />
           ),
         }}/>
-       
-
-<Tab.Screen 
-        name="About Us" 
-        component={AboutScreen} 
+<Tab.Screen
+        name="About Us"
+        component={AboutScreen}
         options={{
           headerShown: false,
           tabBarIcon: ({ color, size }) => (
@@ -81,20 +70,15 @@ export default function App() {
             />
           ),
         }}/>
-
-   
       </Tab.Navigator>
     );
   }
-  
-
   return (
     <NavigationContainer>
       <TabNavigator/>
     </NavigationContainer>
   );
 }
-
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -104,3 +88,12 @@ const styles = StyleSheet.create({
     paddingHorizontal: 8,
   },
 });
+
+
+
+
+
+
+
+
+
