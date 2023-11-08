@@ -373,7 +373,7 @@ const styles = StyleSheet.create({
     flexDirection: "column",
     flexWrap: "wrap",
     // justifyContent: "space-between",
-    zIndex: 1, //above screen contents
+//above screen contents
     borderRadius: 20,
     // backgroundColor: '#fff',
     backgroundColor: "#055a2b",

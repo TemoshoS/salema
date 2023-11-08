@@ -6,13 +6,14 @@ import { View, StyleSheet, Text, Image } from "react-native";
 // components
 import BottomNav from "../components/BottomNav";
 import Button from "../components/Button";
+import ShakeFeedback from "../components/ShakeFeedback";
 
 const SplashScreen = () => {
   return (
     <View style={styles.container}>
     
-      <Image
-        source={require("/assets/union.png")}
+      <Image      
+        source={require("/assets/Union.png")}
         style={styles.logoImg}
         accessibilityLabel="logo image"
       />
@@ -20,11 +21,14 @@ const SplashScreen = () => {
       {/* Staus image */}
 
       <View style={styles.textContent}>
-        <Image
+      {/* HERE IS THE STATUS OF THE SHAKE APP {IN USE OR NOT} */}
+      <ShakeFeedback/>
+        {/* <Image
           source={require("/assets/Vector.png")}
           style={styles.signalImg}
           accessibilityLabel="status signalimage"
-        />
+        /> */}
+
         <Text style={styles.title}>"Shake to Alert"</Text>
         <Text style={styles.text}>
           In an emergency, every second counts, just give your phone a quick
@@ -38,12 +42,14 @@ const SplashScreen = () => {
         style={styles.BgImage}
         accessibilityLabel="status signalimage"
       />
-      {/* THIS IS NOT ENDERING */}
+      {/* THIS IS NOT R ENDERING */}
       <View style={styles.buttonSection}>
         <Button style={styles.bgGreen} title={"Signup"} onPress={() => console.log("Send me to register")} altText={"register"} color={"#055a2b"}/>
         <Button style={styles.bgGreen} title={"Log in"} onPress={() => console.log("Send me to Login")} altText={"Login"} color={"#055a2b"}/>
        
       </View>
+
+      
 
         
     </View>
