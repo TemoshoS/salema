@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { View, StyleSheet, Text, Image, Button, TouchableOpacity, Modal, ScrollView, TextInput } from "react-native";
-import ChipButton from "../components/Chip";
+import ChipButton from "../components/ChipButton";
 import { getContacts, addContact, updateContact, removeContact } from "../services/homeServices";
 
 
@@ -118,7 +118,7 @@ const HomeScreen = () => {
   return (
     <ScrollView contentContainerStyle={styles.container}>
       <Image
-        source={require("/assets/union.png")}
+        source={require("/assets/Union.png")}
         style={styles.logoImg}
         accessibilityLabel="logo image"
       />
