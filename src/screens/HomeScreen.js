@@ -8,7 +8,7 @@ import { createStackNavigator } from "@react-navigation/stack";
 
 // components
 import BottomNav from "../components/BottomNav";
-import ChipButton from "../components/Chip";
+import ChipButton from "../components/ChipButton";
 import { Button } from "react-native-web";
 
  //const Stack = createNativeStackNavigator(); //nav container
@@ -167,7 +167,7 @@ const styles = StyleSheet.create({
     flexDirection: "column",
     flexWrap: "wrap",
     // justifyContent: "space-between",
-    zIndex: 1, //above screen contents
+//above screen contents
     borderRadius: 20,
     // backgroundColor: '#fff',
     backgroundColor: "#055a2b",
