@@ -11,6 +11,12 @@ import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityI
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
+import React from 'react';
+import { StyleSheet, View } from 'react-native';
+import { StatusBar } from 'expo-status-bar';
+import RegistrationScreen from './src/screens/RegistrationScreen';
+import AboutScreen from './src/screens/About Screen';
+import SplashScreen from './src/screens/SplashScreen';
 
 export default function App() {
 
@@ -94,6 +100,12 @@ export default function App() {
     <NavigationContainer>
       <TabNavigator/>
     </NavigationContainer>
+    <View style={styles.container}>
+      {/* <RegistrationScreen /> */}
+      {/* <AboutScreen/> */}
+      <SplashScreen/>
+      <StatusBar style="auto" />
+    </View>
   );
 }
 
