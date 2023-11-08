@@ -149,6 +149,7 @@ const RegistrationScreen = () => {
           placeholder="Full Name"
           placeholderTextColor="white"
           onChangeText={(text) => setName(text)}
+          bottomBorderColor="white"
         />
         {nameError && <Text style={styles.errorText}>{nameError}</Text>}
 
@@ -166,6 +167,7 @@ const RegistrationScreen = () => {
           placeholder="Phone Number"
           placeholderTextColor="white"
           onChangeText={(text) => setPhoneNumber(text)}
+         
         />
         {phoneError && <Text style={styles.errorText}>{phoneError}</Text>}
 
@@ -175,6 +177,9 @@ const RegistrationScreen = () => {
           placeholder="Password"
           onChangeText={(text) => handlePasswordChange(text)}
           secureTextEntry={!showPassword}
+          secureTextEntry={true} // Hide the password with stars
+          placeholderTextColor="white"
+          bottomBorderColor="white"
         />
         {passwordError && <Text style={styles.errorText}>{passwordError}</Text>}
 
