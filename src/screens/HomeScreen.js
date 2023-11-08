@@ -2,12 +2,12 @@ import React, { useEffect, useState } from "react";
 import { View, StyleSheet, Text, Image, Button, TouchableOpacity, Modal, ScrollView, TextInput } from "react-native";
 import ChipButton from "../components/ChipButton";
 import { getContacts, addContact, updateContact, removeContact } from "../services/homeServices";
-
+import { getAuth, onAuthStateChanged } from "@firebase/auth";
 
 
 
 const HomeScreen = () => {
-
+  const [currentUser, setCurrentUser] = useState(null);
   const [contacts, setContacts] = useState([]);
   const [isConfirmationVisible, setConfirmationVisible] = useState(false);
   const [selectedContact, setSelectedContact] = useState(null);
@@ -27,6 +27,19 @@ const HomeScreen = () => {
   });
 
   useEffect(() => {
+    const auth = getAuth();
+
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if (user) {
+        setCurrentUser(user.uid);
+        
+      } else {
+        setCurrentUser(null);
+        setContacts([]);
+      }
+    })
+
+
     async function fetchContacts() {
       try {
         const data = await getContacts();
@@ -37,7 +50,11 @@ const HomeScreen = () => {
     }
 
     fetchContacts();
+    return unsubscribe;
   }, []);
+
+  const filteredContacts = contacts.filter((contact) => contact.userId === currentUser);
+
 
   const showContactDetails = (contact) => {
     setSelectedContact(contact);
@@ -60,6 +77,25 @@ const HomeScreen = () => {
   const hideAddContactModal = () => {
     setAddContactModalVisible(false);
   };
+
+
+  const handleAddContact = async () => {
+    try {
+      if (!currentUser) {
+        console.error('No user is signed in. Cannot add contact without a user.');
+        return;
+      }
+
+      const contactWithUserId = { ...newContactData, userId: currentUser };
+
+      await addContact(contactWithUserId);
+
+      hideAddContactModal();
+    } catch (error) {
+      console.error('Error adding contact: ', error);
+    }
+  };
+
 
   //function to update contact
   const showUpdateModal = () => {
@@ -150,8 +186,8 @@ const HomeScreen = () => {
         <Text style={styles.title}>Trusted Contacts</Text>
         <View style={styles.contactCard}>
           <View style={styles.contactList}>
-            {contacts ? (
-              contacts.map((contact, index) => (
+            {filteredContacts ? (
+              filteredContacts.map((contact, index) => (
                 <View key={index}>
                   <ChipButton
                     key={index}
@@ -202,12 +238,8 @@ const HomeScreen = () => {
             }
           />
           <Button
-            title="Add"
-            onPress={() => {
-              addContact(newContactData);
-              hideAddContactModal();
-            }}
-
+            title="Add Contact"
+            onPress={handleAddContact}
           />
           <Button
             title="Cancel"
