@@ -1,10 +1,16 @@
+import React from 'react';
+import { StyleSheet, View } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
+import RegistrationScreen from './src/screens/RegistrationScreen';
+import AboutScreen from './src/screens/About Screen';
+import SplashScreen from './src/screens/SplashScreen';
 
 export default function App() {
   return (
     <View style={styles.container}>
-      <Text>Open up App.js to start working on your app!</Text>
+      {/* <RegistrationScreen /> */}
+      {/* <AboutScreen/> */}
+      <SplashScreen/>
       <StatusBar style="auto" />
     </View>
   );
@@ -18,12 +24,3 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
 });
-
-export default function App() {
-  return (
-    <View style={styles.container}>
-      <RegistrationScreen />
-      <StatusBar style="auto" />
-    </View>
-  );
-}

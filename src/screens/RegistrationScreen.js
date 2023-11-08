@@ -23,6 +23,7 @@ const RegistrationScreen = () => {
           style={styles.input}
           placeholder="Full Name"
           placeholderTextColor="white"
+          bottomBorderColor="white"
         />
         <TextInput
           style={styles.input}
@@ -33,12 +34,14 @@ const RegistrationScreen = () => {
           style={styles.input}
           placeholder="Phone Number"
           placeholderTextColor="white"
+         
         />
         <TextInput
           style={styles.input}
           placeholder="Password"
           secureTextEntry={true} // Hide the password with stars
           placeholderTextColor="white"
+          bottomBorderColor="white"
         />
         <TouchableOpacity style= {styles.createAccountButton}>  
          <Text style={styles.TextButton}>CREATE ACCOUNT</Text>
