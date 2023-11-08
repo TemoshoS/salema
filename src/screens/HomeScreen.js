@@ -1,21 +1,76 @@
-// import { Card } from "@rneui/themed";
-import React from "react";
-import { View, StyleSheet, Text, Image } from "react-native";
-// Navigation Contents
-import { NavigationContainer } from "@react-navigation/native";
-//import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import { createStackNavigator } from "@react-navigation/stack";
+import React, { useEffect, useState } from "react";
+import { View, StyleSheet, Text, Image, Button, TouchableOpacity, Modal, ScrollView } from "react-native";
+import ChipButton from "../components/Chip";
+import { getContacts, updateContact, removeContact } from "../services/homeServices";
+import UpdateModal from "../components/UpdateModal";
 
-// components
-import BottomNav from "../components/BottomNav";
-import ChipButton from "../components/ChipButton";
-import { Button } from "react-native-web";
 
- //const Stack = createNativeStackNavigator(); //nav container
+
 
 const HomeScreen = () => {
+
+  const [contacts, setContacts] = useState([]);
+  const [isConfirmationVisible, setConfirmationVisible] = useState(false);
+  const [isUpdateModalVisible, setUpdateModalVisible] = useState(false);
+
+  const [selectedContact, setSelectedContact] = useState(null);
+  const [updatedContactData, setUpdatedContactData] = useState({
+    name: "",
+    phoneNumber: "",
+  });
+
+  useEffect(() => {
+    async function fetchContacts() {
+      try {
+        const data = await getContacts();
+        setContacts(data);
+      } catch (error) {
+        console.error("Error fetching contacts:", error);
+      }
+    }
+
+    fetchContacts();
+  }, []);
+
+  const showContactDetails = (contact) => {
+    setSelectedContact(contact);
+    setUpdatedContactData(contact);
+    setConfirmationVisible(true);
+  };
+
+  const handleUpdateContact = async (contactId, updatedContact) => {
+    try {
+      await updateContact(contactId, updatedContact);
+    
+      hideConfirmation();
+      setUpdateModalVisible(true);
+    } catch (error) {
+      console.error("Error updating contact: ", error);
+    }
+  };
+  
+
+
+  const handleRemoveContact = async (contactId) => {
+    try {
+      await removeContact(contactId);
+      
+      hideConfirmation();
+    } catch (error) {
+      console.error("Error removing contact: ", error);
+    }
+  };
+
+
+  // Function to hide the confirmation modal
+  const hideConfirmation = () => {
+    setConfirmationVisible(false);
+  };
+
+
+
   return (
-    <View style={styles.container}>
+    <ScrollView contentContainerStyle={styles.container}>
       <Image
         source={require("/assets/union.png")}
         style={styles.logoImg}
@@ -26,7 +81,7 @@ const HomeScreen = () => {
 
       <View style={styles.textContent}>
         <Image
-          source={require("/assets/vector.png")}
+          source={require("/assets/Vector.png")}
           style={styles.signalImg}
           accessibilityLabel="status signalimage"
         />
@@ -46,49 +101,74 @@ const HomeScreen = () => {
 
       {/* CONTACT LIST CARD */}
       <View style={styles.cardContainer}>
-      <Text style={styles.title}>Trusted Contacts</Text>
+        <Text style={styles.title}>Trusted Contacts</Text>
         <View style={styles.contactCard}>
           <View style={styles.contactList}>
-            <ChipButton
-              title={"Name"}
-              onPress={() =>
-                console.log("send me to view contact ||  edit contact")
-              }
-              type="outline"
-              altText={"contact"}
-            />
-            <ChipButton
-              title={"Name"}
-              onPress={() =>
-                console.log("send me to view contact ||  edit contact")
-              }
-              type="outline"
-              altText={"contact"}
-            />
-            <ChipButton
-              title={"Name"}
-              onPress={() =>
-                console.log("send me to view contact ||  edit contact")
-              }
-              type="outline"
-              altText={"contact"}
-            />
+            {contacts ? (
+              contacts.map((contact, index) => (
+                <View key={index}>
+                  <ChipButton
+                    key={index}
+                    title={contact.name}
+                    onPress={() => showContactDetails(contact)}
+                  />
+                </View>
+              ))
+            ) : (
+              <Text>No contacts available</Text>
+            )}
           </View>
-
-          <Button title="Add Contact" onPress={() => {}} />
+          <Button title="Add Contact" onPress={() => { }} />
         </View>
       </View>
 
-      <NavigationContainer>
-        {/* navigation screens (bottom tab)*/}
-        <BottomNav
-          style={styles.bottom}
-          helpLabel="Help"
-          supportLabel="Support"
-          aboutLabel="About"
-        />
-      </NavigationContainer>
-    </View>
+      <Modal
+        animationType="slide"
+        transparent={false}
+        visible={isConfirmationVisible}
+        onRequestClose={hideConfirmation}
+      >
+        <View style={styles.confirmationModal}>
+          {selectedContact ? (
+            <View>
+              <Text>Trusted Contacts</Text>
+              <Text style={styles.confirmTxt}>{selectedContact.name}</Text>
+              <Text style={styles.confirmTxt}>{selectedContact.phoneNumber}</Text>
+
+              <TouchableOpacity
+                onPress={() => handleUpdateContact(selectedContact.id, updatedContactData)}
+              >
+                <Text>Update contact</Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity onPress={() => handleRemoveContact(selectedContact.id)}>
+                <Text>Remove contact</Text>
+              </TouchableOpacity>
+            </View>
+          ) : (
+            <Text>No contact selected</Text>
+          )}
+          <TouchableOpacity onPress={hideConfirmation}>
+            <Text style={styles.confirmTxt}>Close</Text>
+          </TouchableOpacity>
+        </View>
+      </Modal>
+
+      {isUpdateModalVisible && (
+  <UpdateModal
+    contact={selectedContact}
+    onUpdate={(updatedContact) => {
+      // Handle the update here if needed
+    }}
+    onCancel={() => {
+      setUpdateModalVisible(false); // Close the modal
+    }}
+  />
+)}
+
+
+
+    </ScrollView>
   );
 };
 
@@ -189,6 +269,19 @@ const styles = StyleSheet.create({
     alignItems: "center",
     gap: 4,
   },
+  confirmationModal: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'green',
+    height: '20%',
+    width: '90%',
+  },
+  confirmTxt: {
+    color: 'white',
+    fontSize: 20,
+    fontWeight: 'bold'
+  }
 });
 
 export default HomeScreen;
