@@ -1,53 +1,58 @@
 import React, { useState } from 'react';
-import { StyleSheet, Text, View, Modal, TextInput, Button } from 'react-native';
+import { View, Text, Button } from 'react-native';
+import UpdateModal from './UpdateModal'; // Update the path to match your project structure
+import { updateContact } from '../services/homeServices'; // Import the Firebase Firestore update function
 
-const UpdateModal = ({ contact, onUpdate, onCancel }) => {
-  const [updatedName, setUpdatedName] = useState(contact.name);
-  const [updatedPhoneNumber, setUpdatedPhoneNumber] = useState(contact.phoneNumber);
+const UpdateModalScreen = () => {
+  const [contact, setContact] = useState({
+    name: 'John Doe',
+    phoneNumber: '555-123-4567',
+  });
 
-  const handleUpdate = () => {
-    const updatedContact = {
-      name: updatedName,
-      phoneNumber: updatedPhoneNumber,
-    };
-    onUpdate(updatedContact);
+  const [isUpdateModalVisible, setUpdateModalVisible] = useState(false);
+
+  // Function to open the modal for updating the contact
+  const openUpdateModal = () => {
+    setUpdateModalVisible(true);
+  };
+
+  // Function to close the modal
+  const closeUpdateModal = () => {
+    setUpdateModalVisible(false);
+  };
+
+  // Function to update the contact with new information
+  const updateContactInfo = (updatedContact) => {
+    // Call the Firebase Firestore update function
+    updateContact(contact.id, updatedContact)
+      .then(() => {
+        // Update the local contact data
+        setContact({ ...contact, ...updatedContact });
+        // Close the modal
+        closeUpdateModal();
+      })
+      .catch((error) => {
+        // Handle errors, e.g., show an error message
+        console.error('Error updating contact: ', error);
+      });
   };
 
   return (
-    <Modal animationType="slide" transparent={false} visible={true}>
-      <View style={styles.modalContainer}>
-        <Text>Edit Contact</Text>
-        <TextInput
-          style={styles.input}
-          placeholder="Name"
-          value={updatedName}
-          onChangeText={(text) => setUpdatedName(text)}
-        />
-        <TextInput
-          style={styles.input}
-          placeholder="Phone Number"
-          value={updatedPhoneNumber}
-          onChangeText={(text) => setUpdatedPhoneNumber(text)}
-        />
-        <Button title="Update" onPress={handleUpdate} />
-        <Button title="Cancel" onPress={onCancel} />
-      </View>
-    </Modal>
+    <View>
+      <Text>Contact Information:</Text>
+      <Text>Name: {contact.name}</Text>
+      <Text>Phone Number: {contact.phoneNumber}</Text>
+
+      <Button title="Edit Contact" onPress={openUpdateModal} />
+
+      <UpdateModal
+        contact={contact}
+        onUpdate={updateContactInfo}
+        onCancel={closeUpdateModal}
+        visible={isUpdateModalVisible}
+      />
+    </View>
   );
 };
 
-const styles = StyleSheet.create({
-  modalContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  input: {
-    borderWidth: 1,
-    borderColor: 'gray',
-    padding: 10,
-    marginBottom: 10,
-  },
-});
-
-export default UpdateModal;
+export default UpdateModalScreen;

@@ -1,4 +1,4 @@
-import { collection, getDocs, updateDoc, deleteDoc, doc } from "firebase/firestore";
+import { collection, getDocs,addDoc, updateDoc, deleteDoc, doc } from "firebase/firestore";
 import { db } from "./firebaseService";
 
 async function getContacts() {
@@ -16,6 +16,17 @@ async function getContacts() {
   } catch (error) {
     console.error('Error fetching data: ', error);
     return []; 
+  }
+}
+
+async function addContact(newContact){
+  try {
+    const collectionRef = collection(db, "emergency_contacts");
+    await addDoc(collectionRef,newContact);
+    console.log('Contact added successfully');
+  } catch (error) {
+    console.error('Error adding contact: ', error);
+    
   }
 }
 
@@ -41,4 +52,4 @@ async function removeContact(contactId) {
     }
 }
 
-export { getContacts , updateContact, removeContact};
+export { getContacts ,addContact, updateContact, removeContact};

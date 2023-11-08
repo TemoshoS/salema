@@ -1,8 +1,7 @@
 import React, { useEffect, useState } from "react";
-import { View, StyleSheet, Text, Image, Button, TouchableOpacity, Modal, ScrollView } from "react-native";
+import { View, StyleSheet, Text, Image, Button, TouchableOpacity, Modal, ScrollView, TextInput } from "react-native";
 import ChipButton from "../components/Chip";
-import { getContacts, updateContact, removeContact } from "../services/homeServices";
-import UpdateModal from "../components/UpdateModal";
+import { getContacts, addContact, updateContact, removeContact } from "../services/homeServices";
 
 
 
@@ -11,12 +10,20 @@ const HomeScreen = () => {
 
   const [contacts, setContacts] = useState([]);
   const [isConfirmationVisible, setConfirmationVisible] = useState(false);
-  const [isUpdateModalVisible, setUpdateModalVisible] = useState(false);
-
   const [selectedContact, setSelectedContact] = useState(null);
+
+  const [isAddContactModalVisible, setAddContactModalVisible] = useState(false);
+  const [newContactData, setNewContactData] = useState({
+    name: '',
+    phoneNumber: '',
+    relationship: '',
+  })
+
+  const [isUpdateModalVisible, setUpdateModalVisible] = useState(false);
   const [updatedContactData, setUpdatedContactData] = useState({
     name: "",
     phoneNumber: "",
+    relationship: '',
   });
 
   useEffect(() => {
@@ -38,19 +45,58 @@ const HomeScreen = () => {
     setConfirmationVisible(true);
   };
 
-  const handleUpdateContact = async (contactId, updatedContact) => {
+  //function to add new contact
+
+  const showAddContactModal = ()=>{
+    setNewContactData({
+      name: '',
+      phoneNumber: '',
+      relationship: '',
+    });
+
+    setAddContactModalVisible(true);
+  }
+
+  const hideAddContactModal = () => {
+    setAddContactModalVisible(false);
+  };
+
+   //function to update contact
+   const showUpdateModal =()=>{
+    setUpdateModalVisible(true);
+   }
+
+   const hideUpdateModal =()=>{
+    setUpdateModalVisible(false);
+   }
+
+   const handleUpdateContact = async () => {
     try {
-      await updateContact(contactId, updatedContact);
-    
-      hideConfirmation();
-      setUpdateModalVisible(true);
+      if (!selectedContact) {
+        console.error('No contact selected for update');
+        return;
+      }
+  
+      if (!selectedContact.id) {
+        console.error('Selected contact has no valid ID');
+        return;
+      }
+  
+      if (!updatedContactData) {
+        console.error('No updated data provided');
+        return;
+      }
+  
+      await updateContact(selectedContact.id, updatedContactData);
+      hideUpdateModal();
     } catch (error) {
-      console.error("Error updating contact: ", error);
+      console.error('Error updating contact: ', error);
     }
   };
   
+  
 
-
+//Function to remove contact
   const handleRemoveContact = async (contactId) => {
     try {
       await removeContact(contactId);
@@ -118,9 +164,63 @@ const HomeScreen = () => {
               <Text>No contacts available</Text>
             )}
           </View>
-          <Button title="Add Contact" onPress={() => { }} />
+          <Button title="Add Contact" onPress={showAddContactModal} />
+
         </View>
       </View>
+
+      {/* Add contact modal */}
+      <Modal 
+         animationType="slide"
+         transparent={false}
+         visible={isAddContactModalVisible}
+         onRequestClose={hideAddContactModal}
+      >
+        <View style={styles.addContactModal}>
+          <Text>Add New Contact</Text>
+          <TextInput
+           placeholder="Name"
+           value={newContactData.name}
+           onChangeText={(text)=> setNewContactData({...newContactData, name: text})}
+          
+          />
+
+          <TextInput
+           placeholder="Phone Number"
+           value={newContactData.phoneNumber}
+           onChangeText={(text)=>
+            setNewContactData({...newContactData, phoneNumber: text})
+          }
+          
+          />
+
+          <TextInput
+            placeholder="Relationship"
+            value={newContactData.relationship}
+            onChangeText={(text)=>
+              setNewContactData({...newContactData, relationship: text})
+            }
+          />
+          <Button
+          title="Add"
+          onPress={()=>{
+            addContact(newContactData);
+            hideAddContactModal();
+          }}
+          
+          />
+          <Button
+          title="Cancel"
+          onPress={hideAddContactModal}
+          />
+
+        </View>
+
+
+      </Modal>
+
+
+      {/* Display modal */}
 
       <Modal
         animationType="slide"
@@ -131,17 +231,16 @@ const HomeScreen = () => {
         <View style={styles.confirmationModal}>
           {selectedContact ? (
             <View>
-              <Text>Trusted Contacts</Text>
+             
               <Text style={styles.confirmTxt}>{selectedContact.name}</Text>
               <Text style={styles.confirmTxt}>{selectedContact.phoneNumber}</Text>
 
-              <TouchableOpacity
-                onPress={() => handleUpdateContact(selectedContact.id, updatedContactData)}
-              >
+              <TouchableOpacity onPress={showUpdateModal}
+                >
                 <Text>Update contact</Text>
               </TouchableOpacity>
 
-              <TouchableOpacity onPress={() => handleRemoveContact(selectedContact.id)}>
+              <TouchableOpacity >
                 <Text>Remove contact</Text>
               </TouchableOpacity>
             </View>
@@ -154,19 +253,46 @@ const HomeScreen = () => {
         </View>
       </Modal>
 
-      {isUpdateModalVisible && (
-  <UpdateModal
-    contact={selectedContact}
-    onUpdate={(updatedContact) => {
-      // Handle the update here if needed
-    }}
-    onCancel={() => {
-      setUpdateModalVisible(false); // Close the modal
-    }}
-  />
-)}
+      {/* Update Modal*/}
+      <Modal
+  animationType="slide"
+  transparent={false}
+  visible={isUpdateModalVisible}
+  onRequestClose={hideUpdateModal}
+>
+  <View style={styles.confirmationModal}>
+    <Text>Update Contact</Text>
+    <TextInput
+      placeholder="Name"
+      value={updatedContactData.name}
+      onChangeText={(text) =>
+        setUpdatedContactData({ ...updatedContactData, name: text })
+      }
+    />
+
+    <TextInput
+      placeholder="Phone Number"
+      value={updatedContactData.phoneNumber}
+      onChangeText={(text) =>
+        setUpdatedContactData({ ...updatedContactData, phoneNumber: text })
+      }
+    />
+
+    <TextInput
+      placeholder="Relationship"
+      value={updatedContactData.relationship}
+      onChangeText={(text) =>
+        setUpdatedContactData({ ...updatedContactData, relationship: text })
+      }
+    />
+
+    <Button title="Update" onPress={handleUpdateContact} />
+    <Button title="Cancel" onPress={hideUpdateModal} />
+  </View>
+</Modal>
 
 
+    
 
     </ScrollView>
   );
