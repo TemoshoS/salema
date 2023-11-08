@@ -4,6 +4,8 @@ import { auth } from '../services/firebaseService';
 import { createUserWithEmailAndPassword, updateProfile } from 'firebase/auth';
 import { Feather } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
+import Union from '../../assets/Union.png';
+import Vector from '../../assets/Vector.png';
 
 const RegistrationScreen = () => {
   const [name, setName] = useState('');
@@ -131,11 +133,11 @@ const RegistrationScreen = () => {
 
     <View style={styles.container}>
       <Image
-        source={require('/assets/Union.png')}
+        source={Union}
         style={styles.image}
       />
       <Image
-        source={require('/assets/Vector.png')}
+        source={Vector}
         style={styles.imageVector}
       />
       <Text style={styles.boldText}>Shake to Alert</Text>
