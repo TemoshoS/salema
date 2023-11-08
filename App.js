@@ -13,27 +13,18 @@ const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
 
 export default function App() {
-<<<<<<< HEAD
-  return (
-   <LoginScreen/>
-  //  <NavigationContainer>
-    //  <Stack.Navigator initialRouteName='Register'>
-     //   <Stack.Screen name='Welcome' component={HomeScreen} options={{ headerShown: false }} />
-     //   <Stack.Screen name='Login' component={LoginScreen} options={{ headerShown: false }} />
-     //   <Stack.Screen name='Register' component={RegistrationScreen} options={{ headerShown: false }} />
-     // </Stack.Navigator>
-   // </NavigationContainer>
-=======
 
   function MainStack(){
     return(
-      <Stack.Navigator initialRouteName='Home'>
+      
+      <Stack.Navigator initialRouteName='Login'>
         <Stack.Screen name='Home' component={HomeScreen} options={{ headerShown: false }} />
-        <Stack.Screen name='Splash' component={SplashScreen} options={{ headerShown: false }} />
-        <Stack.Screen name='Login' component={LoginScreen} options={{ headerShown: false }} />
-        <Stack.Screen name='Register' component={RegistrationScreen} options={{ headerShown: false }} />
-        <Stack.Screen name='About' component={AboutScreen} options={{ headerShown: false }} />
+       <Stack.Screen name='Splash' component={SplashScreen} options={{ headerShown: false }} />
+      <Stack.Screen name='Login' component={LoginScreen} options={{ headerShown: false }} />
+    <Stack.Screen name='Register' component={RegistrationScreen} options={{ headerShown: false }} />
+    <Stack.Screen name='About' component={AboutScreen} options={{ headerShown: false }} />
       </Stack.Navigator>
+      
     );
   }
 
@@ -103,7 +94,6 @@ export default function App() {
     <NavigationContainer>
       <TabNavigator/>
     </NavigationContainer>
->>>>>>> 12f3b50bead7ab7f89fb2dc1c242bacae040cd2f
   );
 }
 
