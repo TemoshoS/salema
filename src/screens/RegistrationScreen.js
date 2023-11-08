@@ -131,7 +131,7 @@ const RegistrationScreen = () => {
 
     <View style={styles.container}>
       <Image
-        source={require('/assets/Union.png')}
+        source={require('/assets/union.png')}
         style={styles.image}
       />
       <Image
@@ -148,6 +148,7 @@ const RegistrationScreen = () => {
           style={styles.input}
           placeholder="Full Name"
           placeholderTextColor="white"
+          onChangeText={(text) => setName(text)}
         />
         {nameError && <Text style={styles.errorText}>{nameError}</Text>}
 
@@ -164,6 +165,7 @@ const RegistrationScreen = () => {
           style={styles.input}
           placeholder="Phone Number"
           placeholderTextColor="white"
+          onChangeText={(text) => setPhoneNumber(text)}
         />
         {phoneError && <Text style={styles.errorText}>{phoneError}</Text>}
 
@@ -171,15 +173,64 @@ const RegistrationScreen = () => {
         <TextInput
           style={styles.input}
           placeholder="Password"
-          secureTextEntry={true} // Hide the password with stars
-          placeholderTextColor="white"
+          onChangeText={(text) => handlePasswordChange(text)}
+          secureTextEntry={!showPassword}
         />
-        <TouchableOpacity style= {styles.createAccountButton}>  
-         <Text style={styles.TextButton}>CREATE ACCOUNT</Text>
-        
-          
-         
-       </TouchableOpacity>
+        {passwordError && <Text style={styles.errorText}>{passwordError}</Text>}
+
+
+
+        <TextInput
+          style={styles.input}
+          placeholder="Confirm Password"
+          onChangeText={(text) => handlePasswordChange(text, true)} // Pass true to indicate it's the Confirm Password field
+          secureTextEntry={!showPassword}
+        />
+        {reenterPasswordError && <Text style={styles.errorText}>{reenterPasswordError}</Text>}
+
+        <TouchableOpacity style={styles.showPasswordButton} onPress={toggleShowPassword}>
+          <Feather
+            name={showPassword ? 'eye-off' : 'eye'}
+            size={19}
+            color='white'
+          />
+        </TouchableOpacity>
+
+
+        {userExistsMessage && <Text style={styles.successMessage}>{userExistsMessage}</Text>}
+
+        <View style={styles.passwordStrength}>
+          {passwordStrength && <Text>Password Strength: {passwordStrength}</Text>}
+        </View>
+
+
+        <TouchableOpacity style={styles.createAccountButton}
+          onPress={handleRegister} >
+          <Text style={styles.TextButton}>CREATE ACCOUNT</Text>
+        </TouchableOpacity>
+
+
+        <View style={styles.loginNav}>
+          <Text>Already have an account?</Text>
+          <TouchableOpacity onPress={handleLogin}>
+            <Text style={styles.loginTxt}>Log in</Text>
+          </TouchableOpacity>
+        </View>
+
+
+        <Modal
+          animationType="slide"
+          transparent={true}
+          visible={isConfirmationVisible}
+          onRequestClose={hideConfirmation}
+        >
+          <View style={styles.confirmationModal}>
+            <Text style={styles.confirmTxt}>User registered successfully</Text>
+            <TouchableOpacity onPress={hideConfirmation}>
+              <Text style={styles.confirmTxt}>Ok</Text>
+            </TouchableOpacity>
+          </View>
+        </Modal>
       </View>
 
       {/* Image at the bottom center */}
