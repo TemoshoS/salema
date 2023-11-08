@@ -9,32 +9,18 @@ const LoginScreen = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loginAttempts, setLoginAttempts] = useState(0);
+  const navigation = useNavigation();
 
-  const handleLogin = () => {
-    firebase
-      .auth()
-      .signInWithEmailAndPassword(email, password)
-      .then((userCredential) => {
-        // Successful login
-        const user = userCredential.user;
-        // redirect the user to the main screen here
-        navigaton.navigate('Home');
-      })
-      .catch((error) => {
-        if (error.code === 'auth/wrong-password') {
-          // Incorrect password
-          setLoginAttempts(loginAttempts + 1);
-
-          if (loginAttempts >= 3) {
-            // Lock the user's account or implement your own logic
-            Alert.alert('Account Locked', 'You have exceeded the maximum login attempts.');
-          } else {
-            Alert.alert('Incorrect Password', 'Please try again.');
-          }
-        } else {
-          Alert.alert('Login Error', 'An error occurred while logging in.');
-        }
-      });
+  const handleLogin = async() => {
+    try {
+      const auth = getAuth();
+      const userCredential = await signInWithEmailAndPassword(auth, email, password);
+    
+      navigation.navigate('Home'); // Make sure you have the appropriate navigation route set up.
+    } catch (error) {
+      // Handle login errors, such as displaying an error message to the user
+      console.error('Login failed:', error);
+    }
   };
     return (
         <View style={styles.container}>

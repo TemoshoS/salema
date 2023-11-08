@@ -11,14 +11,12 @@ const HomeScreen = () => {
   const [contacts, setContacts] = useState([]);
   const [isConfirmationVisible, setConfirmationVisible] = useState(false);
   const [selectedContact, setSelectedContact] = useState(null);
-
   const [isAddContactModalVisible, setAddContactModalVisible] = useState(false);
   const [newContactData, setNewContactData] = useState({
     name: '',
     phoneNumber: '',
     relationship: '',
   })
-
   const [isUpdateModalVisible, setUpdateModalVisible] = useState(false);
   const [updatedContactData, setUpdatedContactData] = useState({
     name: "",
@@ -40,18 +38,23 @@ const HomeScreen = () => {
     })
 
 
-    async function fetchContacts() {
+    
+    fetchContacts();
+    return unsubscribe;
+  }, [currentUser]);
+
+const fetchContacts = async ()=>{
       try {
-        const data = await getContacts();
-        setContacts(data);
+        if(currentUser){
+          const data = await getContacts();
+          setContacts(data);
+        }
       } catch (error) {
         console.error("Error fetching contacts:", error);
       }
     }
 
-    fetchContacts();
-    return unsubscribe;
-  }, []);
+
 
   const filteredContacts = contacts.filter((contact) => contact.userId === currentUser);
 
@@ -89,7 +92,7 @@ const HomeScreen = () => {
       const contactWithUserId = { ...newContactData, userId: currentUser };
 
       await addContact(contactWithUserId);
-
+     fetchContacts();
       hideAddContactModal();
     } catch (error) {
       console.error('Error adding contact: ', error);
@@ -124,7 +127,10 @@ const HomeScreen = () => {
       }
 
       await updateContact(selectedContact.id, updatedContactData);
+      fetchContacts();
       hideUpdateModal();
+      setConfirmationVisible(false);
+      
     } catch (error) {
       console.error('Error updating contact: ', error);
     }
@@ -136,7 +142,7 @@ const HomeScreen = () => {
   const handleRemoveContact = async (contactId) => {
     try {
       await removeContact(contactId);
-
+      fetchContacts();
       hideConfirmation();
     } catch (error) {
       console.error("Error removing contact: ", error);

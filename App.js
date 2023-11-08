@@ -8,8 +8,12 @@ import { createStackNavigator } from '@react-navigation/stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import SplashScreen from './src/screens/SplashScreen';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+
+
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
+
+
 export default function App() {
   function MainStack() {
     return (
