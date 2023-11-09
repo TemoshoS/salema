@@ -20,24 +20,24 @@ const AboutScreen = () => {
   return (
     <View style={styles.container}>
       <View style={styles.content}>
-        <Image source={require('/assets/Arrow_Left.png')} style={styles.icon} />
+        <Image source={require('../../assets/Arrow_Left.png')} style={styles.icon} />
         <Text style={styles.text}>About us</Text>
       </View>
       <View style={styles.imageContainer}>
         <Image
-          source={require('/assets/frame.png')}
+          source={require('../../assets/Frame.png')}
           style={styles.image}
         />
       </View>
       <View style={styles.socialIcons}>
         <TouchableOpacity onPress={handleFacebookPress}>
-          <Image source={require('/assets/facebook.png')} style={styles.smallIcon} />
+          <Image source={require('../../assets/facebook.png')} style={styles.smallIcon} />
         </TouchableOpacity>
         <TouchableOpacity onPress={handleTwitterPress}>
-          <Image source={require('/assets/twitter.png')} style={styles.latestTwitterIcon} />
+          <Image source={require('../../assets/twitter.png')} style={styles.latestTwitterIcon} />
         </TouchableOpacity>
         <TouchableOpacity onPress={handleWhatsAppPress}>
-          <Image source={require('/assets/whatsapp.png')} style={styles.smallIcon} />
+          <Image source={require('../../assets/whatsapp.png')} style={styles.smallIcon} />
         </TouchableOpacity>
       </View>
       <View style={styles.headingContainer}>
@@ -50,7 +50,7 @@ const AboutScreen = () => {
         <Text style={styles.heading2}>Background Service Status</Text>
         <View style={styles.statusTextContainer}>
           <View style={styles.mainIconContainer}>
-            <Image source={require('/assets/main_icon.png')} style={styles.mainIcon} />
+            <Image source={require('../../assets/main_icon.png')} style={styles.mainIcon} />
           </View>
           <Text style={styles.statusText2}>
             The core of Salema's magic lies in its ability to work quietly in the background, ready to jump into action when you shake your phone. Our background service is currently [Active/Inactive]. Here's why it matters: It ensures a swift response in your moments of distress.

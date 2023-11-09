@@ -25,11 +25,11 @@ const LoginScreen = () => {
     return (
         <View style={styles.container}>
           <Image
-            source={require('/assets/Union.png')}
+            source={require('../../assets/Union.png')}
             style={styles.image}
           />
           <Image
-            source={require('/assets/Vector.png')}
+            source={require('../../assets/Vector.png')}
             style={styles.imageVector}
           />
           <Text style={styles.boldText}>Shake to Alert</Text>
@@ -70,7 +70,7 @@ const LoginScreen = () => {
     
           {/* Image at the bottom center */}
           <Image
-            source={require('/assets/undraw_different_love_a-3-rg 1.png')}
+            source={require('../../assets/undraw_different_love_a-3-rg 1.png')}
             style={styles.bottomImage}
           />
     
