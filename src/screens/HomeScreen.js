@@ -1,10 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { View, StyleSheet, Text, Image, Button, TouchableOpacity, Modal, ScrollView } from "react-native";
-import ChipButton from "../components/Chip";
+import ChipButton from "../components/ChipButton";
 import { getContacts, updateContact, removeContact } from "../services/homeServices";
 import UpdateModal from "../components/UpdateModal";
-
-
 
 
 const HomeScreen = () => {

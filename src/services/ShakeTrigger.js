@@ -2,8 +2,9 @@ import React from 'react';
 import { View, StyleSheet } from 'react-native';
 import ShakeEvent from 'react-native-shake-event';
 import { Accelerometer } from 'expo-sensors';
-import firebase from 'firebase';
-import { sendCoordinates } from './coordinatesService'; // Assuming you have a service for sending coordinates
+import { sendCoordinates } from './coordinatesService';
+import { getContacts } from './homeServices';
+import {requestPermissions} from './geolocation' 
 
 class ShakeTrigger extends React.Component {
   constructor() {
@@ -24,17 +25,21 @@ class ShakeTrigger extends React.Component {
   }
 
   handleShake = async () => {
-    // Fetch the emergency contacts from Firebase
-    const snapshot = await firebase.firestore().collection('emergency_contacts').get();
 
-    // Send coordinates to each emergency contact
-    snapshot.forEach(doc => {
-      const contact = doc.data();
-      sendCoordinates(contact.phoneNumber);
+    // permission request
+    await requestPermissions();
+
+    // Fetch the emergency contact phone numbers using the imported function
+    const phoneNumbers = await getContacts();
+
+    // Now you have the phone numbers and can use them as needed
+    phoneNumbers.forEach((phoneNumber) => {
+      sendCoordinates(phoneNumber);
     });
 
     // Update the shake status to true
     this.isShake = true;
+    this.props.onShake(this.isShake);
   };
 
   handleAcceleration = ({ x, y, z }) => {
@@ -43,7 +48,7 @@ class ShakeTrigger extends React.Component {
     if (Math.abs(x) > 2 || Math.abs(y) > 2 || Math.abs(z) > 2) {
       this.handleShake();
     }
-  };
+  }
 
   getShakeStatus() {
     return this.isShake;
