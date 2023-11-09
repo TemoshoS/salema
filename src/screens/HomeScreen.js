@@ -1,58 +1,161 @@
 import React, { useEffect, useState } from "react";
-import { View, StyleSheet, Text, Image, Button, TouchableOpacity, Modal, ScrollView } from "react-native";
+import { View, StyleSheet, Text, Image, Button, TouchableOpacity, Modal, ScrollView, TextInput } from "react-native";
 import ChipButton from "../components/ChipButton";
-import { getContacts, updateContact, removeContact } from "../services/homeServices";
-import UpdateModal from "../components/UpdateModal";
+import { getContacts, addContact, updateContact, removeContact } from "../services/homeServices";
+import { getAuth, onAuthStateChanged } from "@firebase/auth";
+import {ShakeTrigger} from '../services/ShakeTrigger';
 
 
 const HomeScreen = () => {
-
+  const [currentUser, setCurrentUser] = useState(null);
   const [contacts, setContacts] = useState([]);
   const [isConfirmationVisible, setConfirmationVisible] = useState(false);
-  const [isUpdateModalVisible, setUpdateModalVisible] = useState(false);
-
   const [selectedContact, setSelectedContact] = useState(null);
+  const [isAddContactModalVisible, setAddContactModalVisible] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
+  const [newContactData, setNewContactData] = useState({
+    name: '',
+    phoneNumber: '',
+    relationship: '',
+  })
+  const [isUpdateModalVisible, setUpdateModalVisible] = useState(false);
   const [updatedContactData, setUpdatedContactData] = useState({
     name: "",
     phoneNumber: "",
+    relationship: '',
   });
 
   useEffect(() => {
-    async function fetchContacts() {
-      try {
-        const data = await getContacts();
-        setContacts(data);
-      } catch (error) {
-        console.error("Error fetching contacts:", error);
+    const auth = getAuth();
+
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if (user) {
+        setCurrentUser(user.uid);
+
+      } else {
+        setCurrentUser(null);
+        setContacts([]);
       }
-    }
+    })
+
+
 
     fetchContacts();
-  }, []);
+    return unsubscribe;
+  }, [currentUser]);
+
+  const fetchContacts = async () => {
+    try {
+      if (currentUser) {
+        const data = await getContacts();
+        setContacts(data);
+      }
+    } catch (error) {
+      console.error("Error fetching contacts:", error);
+    }
+  }
+
+
+
+  const filteredContacts = contacts.filter((contact) => contact.userId === currentUser);
+
 
   const showContactDetails = (contact) => {
     setSelectedContact(contact);
-    setUpdatedContactData(contact);
+    setUpdatedContactData({
+      name: contact.name,
+      phoneNumber: contact.phoneNumber,
+      relationship: contact.relationship,
+    });
     setConfirmationVisible(true);
   };
 
-  const handleUpdateContact = async (contactId, updatedContact) => {
+  //function to add new contact
+
+  const showAddContactModal = () => {
+    setNewContactData({
+      name: '',
+      phoneNumber: '',
+      relationship: '',
+    });
+
+    setAddContactModalVisible(true);
+  }
+
+  const hideAddContactModal = () => {
+    setAddContactModalVisible(false);
+  };
+
+
+  const handleAddContact = async () => {
     try {
-      await updateContact(contactId, updatedContact);
-    
-      hideConfirmation();
-      setUpdateModalVisible(true);
+      if (!currentUser) {
+        console.error('No user is signed in. Cannot add contact without a user.');
+        return;
+      }
+
+      const contactWithUserId = { ...newContactData, userId: currentUser };
+
+      await addContact(contactWithUserId);
+      fetchContacts();
+      hideAddContactModal();
     } catch (error) {
-      console.error("Error updating contact: ", error);
+      console.error('Error adding contact: ', error);
     }
   };
-  
 
 
+  //function to update contact
+  const showUpdateModal = () => {
+    setUpdateModalVisible(true);
+  }
+
+  const hideUpdateModal = () => {
+    setUpdateModalVisible(false);
+  }
+
+  const handleUpdateContact = async () => {
+    try {
+      if (!selectedContact) {
+        console.error('No contact selected for update');
+        return;
+      }
+
+      if (!selectedContact.id) {
+        console.error('Selected contact has no valid ID');
+        return;
+      }
+
+      if (!updatedContactData) {
+        console.error('No updated data provided');
+        return;
+      }
+
+      await updateContact(selectedContact.id, updatedContactData);
+      fetchContacts();
+      hideUpdateModal();
+      setConfirmationVisible(false);
+
+    } catch (error) {
+      console.error('Error updating contact: ', error);
+    }
+  };
+
+
+  const selectContactForUpdate = (contact) => {
+    setUpdatedContactData({
+      name: contact.name,
+      phoneNumber: contact.phoneNumber,
+      relationship: contact.relationship,
+    });
+    setIsEditing(true);
+  };
+
+  //Function to remove contact
   const handleRemoveContact = async (contactId) => {
     try {
       await removeContact(contactId);
-      
+      fetchContacts();
       hideConfirmation();
     } catch (error) {
       console.error("Error removing contact: ", error);
@@ -70,7 +173,7 @@ const HomeScreen = () => {
   return (
     <ScrollView contentContainerStyle={styles.container}>
       <Image
-        source={require("/assets/union.png")}
+        source={require("/assets/Union.png")}
         style={styles.logoImg}
         accessibilityLabel="logo image"
       />
@@ -102,8 +205,8 @@ const HomeScreen = () => {
         <Text style={styles.title}>Trusted Contacts</Text>
         <View style={styles.contactCard}>
           <View style={styles.contactList}>
-            {contacts ? (
-              contacts.map((contact, index) => (
+            {filteredContacts ? (
+              filteredContacts.map((contact, index) => (
                 <View key={index}>
                   <ChipButton
                     key={index}
@@ -116,9 +219,59 @@ const HomeScreen = () => {
               <Text>No contacts available</Text>
             )}
           </View>
-          <Button title="Add Contact" onPress={() => { }} />
+          <Button title="Add Contact" onPress={showAddContactModal} />
+
         </View>
       </View>
+
+      {/* Add contact modal */}
+      <Modal
+        animationType="slide"
+        transparent={false}
+        visible={isAddContactModalVisible}
+        onRequestClose={hideAddContactModal}
+      >
+        <View style={styles.addContactModal}>
+          <Text>Add New Contact</Text>
+          <TextInput
+            placeholder="Name"
+            value={newContactData.name}
+            onChangeText={(text) => setNewContactData({ ...newContactData, name: text })}
+
+          />
+
+          <TextInput
+            placeholder="Phone Number"
+            value={newContactData.phoneNumber}
+            onChangeText={(text) =>
+              setNewContactData({ ...newContactData, phoneNumber: text })
+            }
+
+          />
+
+          <TextInput
+            placeholder="Relationship"
+            value={newContactData.relationship}
+            onChangeText={(text) =>
+              setNewContactData({ ...newContactData, relationship: text })
+            }
+          />
+          <Button
+            title="Add Contact"
+            onPress={handleAddContact}
+          />
+          <Button
+            title="Cancel"
+            onPress={hideAddContactModal}
+          />
+
+        </View>
+
+
+      </Modal>
+
+
+      {/* Display modal */}
 
       <Modal
         animationType="slide"
@@ -133,8 +286,7 @@ const HomeScreen = () => {
               <Text style={styles.confirmTxt}>{selectedContact.name}</Text>
               <Text style={styles.confirmTxt}>{selectedContact.phoneNumber}</Text>
 
-              <TouchableOpacity
-                onPress={() => handleUpdateContact(selectedContact.id, updatedContactData)}
+              <TouchableOpacity onPress={showUpdateModal}
               >
                 <Text>Update contact</Text>
               </TouchableOpacity>
@@ -142,6 +294,7 @@ const HomeScreen = () => {
               <TouchableOpacity onPress={() => handleRemoveContact(selectedContact.id)}>
                 <Text>Remove contact</Text>
               </TouchableOpacity>
+
             </View>
           ) : (
             <Text>No contact selected</Text>
@@ -152,17 +305,74 @@ const HomeScreen = () => {
         </View>
       </Modal>
 
-      {isUpdateModalVisible && (
-  <UpdateModal
-    contact={selectedContact}
-    onUpdate={(updatedContact) => {
-      // Handle the update here if needed
-    }}
-    onCancel={() => {
-      setUpdateModalVisible(false); // Close the modal
-    }}
-  />
-)}
+      {/* Update Modal*/}
+      <Modal
+        animationType="slide"
+        transparent={false}
+        visible={isUpdateModalVisible}
+        onRequestClose={hideUpdateModal}
+      >
+        <View style={styles.confirmationModal}>
+
+
+          {selectedContact && (
+            <View>
+              <TextInput
+                placeholder="Name"
+                value={updatedContactData.name}
+                onChangeText={(text) =>
+                  setUpdatedContactData({ ...updatedContactData, name: text })
+                }
+              />
+
+              <TextInput
+                placeholder="Phone Number"
+                value={updatedContactData.phoneNumber}
+                onChangeText={(text) =>
+                  setUpdatedContactData({ ...updatedContactData, phoneNumber: text })
+                }
+              />
+
+              <TextInput
+                placeholder="Relationship"
+                value={updatedContactData.relationship}
+                onChangeText={(text) =>
+                  setUpdatedContactData({ ...updatedContactData, relationship: text })
+                }
+              />
+              <ScrollView style={{ maxHeight: 200, marginBottom: 10 }}>
+                {filteredContacts ? (
+                  filteredContacts.map((contact, index) => (
+                    <TouchableOpacity
+                      key={index}
+
+                    >
+                      <View>
+                        <ChipButton
+                          key={index}
+                          title={contact.name}
+                          onPress={() => selectContactForUpdate(contact)}
+                          style={{
+                            backgroundColor:
+                              selectedContact?.id === contact.id ? 'lightgray' : 'transparent',
+                          }}
+                        />
+                      </View>
+                    </TouchableOpacity>
+                  ))
+                ) : (
+                  <Text>No contacts available</Text>
+                )}
+              </ScrollView>
+
+              <Button title="Update" onPress={handleUpdateContact} />
+              <Button title="Cancel" onPress={hideUpdateModal} />
+            </View>
+          )}
+        </View>
+      </Modal>
+
+
 
 
 
@@ -245,7 +455,7 @@ const styles = StyleSheet.create({
     flexDirection: "column",
     flexWrap: "wrap",
     // justifyContent: "space-between",
-//above screen contents
+    //above screen contents
     borderRadius: 20,
     // backgroundColor: '#fff',
     backgroundColor: "#055a2b",

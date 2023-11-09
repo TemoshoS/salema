@@ -1,10 +1,10 @@
 import React from 'react';
 import { View, StyleSheet } from 'react-native';
-import ShakeEvent from 'react-native-shake-event';
+import RNShake from 'react-native-shake';
 import { Accelerometer } from 'expo-sensors';
-import { sendCoordinates } from './coordinatesService';
+import { sendCoordinates } from './geolocation';
 import { getContacts } from './homeServices';
-import {requestPermissions} from './geolocation' 
+import { requestPermissions } from './geolocation';
 
 class ShakeTrigger extends React.Component {
   constructor() {
@@ -13,19 +13,20 @@ class ShakeTrigger extends React.Component {
   }
 
   async componentDidMount() {
-    ShakeEvent.addEventListener('shake', this.handleShake);
+    RNShake.addListener(() => {
+      this.handleShake();
+    });
 
     // Start listening to the accelerometer for more fine-grained motion data
     this.subscription = Accelerometer.addListener(this.handleAcceleration);
   }
 
   componentWillUnmount() {
-    ShakeEvent.removeEventListener('shake');
+    RNShake.removeListener();
     this.subscription && this.subscription.remove();
   }
 
   handleShake = async () => {
-
     // permission request
     await requestPermissions();
 
@@ -48,7 +49,7 @@ class ShakeTrigger extends React.Component {
     if (Math.abs(x) > 2 || Math.abs(y) > 2 || Math.abs(z) > 2) {
       this.handleShake();
     }
-  }
+  };
 
   getShakeStatus() {
     return this.isShake;

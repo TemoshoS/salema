@@ -48,3 +48,4 @@ const requestPermissions = async () => {
     await request(PERMISSIONS.ANDROID.SEND_SMS);
   }
 };
+export { sendCoordinates, requestPermissions };
