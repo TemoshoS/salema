@@ -24,7 +24,7 @@ const BottomNav = ({ supportLabel, helpLabel, aboutLabel }) => {
         <Text style={styles.navLink}>
           {helpLabel}
           <Image
-            source={require("/assets/help_icon.png")}
+            source={require("../../assets/help_icon.png")}
             style={styles.tabIcon}
           />
         </Text>
@@ -33,7 +33,7 @@ const BottomNav = ({ supportLabel, helpLabel, aboutLabel }) => {
         <Text style={styles.navLink}>
           {supportLabel}
           <Image
-            source={require("/assets/support_icon.png")}
+            source={require("../../assets/support_icon.png")}
             style={styles.tabIcon}
           />
         </Text>

@@ -237,7 +237,7 @@ const RegistrationScreen = () => {
 
       {/* Image at the bottom center */}
       <Image
-        source={require('/assets/undraw_different_love_a-3-rg 1.png')}
+        source={require('../../assets/undraw_different_love_a-3-rg 1.png')}
         style={styles.bottomImage}
       />
 

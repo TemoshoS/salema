@@ -13,7 +13,7 @@ const SplashScreen = () => {
     <View style={styles.container}>
     
       <Image      
-        source={require("/assets/Union.png")}
+        source={require("../../assets/Union.png")}
         style={styles.logoImg}
         accessibilityLabel="logo image"
       />
@@ -38,7 +38,7 @@ const SplashScreen = () => {
 
       {/* Backkground Image */}
       <Image
-        source={require("/assets/undraw_different_love_a-3-rg 1.png")}
+        source={require("../../assets/undraw_different_love_a-3-rg 1.png")}
         style={styles.BgImage}
         accessibilityLabel="status signalimage"
       />

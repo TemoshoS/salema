@@ -3,7 +3,7 @@ import { View, StyleSheet, Text, Image, Button, TouchableOpacity, Modal, ScrollV
 import ChipButton from "../components/ChipButton";
 import { getContacts, addContact, updateContact, removeContact } from "../services/homeServices";
 import { getAuth, onAuthStateChanged } from "@firebase/auth";
-
+import {ShakeTrigger} from '../services/ShakeTrigger';
 
 
 const HomeScreen = () => {

@@ -18,7 +18,7 @@ const getCoordinates = () => {
 };
 
 // Function to send an SMS with the user's coordinates
-const sendCoordinates = async (phoneNumber) => {
+const sendCoordinates = async (phoneNumber, message) => {
   try {
     const position = await getCoordinates();
     const message = `My current location is: https://www.google.com/maps/?q=${position.coords.latitude},${position.coords.longitude}`;
@@ -48,3 +48,4 @@ const requestPermissions = async () => {
     await request(PERMISSIONS.ANDROID.SEND_SMS);
   }
 };
+export { sendCoordinates, requestPermissions };
