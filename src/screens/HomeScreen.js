@@ -13,6 +13,9 @@ const HomeScreen = () => {
   const [selectedContact, setSelectedContact] = useState(null);
   const [isAddContactModalVisible, setAddContactModalVisible] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
+  const [nameError, setNameError] = useState(null);
+  const [phoneError, setPhoneError] = useState(null);
+  const [relationshipError, setRelationshipError] = useState(null);
   const [newContactData, setNewContactData] = useState({
     name: '',
     phoneNumber: '',
@@ -93,6 +96,30 @@ const HomeScreen = () => {
         console.error('No user is signed in. Cannot add contact without a user.');
         return;
       }
+
+      if(!newContactData.name ){
+        setNameError('Please enter Name');
+        return;
+      }else{
+         setNameError(null)
+      }
+
+      if(!newContactData.phoneNumber){
+        setPhoneError('Please enter Phone number');
+        return;
+      }
+      else{
+        setPhoneError(null)
+     }
+      if(!newContactData.relationship){
+        setRelationshipError('Please enter Relationship');
+        return;
+      }
+      else{
+        setRelationshipError(null)
+     }
+
+
 
       const contactWithUserId = { ...newContactData, userId: currentUser };
 
@@ -239,7 +266,7 @@ const HomeScreen = () => {
             onChangeText={(text) => setNewContactData({ ...newContactData, name: text })}
 
           />
-
+         {nameError && <Text style={styles.errorText}>{nameError}</Text>}
           <TextInput
             placeholder="Phone Number"
             value={newContactData.phoneNumber}
@@ -248,7 +275,7 @@ const HomeScreen = () => {
             }
 
           />
-
+          {phoneError && <Text style={styles.errorText}>{phoneError}</Text>}
           <TextInput
             placeholder="Relationship"
             value={newContactData.relationship}
@@ -256,6 +283,7 @@ const HomeScreen = () => {
               setNewContactData({ ...newContactData, relationship: text })
             }
           />
+          {relationshipError && <Text style={styles.errorText}>{relationshipError}</Text>}
           <Button
             title="Add Contact"
             onPress={handleAddContact}
@@ -440,6 +468,10 @@ const styles = StyleSheet.create({
     marginVertical: 5,
     textAlign: "center",
     paddingHorizontal: 12,
+  },
+  errorText: {
+    color: 'red',
+    marginBottom: 10,
   },
   cardContainer: {
     alignItems: "center",
