@@ -63,8 +63,12 @@ const LoginScreen = () => {
            </TouchableOpacity>
            
            <View style={styles.linksContainer }>
-           <Text style={{ color: '#FFF' }}>Forgot password</Text>
+            <TouchableOpacity onPress={() => navigation.navigate('ResetPassword')}>
+            <Text style={{ color: '#FFF' }}>Forgot password</Text>
+            </TouchableOpacity>
+           <TouchableOpacity onPress={() => navigation.navigate('Register')}>
            <Text style={{ color: '#FFF' }}>Register</Text>
+           </TouchableOpacity>
            </View>
           </View>
     
