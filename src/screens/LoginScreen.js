@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Image, StyleSheet, Text, TextInput, View, TouchableOpacity } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
+import Ionicons from 'react-native-vector-icons/Ionicons';
 import { getAuth, signInWithEmailAndPassword, sendPasswordResetEmail } from 'firebase/auth';
 
 
@@ -9,6 +10,7 @@ const LoginScreen = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loginAttempts, setLoginAttempts] = useState(0);
+  const [showPassword, setShowPassword] = useState(false);
   const navigation = useNavigation();
 
   const handleLogin = async (email, password) => {
@@ -34,6 +36,11 @@ const LoginScreen = () => {
       }
     }
   };
+
+  const togglePasswordVisibility = () => {
+    setShowPassword(!showPassword);
+  };
+
     return (
         <View style={styles.container}>
           <Image
@@ -64,9 +71,19 @@ const LoginScreen = () => {
               onChangeText={(text) => setPassword(text)}
               style={styles.input}
               placeholder="Password"
-              secureTextEntry={true} // Hide the password with stars
+              secureTextEntry={!showPassword}// Hide the password with stars
               placeholderTextColor="white"
             />
+             <TouchableOpacity
+          style={styles.togglePasswordButton}
+          onPress={togglePasswordVisibility}
+        >
+          <Ionicons
+            name={showPassword ? 'eye-off' : 'eye'}
+            size={20}
+            color="white"
+          />
+        </TouchableOpacity>
             <TouchableOpacity onPress={handleLogin} style= {styles.LoginButton}>  
              <Text style={styles.TextButton}>Login</Text>
             
