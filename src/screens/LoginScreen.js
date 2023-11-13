@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { Image, StyleSheet, Text, View, TouchableOpacity } from "react-native";
 import { useNavigation } from "@react-navigation/native";
+import Ionicons from 'react-native-vector-icons/Ionicons';
 import {
   getAuth,
   signInWithEmailAndPassword,
@@ -15,21 +16,30 @@ const LoginScreen = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loginAttempts, setLoginAttempts] = useState(0);
+  const [showPassword, setShowPassword] = useState(false);
   const navigation = useNavigation();
 
-  const handleLogin = async () => {
+  const handleLogin = async (email, password) => {
     try {
       const auth = getAuth();
-      const userCredential = await signInWithEmailAndPassword(
-        auth,
-        email,
-        password
-      );
-
-      navigation.navigate("Home"); // Make sure you have the appropriate navigation route set up.
+      const userCredential = await signInWithEmailAndPassword(auth, email, password);
+  
+      // If the login is successful, you can navigate to the Home screen.
+      navigation.navigate('Home'); // Make sure you have the appropriate navigation route set up.
     } catch (error) {
-      // Handle login errors, such as displaying an error message to the user
-      console.error("Login failed:", error);
+      // Handle login errors
+      const errorCode = error.code;
+  
+      if (errorCode === 'auth/wrong-password') {
+        // Handle wrong password error
+        console.error('Wrong password. Please check your password.');
+      } else if (errorCode === 'auth/user-not-found') {
+        // Handle user not found error (user is not registered)
+        console.error('User not found. Please register or check your email.');
+      } else {
+        // Handle other errors
+        console.error('Login failed:', error);
+      }
     }
   };
 
@@ -41,6 +51,11 @@ const handleRegister = () => {
   const handleForgotPassword = () => {
     navigation.navigate("ResetPassword");
   }
+
+
+  const togglePasswordVisibility = () => {
+    setShowPassword(!showPassword);
+  };
 
   return (
     <View style={styles.container}>

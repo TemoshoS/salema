@@ -32,6 +32,9 @@ const HomeScreen = () => {
   const [selectedContact, setSelectedContact] = useState(null);
   const [isAddContactModalVisible, setAddContactModalVisible] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
+  const [nameError, setNameError] = useState(null);
+  const [phoneError, setPhoneError] = useState(null);
+  const [relationshipError, setRelationshipError] = useState(null);
   const [newContactData, setNewContactData] = useState({
     name: "",
     phoneNumber: "",
@@ -109,6 +112,30 @@ const HomeScreen = () => {
         );
         return;
       }
+
+      if(!newContactData.name ){
+        setNameError('Please enter Name');
+        return;
+      }else{
+         setNameError(null)
+      }
+
+      if(!newContactData.phoneNumber){
+        setPhoneError('Please enter Phone number');
+        return;
+      }
+      else{
+        setPhoneError(null)
+     }
+      if(!newContactData.relationship){
+        setRelationshipError('Please enter Relationship');
+        return;
+      }
+      else{
+        setRelationshipError(null)
+     }
+
+
 
       const contactWithUserId = { ...newContactData, userId: currentUser };
 
@@ -252,7 +279,7 @@ const HomeScreen = () => {
               setNewContactData({ ...newContactData, name: text })
             }
           />
-
+         {nameError && <Text style={styles.errorText}>{nameError}</Text>}
           <TextField
             style={styles.input}
             placeholder="Phone Number"
@@ -261,7 +288,7 @@ const HomeScreen = () => {
               setNewContactData({ ...newContactData, phoneNumber: text })
             }
           />
-
+          {phoneError && <Text style={styles.errorText}>{phoneError}</Text>}
           <TextField
             style={styles.input}
             placeholder="Relationship"
@@ -270,6 +297,7 @@ const HomeScreen = () => {
               setNewContactData({ ...newContactData, relationship: text })
             }
           />
+          {relationshipError && <Text style={styles.errorText}>{relationshipError}</Text>}
           <View style={styles.buttonGroup}>
           <Button title="Add Contact" onPress={handleAddContact} altText="Add Contact" />
             {/* <Button2
@@ -483,6 +511,10 @@ const styles = StyleSheet.create({
     marginVertical: 5,
     textAlign: "center",
     paddingHorizontal: 12,
+  },
+  errorText: {
+    color: 'red',
+    marginBottom: 10,
   },
   cardContainer: {
     alignItems: "center",

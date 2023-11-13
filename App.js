@@ -9,6 +9,8 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import SplashScreen from './src/screens/SplashScreen';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import ForgotPassword from './src/screens/ForgotPassword';
+import PasswordReset from './src/components/PasswordReset';
+
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -18,10 +20,11 @@ export default function App() {
   function MainStack() {
     return (
 
-      <Stack.Navigator initialRouteName='Home'>
+      <Stack.Navigator initialRouteName='Login'>
         <Stack.Screen name='Home' component={HomeScreen} options={{ headerShown: false }} />
         <Stack.Screen name='Splash' component={SplashScreen} options={{ headerShown: false }} />
         <Stack.Screen name='Login' component={LoginScreen} options={{ headerShown: false }} />
+        <Stack.Screen name='ResetPassword' component={PasswordReset} options={{ headerShown: false }} />
         <Stack.Screen name='Register' component={RegistrationScreen} options={{ headerShown: false }} />
         <Stack.Screen name='About' component={AboutScreen} options={{ headerShown: false }} />
         <Stack.Screen name='ResetPassword' component={ForgotPassword} options={{ headerShown: false }} />
