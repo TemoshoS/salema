@@ -2,13 +2,16 @@
 import React from "react";
 import { View, StyleSheet, Text, Image } from "react-native";
 // Navigation Contents
-
+import { useNavigation } from '@react-navigation/native';
 // components
 import BottomNav from "../components/BottomNav";
 import Button from "../components/Button";
 import ShakeFeedback from "../components/ShakeFeedback";
 
 const SplashScreen = () => {
+
+  const navigation = useNavigation();
+
   return (
     <View style={styles.container}>
     
@@ -42,10 +45,10 @@ const SplashScreen = () => {
         style={styles.BgImage}
         accessibilityLabel="status signalimage"
       />
-      {/* THIS IS NOT R ENDERING */}
+      {/* User buttons*/}
       <View style={styles.buttonSection}>
-        <Button style={styles.bgGreen} title={"Signup"} onPress={() => console.log("Send me to register")} altText={"register"} color={"#055a2b"}/>
-        <Button style={styles.bgGreen} title={"Log in"} onPress={() => console.log("Send me to Login")} altText={"Login"} color={"#055a2b"}/>
+        <Button style={styles.bgGreen} title={"Signup"}  onPress={() => navigation.navigate('Register')} altText={"register"} color={"#055a2b"}/>
+        <Button style={styles.bgGreen} title={"Log in"}  onPress={() => navigation.navigate('Login')} altText={"Login"} color={"#055a2b"}/>
        
       </View>
 
@@ -59,7 +62,7 @@ const SplashScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#fff",
+    // backgroundColor: "#fff",
     alignItems: "center",
     justifyContent: "space-between",
     width: "100%",
@@ -118,12 +121,12 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
   },
   buttonSection: {
-    width: "60%",
+    width: "100%",
     height: "auto",
     position: "relative",
     flexDirection: "row",
     flexWrap: "wrap",
-    backgroundColor: "#f2f2",
+    
     justifyContent: "space-between",
   },
   bgGreen: {

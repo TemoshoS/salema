@@ -8,7 +8,7 @@ import { createStackNavigator } from '@react-navigation/stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import SplashScreen from './src/screens/SplashScreen';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
-
+import ForgotPassword from './src/screens/ForgotPassword';
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -24,6 +24,7 @@ export default function App() {
         <Stack.Screen name='Login' component={LoginScreen} options={{ headerShown: false }} />
         <Stack.Screen name='Register' component={RegistrationScreen} options={{ headerShown: false }} />
         <Stack.Screen name='About' component={AboutScreen} options={{ headerShown: false }} />
+        <Stack.Screen name='ResetPassword' component={ForgotPassword} options={{ headerShown: false }} />
       </Stack.Navigator>
 
     );
@@ -32,8 +33,8 @@ export default function App() {
     return (
       <Tab.Navigator
         tabBarOptions={{
-          activeTintColor: '#808080',
-          inactiveTintColor: '#AFEEEE',
+          activeTintColor: '#117000',
+          inactiveTintColor: '#6ECC5E',
         }}
       >
         <Tab.Screen

@@ -19,7 +19,10 @@ const TextField = ({ style, placeholder, value, onChange }) => {
       paddingLeft: 10,
       margin: 10,
       borderBottomWidth: 2,
-      borderBottomColor: 'green',
+      borderBottomColor: '#e5e5e5',
+      color: '#f2f2f2',
+      borderStyle: 'solid',
+      // outline: 'none',
     },
   });
 
