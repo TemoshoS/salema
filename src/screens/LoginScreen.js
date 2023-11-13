@@ -1,10 +1,8 @@
 import React, { useState } from 'react';
-import { Image, StyleSheet, Text, TextInput, View, TouchableOpacity } from 'react-native';
+import { Image, StyleSheet, Text, TextInput, View, TouchableOpacity, Alert } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
-import { getAuth, signInWithEmailAndPassword, sendPasswordResetEmail } from 'firebase/auth';
-
-
+import { getAuth, signInWithEmailAndPassword } from 'firebase/auth';
 
 const LoginScreen = () => {
   const [email, setEmail] = useState('');
@@ -13,68 +11,60 @@ const LoginScreen = () => {
   const [showPassword, setShowPassword] = useState(false);
   const navigation = useNavigation();
 
-  const handleLogin = async (email, password) => {
+  const loginUser = async () => {
     try {
-      const auth = getAuth();
-      const userCredential = await signInWithEmailAndPassword(auth, email, password);
-  
-      // If the login is successful, you can navigate to the Home screen.
-      navigation.navigate('Home'); // Make sure you have the appropriate navigation route set up.
+      await signInWithEmailAndPassword(getAuth(), email, password);
+      navigation.navigate('Home');
     } catch (error) {
-      // Handle login errors
-      const errorCode = error.code;
-  
-      if (errorCode === 'auth/wrong-password') {
-        // Handle wrong password error
-        console.error('Wrong password. Please check your password.');
-      } else if (errorCode === 'auth/user-not-found') {
-        // Handle user not found error (user is not registered)
-        console.error('User not found. Please register or check your email.');
-      } else {
-        // Handle other errors
-        console.error('Login failed:', error);
-      }
+      Alert.alert(error.message);
+      setLoginAttempts(loginAttempts + 1);
+
+      // Check if login attempts exceed the limit (e.g., 3)
+      if (loginAttempts >= 2) {
+        // Block the user or perform any other action (e.g., show a message)
+        Alert.alert('Login attempts exceeded. Your account is blocked.');
     }
+  }
   };
 
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword);
   };
 
-    return (
-        <View style={styles.container}>
-          <Image
-            source={require('../../assets/Union.png')}
-            style={styles.image}
-          />
-          <Image
-            source={require('../../assets/Vector.png')}
-            style={styles.imageVector}
-          />
-          <Text style={styles.boldText}>Shake to Alert</Text>
-          <Text style={styles.readyText}>READY</Text>
-    
-          {/* Signup Form */}
-          <View style={styles.signupForm}>
-            <Text style={[styles.signupText, { color: 'white' }]}>Login</Text>
-            
-            <TextInput
-              value={email}
-              onChangeText={(text) => setEmail(text)}
-              style={styles.input}
-              placeholder="Email"
-              placeholderTextColor="white"
-            />
-            
-            <TextInput
-              value={password}
-              onChangeText={(text) => setPassword(text)}
-              style={styles.input}
-              placeholder="Password"
-              secureTextEntry={!showPassword}// Hide the password with stars
-              placeholderTextColor="white"
-            />
-             <TouchableOpacity
+  return (
+    <View style={styles.container}>
+      <Image
+        source={require('../../assets/Union.png')}
+        style={styles.image}
+      />
+      <Image
+        source={require('../../assets/Vector.png')}
+        style={styles.imageVector}
+      />
+      <Text style={styles.boldText}>Shake to Alert</Text>
+      <Text style={styles.readyText}>READY</Text>
+
+      {/* Signup Form */}
+      <View style={styles.signupForm}>
+        <Text style={[styles.signupText, { color: 'white' }]}>Login</Text>
+
+        <TextInput
+          value={email}
+          onChangeText={(text) => setEmail(text)}
+          style={styles.input}
+          placeholder="Email"
+          placeholderTextColor="white"
+        />
+
+        <TextInput
+          value={password}
+          onChangeText={(text) => setPassword(text)}
+          style={styles.input}
+          placeholder="Password"
+          secureTextEntry={!showPassword}
+          placeholderTextColor="white"
+        />
+        <TouchableOpacity
           style={styles.togglePasswordButton}
           onPress={togglePasswordVisibility}
         >
@@ -84,34 +74,29 @@ const LoginScreen = () => {
             color="white"
           />
         </TouchableOpacity>
-            <TouchableOpacity onPress={handleLogin} style= {styles.LoginButton}>  
-             <Text style={styles.TextButton}>Login</Text>
-            
-              
-             
-           </TouchableOpacity>
-           
-           <View style={styles.linksContainer }>
-            <TouchableOpacity onPress={() => navigation.navigate('ResetPassword')}>
+
+        <TouchableOpacity onPress={loginUser} style={styles.LoginButton}>
+          <Text style={styles.TextButton}>Login</Text>
+        </TouchableOpacity>
+
+        <View style={styles.linksContainer}>
+          <TouchableOpacity onPress={() => navigation.navigate('ResetPassword')}>
             <Text style={{ color: '#FFF' }}>Forgot password</Text>
-            </TouchableOpacity>
-           <TouchableOpacity onPress={() => navigation.navigate('Register')}>
-           <Text style={{ color: '#FFF' }}>Register</Text>
-           </TouchableOpacity>
-           </View>
-          </View>
-    
-          {/* Image at the bottom center */}
-          <Image
-            source={require('../../assets/undraw_different_love_a-3-rg 1.png')}
-            style={styles.bottomImage}
-          />
-    
-          {/* Bottom Tab */}
-          
+          </TouchableOpacity>
+          <TouchableOpacity onPress={() => navigation.navigate('Register')}>
+            <Text style={{ color: '#FFF' }}>Register</Text>
+          </TouchableOpacity>
         </View>
-      );
-    };
+      </View>
+
+      {/* Image at the bottom center */}
+      <Image
+        source={require('../../assets/undraw_different_love_a-3-rg 1.png')}
+        style={styles.bottomImage}
+      />
+    </View>
+  );
+};
 
 export default LoginScreen;
     
