@@ -10,6 +10,7 @@ import SplashScreen from './src/screens/SplashScreen';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import ForgotPassword from './src/screens/ForgotPassword';
 import PasswordReset from './src/components/PasswordReset';
+import BottomNav from './src/components/BottomNav';
 
 
 const Stack = createStackNavigator();
@@ -20,14 +21,15 @@ export default function App() {
   function MainStack() {
     return (
 
-      <Stack.Navigator initialRouteName='Login'>
+      <Stack.Navigator initialRouteName='Splash'>
         <Stack.Screen name='Home' component={HomeScreen} options={{ headerShown: false }} />
         <Stack.Screen name='Splash' component={SplashScreen} options={{ headerShown: false }} />
         <Stack.Screen name='Login' component={LoginScreen} options={{ headerShown: false }} />
         <Stack.Screen name='ResetPassword' component={PasswordReset} options={{ headerShown: false }} />
         <Stack.Screen name='Register' component={RegistrationScreen} options={{ headerShown: false }} />
         <Stack.Screen name='About' component={AboutScreen} options={{ headerShown: false }} />
-        <Stack.Screen name='ResetPassword' component={ForgotPassword} options={{ headerShown: false }} />
+        <Stack.Screen name='ForgotPassword' component={ForgotPassword} options={{ headerShown: false }} />
+        
       </Stack.Navigator>
 
     );
@@ -84,6 +86,7 @@ export default function App() {
     );
   }
   return (
+    
     <NavigationContainer>
       <TabNavigator />
     </NavigationContainer>

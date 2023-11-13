@@ -7,6 +7,7 @@ import {
   signInWithEmailAndPassword,
   sendPasswordResetEmail,
 } from "firebase/auth";
+import InputText from "../components/InputText";
 
 export default function ForgotPassword() {
   const [email, setEmail] = useState("");
@@ -15,13 +16,13 @@ export default function ForgotPassword() {
   return (
     <View style={styles.contactCard}>
       <Text style={styles.title}>Forgot Password Screen</Text>
-      <TextField
+      <InputText
         value={email}
         onChangeText={(text) => setEmail(text)}
         style={styles.input}
         placeholder="Email"
       />
-      <TextField
+      <InputText
         value={Number}
         onChangeText={(text) => setEmail(text)}
         style={styles.input}

@@ -6,6 +6,7 @@ import { Feather } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import Union from '../../assets/Union.png';
 import Vector from '../../assets/Vector.png';
+import InputText from '../components/InputText';
 
 const RegistrationScreen = () => {
   const [name, setName] = useState('');
@@ -146,7 +147,7 @@ const RegistrationScreen = () => {
       {/* Signup Form */}
       <View style={styles.signupForm}>
         <Text style={[styles.signupText, { color: 'white' }]}>SignUp</Text>
-        <TextInput
+        <InputText
           style={styles.input}
           placeholder="Full Name"
           placeholderTextColor="white"
@@ -154,7 +155,7 @@ const RegistrationScreen = () => {
         />
         {nameError && <Text style={styles.errorText}>{nameError}</Text>}
 
-        <TextInput
+        <InputText
           style={styles.input}
           placeholder="Email"
           placeholderTextColor="white"
@@ -163,7 +164,7 @@ const RegistrationScreen = () => {
         {emailError && <Text style={styles.errorText}>{emailError}</Text>}
 
 
-        <TextInput
+        <InputText
           style={styles.input}
           placeholder="Phone Number"
           placeholderTextColor="white"
@@ -182,7 +183,7 @@ const RegistrationScreen = () => {
 
 
 
-        <TextInput
+        <InputText
           style={styles.input}
           placeholder="Confirm Password"
           onChangeText={(text) => handlePasswordChange(text, true)} // Pass true to indicate it's the Confirm Password field

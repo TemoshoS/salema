@@ -49,7 +49,7 @@ const handleRegister = () => {
 }
   // Handle Forgot password button click
   const handleForgotPassword = () => {
-    navigation.navigate("ResetPassword");
+    navigation.navigate("ForgotPassword");
   }
 
 

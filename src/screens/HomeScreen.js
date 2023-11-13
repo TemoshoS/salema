@@ -430,18 +430,7 @@ const HomeScreen = () => {
                   altText="Cancel Edit"
                 />
               </View>
-              {/* <View style={styles.buttonGroup}>
-                <Pressable
-                  title={"Update"}
-                  onPress={handleUpdateContact}
-                  altText={"Update"}
-                />
-                <Pressable
-                  title={"Cancel"}
-                  onPress={hideUpdateModal}
-                  altText={"Cancel"}
-                />
-              </View> */}
+             
             </View>
           )}
         </View>
@@ -502,7 +491,7 @@ const styles = StyleSheet.create({
     fontSize: 24,
     fontWeight: "bold",
     marginBottom: 5,
-    color: "#f2f2f2",
+    color: "#3d3d3d",
     textAlign: "center",
   },
   text: {
