@@ -95,7 +95,7 @@ const handleRegister = () => {
 
         <View style={styles.buttonGroup}>
           <Button
-            onPress={handleLogin}
+            onPress={loginUser}
             title="Login"
             altText={"Login"}
             color={"#055a2b"}

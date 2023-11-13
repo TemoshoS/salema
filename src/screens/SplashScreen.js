@@ -1,31 +1,28 @@
-
 import React from "react";
 import { View, StyleSheet, Text, Image } from "react-native";
 // Navigation Contents
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation } from "@react-navigation/native";
 // components
 import BottomNav from "../components/BottomNav";
 import Button from "../components/Button";
 import ShakeFeedback from "../components/ShakeFeedback";
 
 const SplashScreen = () => {
-
   const navigation = useNavigation();
 
   return (
     <View style={styles.container}>
-    
-      <Image      
+      <Image
         source={require("../../assets/Union.png")}
         style={styles.logoImg}
-        accessibilityLabel="logo image"
+        accessibilityLabel="logo"
       />
       <Text>Your safety is just a shake away</Text>
       {/* Staus image */}
 
       <View style={styles.textContent}>
-      {/* HERE IS THE STATUS OF THE SHAKE APP {IN USE OR NOT} */}
-      <ShakeFeedback/>
+        {/* HERE IS THE STATUS OF THE SHAKE APP {IN USE OR NOT} */}
+        <ShakeFeedback />
         {/* <Image
           source={require("/assets/Vector.png")}
           style={styles.signalImg}
@@ -47,14 +44,21 @@ const SplashScreen = () => {
       />
       {/* User buttons*/}
       <View style={styles.buttonSection}>
-        <Button style={styles.bgGreen} title={"Signup"}  onPress={() => navigation.navigate('Register')} altText={"register"} color={"#055a2b"}/>
-        <Button style={styles.bgGreen} title={"Log in"}  onPress={() => navigation.navigate('Login')} altText={"Login"} color={"#055a2b"}/>
-       
+        <Button
+          style={styles.bgGreen}
+          title={"Signup"}
+          onPress={() => navigation.navigate("Register")}
+          altText={"register"}
+          color={"#055a2b"}
+        />
+        <Button
+          style={styles.bgGreen}
+          title={"Log in"}
+          onPress={() => navigation.navigate("Login")}
+          altText={"Login"}
+          color={"#055a2b"}
+        />
       </View>
-
-      
-
-        
     </View>
   );
 };
@@ -67,7 +71,6 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     width: "100%",
     flexDirection: "column",
-    
   },
   bottom: {
     bottom: 0,
@@ -126,12 +129,12 @@ const styles = StyleSheet.create({
     position: "relative",
     flexDirection: "row",
     flexWrap: "wrap",
-    
+
     justifyContent: "space-between",
   },
   bgGreen: {
-backgroundColor: "green",
-  }
+    backgroundColor: "green",
+  },
 });
 
 export default SplashScreen;
