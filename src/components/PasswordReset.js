@@ -4,25 +4,33 @@ import { auth } from '../services/firebaseService';
 import { sendPasswordResetEmail } from 'firebase/auth';
 
 const PasswordReset = () => {
-    // State to store the user's email and a message to display to the user
-    const [email, setEmail] = useState('');
-    const [message, setMessage] = useState('');
-    // Function to send a password reset email
-    const resetPassword = () => {
-        sendPasswordResetEmail(auth, email)
-            .then(() => {
-                // If the email was sent successfully, set a success message
-                setMessage('Password reset email sent. Check your email.');
-            })
-            .catch((error) => {
-                // Handle different error cases
-                if (error.code === 'auth/user-not-found') {
-                    setMessage('User with this email does not exist.');
-                } else {
-                    setMessage('An error occurred. Please try again later.');
-                }
-            });
-    };
+  // State to store the user's email and a message to display to the user
+  const [email, setEmail] = useState('');
+  const [message, setMessage] = useState('');
+
+  // Function to send a password reset email
+  const resetPassword = () => {
+    // Simple email validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      setMessage('Invalid email address. Please enter a valid email.');
+      return;
+    }
+
+    sendPasswordResetEmail(auth, email)
+      .then(() => {
+        // If the email was sent successfully, set a success message
+        setMessage('Password reset email sent. Check your email.');
+      })
+      .catch((error) => {
+        // Handle different error cases
+        if (error.code === 'auth/user-not-found') {
+          setMessage('User with this email does not exist.');
+        } else {
+          setMessage('An error occurred. Please try again later.');
+        }
+      });
+  };
 
   return (
     <View>
@@ -31,6 +39,8 @@ const PasswordReset = () => {
         placeholder="Email"
         value={email}
         onChangeText={(text) => setEmail(text)}
+        keyboardType="email-address"
+        autoCapitalize="none"
       />
       <Button title="Reset Password" onPress={resetPassword} />
       {message && <Text>{message}</Text>}

@@ -30,9 +30,11 @@ const ChipButton = ({ title, onPress, altText }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: "center",
+    justifyContent: "space-between",
     // marginHorizontal: 8,     // will use gap instead
     position: "relative",
+    alignItems: "stretch",
+    
   },
   button: {
     alignItems: "center",
