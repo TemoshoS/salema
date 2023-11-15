@@ -21,7 +21,7 @@ export default function App() {
   function MainStack() {
     return (
 // Naviagtions have slight animation slies (cardStyleInterpolator:CardStyleInterpolators.forHorizontalIOS) from '@react-navigation/stack'; 
-      <Stack.Navigator initialRouteName='Splash'>
+      <Stack.Navigator initialRouteName='Home'>
         <Stack.Screen name='Home' component={HomeScreen} options={{ headerShown: false}} />
         <Stack.Screen name='Splash' component={SplashScreen} options={{ headerShown: false}} />
         <Stack.Screen name='ResetPassword' component={PasswordReset} options={{ headerShown: false , cardStyleInterpolator:CardStyleInterpolators.forHorizontalIOS }} />

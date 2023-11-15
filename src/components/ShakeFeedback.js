@@ -26,12 +26,11 @@ const ShakeFeedback = () => {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
+    
     justifyContent: "center",
     alignItems: "center",
-    // backgroundColor: "#ff4a4a",
-    borderRadius: 100,
-    marginVertical: 20,
+    
+    
   },
   image: {
     width: 100,

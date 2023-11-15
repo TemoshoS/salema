@@ -26,6 +26,7 @@ import Button2 from "../components/Button2";
 import ShakeFeedback from "../components/ShakeFeedback";
 import InputText from "../components/InputText";
 
+
 const HomeScreen = () => {
   const [currentUser, setCurrentUser] = useState(null);
   const [contacts, setContacts] = useState([]);
@@ -114,27 +115,27 @@ const HomeScreen = () => {
         return;
       }
 
-      if(!newContactData.name ){
+      if (!newContactData.name) {
         setNameError('Please enter Name');
         return;
-      }else{
-         setNameError(null)
+      } else {
+        setNameError(null)
       }
 
-      if(!newContactData.phoneNumber){
+      if (!newContactData.phoneNumber) {
         setPhoneError('Please enter Phone number');
         return;
       }
-      else{
+      else {
         setPhoneError(null)
-     }
-      if(!newContactData.relationship){
+      }
+      if (!newContactData.relationship) {
         setRelationshipError('Please enter Relationship');
         return;
       }
-      else{
+      else {
         setRelationshipError(null)
-     }
+      }
 
 
 
@@ -211,7 +212,7 @@ const HomeScreen = () => {
   return (
     <ScrollView contentContainerStyle={styles.container}>
       <Image
-        source={require("/assets/Union.png")}
+        source={require("../../assets/Union.png")}
         style={styles.logoImg}
         accessibilityLabel="logo image"
       />
@@ -219,7 +220,7 @@ const HomeScreen = () => {
       {/* Staus image */}
 
       <View style={styles.textContent}>
-        <ShakeFeedback/>
+        <ShakeFeedback />
         <Text style={styles.title}>"Shake to Alert"</Text>
         <Text style={styles.text}>
           In an emergency, every second counts, just give your phone a quick
@@ -229,7 +230,7 @@ const HomeScreen = () => {
 
       {/* Backkground Image */}
       <Image
-        source={require("/assets/undraw_different_love_a-3-rg 1.png")}
+        source={require("../../assets/undraw.png")}
         style={styles.BgImage}
         accessibilityLabel="status signalimage"
       />
@@ -274,7 +275,7 @@ const HomeScreen = () => {
         <View style={styles.modalCard}>
           <Text style={styles.title}>Add New Contact</Text>
 
-          <InputText
+          <TextInput
             style={styles.input}
             placeholder="Name"
             value={newContactData.name}
@@ -282,8 +283,9 @@ const HomeScreen = () => {
               setNewContactData({ ...newContactData, name: text })
             }
           />
-         {nameError && <Text style={styles.errorText}>{nameError}</Text>}
-          <InputText
+
+          {nameError && <Text style={styles.errorText}>{nameError}</Text>}
+          <TextInput
             style={styles.input}
             placeholder="Phone Number"
             value={newContactData.phoneNumber}
@@ -292,7 +294,7 @@ const HomeScreen = () => {
             }
           />
           {phoneError && <Text style={styles.errorText}>{phoneError}</Text>}
-          <InputText
+          <TextInput
             style={styles.input}
             placeholder="Relationship"
             value={newContactData.relationship}
@@ -302,7 +304,7 @@ const HomeScreen = () => {
           />
           {relationshipError && <Text style={styles.errorText}>{relationshipError}</Text>}
           <View style={styles.buttonGroup}>
-          <Button title="Add Contact" onPress={handleAddContact} altText="Add Contact" />
+            <Button title="Add Contact" onPress={handleAddContact} altText="Add Contact" />
             {/* <Button2
               title="Add Contact"
               onPress={handleAddContact}
@@ -433,7 +435,7 @@ const HomeScreen = () => {
                   altText="Cancel Edit"
                 />
               </View>
-             
+
             </View>
           )}
         </View>
@@ -465,11 +467,10 @@ const styles = StyleSheet.create({
     // marginVertical: 20,
   },
   BgImage: {
-    width: 180,
-    height: 200,
-    // marginTop: -140,
+    width: 60,
+    height: 100,
     resizeMode: "cover",
-    // marginVertical: 20,
+
   },
   signalImg: {
     width: 80,
@@ -493,7 +494,7 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 24,
     fontWeight: "bold",
-    marginBottom: 5,
+    //marginBottom: 5,
     color: "#f2f2f2",
     textAlign: "center",
   },
@@ -512,9 +513,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     width: "100%",
-    // position: "absolute",
-    
-    // marginHorizontal: 8,
+
   },
   contactCard: {
     width: "100%",
@@ -540,7 +539,7 @@ const styles = StyleSheet.create({
   },
   modalCard: {
     padding: 30,
-    borderRadius: "16px",
+    borderRadius: 16,
     backgroundColor: "#002E15",
     alignItems: "center",
     justifyContent: "center",
@@ -550,7 +549,7 @@ const styles = StyleSheet.create({
     display: "flex",
     flexDirection: "column",
     alignSelf: "stretch",
-    top: 500,
+    top: 200,
     position: "relative",
   },
   overlay: {
@@ -600,7 +599,7 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     textAlign: "left,",
     minHeight: 52,
-    backgroundColor: "#712626", 
+    backgroundColor: "#712626",
     width: "100%",
   },
 });
