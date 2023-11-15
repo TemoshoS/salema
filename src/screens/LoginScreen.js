@@ -166,7 +166,7 @@ const styles = StyleSheet.create({
   },
   signupForm: {
     padding: 30,
-    borderRadius: "16px",
+    borderRadius: 16,
     backgroundColor: "#002E15",
     alignItems: "flex-start",
     justifyContent: "center",

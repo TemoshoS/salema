@@ -590,6 +590,10 @@ const styles = StyleSheet.create({
     gap: 8,
     justifyContent: "flex-end",
   },
+  card:{
+      backgroundColor: "#002E15",	
+      flex: 1,
+  },
   // New contact card
   cancelBtn: {
     paddingVertical: 10,
