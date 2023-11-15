@@ -24,6 +24,7 @@ import TextField from "../components/TextField";
 import Button from "../components/Button";
 import Button2 from "../components/Button2";
 import ShakeFeedback from "../components/ShakeFeedback";
+import InputText from "../components/InputText";
 
 const HomeScreen = () => {
   const [currentUser, setCurrentUser] = useState(null);
@@ -113,27 +114,27 @@ const HomeScreen = () => {
         return;
       }
 
-      if(!newContactData.name ){
+      if (!newContactData.name) {
         setNameError('Please enter Name');
         return;
-      }else{
-         setNameError(null)
+      } else {
+        setNameError(null)
       }
 
-      if(!newContactData.phoneNumber){
+      if (!newContactData.phoneNumber) {
         setPhoneError('Please enter Phone number');
         return;
       }
-      else{
+      else {
         setPhoneError(null)
-     }
-      if(!newContactData.relationship){
+      }
+      if (!newContactData.relationship) {
         setRelationshipError('Please enter Relationship');
         return;
       }
-      else{
+      else {
         setRelationshipError(null)
-     }
+      }
 
 
 
@@ -218,7 +219,7 @@ const HomeScreen = () => {
       {/* Staus image */}
 
       <View style={styles.textContent}>
-        <ShakeFeedback/>
+        <ShakeFeedback />
         <Text style={styles.title}>"Shake to Alert"</Text>
         <Text style={styles.text}>
           In an emergency, every second counts, just give your phone a quick
@@ -262,16 +263,18 @@ const HomeScreen = () => {
 
       {/* Add New Contact modal */}
       <Modal
+
         animationType="slide"
         transparent={false}
         visible={isAddContactModalVisible}
         onRequestClose={hideAddContactModal}
       >
         {/* must be converted to ra relevant component */}
-        <View style={styles.contactCard}>
+        <View style={styles.overlay}></View>
+        <View style={styles.modalCard}>
           <Text style={styles.title}>Add New Contact</Text>
 
-          <TextField
+          <InputText
             style={styles.input}
             placeholder="Name"
             value={newContactData.name}
@@ -279,8 +282,8 @@ const HomeScreen = () => {
               setNewContactData({ ...newContactData, name: text })
             }
           />
-         {nameError && <Text style={styles.errorText}>{nameError}</Text>}
-          <TextField
+          {nameError && <Text style={styles.errorText}>{nameError}</Text>}
+          <InputText
             style={styles.input}
             placeholder="Phone Number"
             value={newContactData.phoneNumber}
@@ -289,7 +292,7 @@ const HomeScreen = () => {
             }
           />
           {phoneError && <Text style={styles.errorText}>{phoneError}</Text>}
-          <TextField
+          <InputText
             style={styles.input}
             placeholder="Relationship"
             value={newContactData.relationship}
@@ -299,7 +302,7 @@ const HomeScreen = () => {
           />
           {relationshipError && <Text style={styles.errorText}>{relationshipError}</Text>}
           <View style={styles.buttonGroup}>
-          <Button title="Add Contact" onPress={handleAddContact} altText="Add Contact" />
+            <Button title="Add Contact" onPress={handleAddContact} altText="Add Contact" />
             {/* <Button2
               title="Add Contact"
               onPress={handleAddContact}
@@ -363,7 +366,7 @@ const HomeScreen = () => {
         <View style={styles.card}>
           {selectedContact && (
             <View style={styles.confirmationModal}>
-              <TextField
+              <InputText
                 style={styles.input}
                 placeholder="Name"
                 value={updatedContactData.name}
@@ -372,7 +375,7 @@ const HomeScreen = () => {
                 }
               />
 
-              <TextField
+              <InputText
                 style={styles.input}
                 placeholder="Phone Number"
                 value={updatedContactData.phoneNumber}
@@ -384,7 +387,7 @@ const HomeScreen = () => {
                 }
               />
 
-              <TextField
+              <InputText
                 style={styles.input}
                 placeholder="Relationship"
                 value={updatedContactData.relationship}
@@ -421,16 +424,17 @@ const HomeScreen = () => {
               <View style={styles.buttonGroup}>
                 <Button2
                   title="Update"
-                  onPress={showUpdateModal}
+                  onPress={handleUpdateContact}
                   altText="Update Edit"
                 />
                 <Button2
                   title="Cancel"
-                  onPress={() => handleRemoveContact(selectedContact.id)}
+                  onPress={() => hideUpdateModal()}
                   altText="Cancel Edit"
                 />
+
               </View>
-             
+
             </View>
           )}
         </View>
@@ -447,7 +451,7 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     width: "100%",
     flexDirection: "column",
-    padding: 8,
+    paddingHorizontal: 8,
   },
   bottom: {
     bottom: 0,
@@ -477,7 +481,7 @@ const styles = StyleSheet.create({
   },
   bottomTab: {
     bottom: 0,
-    justifyContent: "flex-end",
+    // justifyContent: "flex-end",
   },
   textContent: {
     paddingHorizontal: 0,
@@ -491,7 +495,7 @@ const styles = StyleSheet.create({
     fontSize: 24,
     fontWeight: "bold",
     marginBottom: 5,
-    color: "#3d3d3d",
+    color: "#f2f2f2",
     textAlign: "center",
   },
   text: {
@@ -510,7 +514,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     width: "100%",
     // position: "absolute",
-    bottom: -20,
+
     // marginHorizontal: 8,
   },
   contactCard: {
@@ -535,6 +539,29 @@ const styles = StyleSheet.create({
     minHeight: 200,
     gap: 16,
   },
+  modalCard: {
+    padding: 30,
+    borderRadius: "16px",
+    backgroundColor: "#002E15",
+    alignItems: "center",
+    justifyContent: "center",
+    // bottom: 210,
+    gap: 20,
+    color: "white",
+    display: "flex",
+    flexDirection: "column",
+    alignSelf: "stretch",
+    top: 500,
+    position: "relative",
+  },
+  overlay: {
+    position: "absolute",
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: "rgba(0, 0, 0, 0.601)",
+  },
   contactList: {
     width: "100%",
     flexDirection: "row",
@@ -549,7 +576,8 @@ const styles = StyleSheet.create({
     alignItems: "center",
     backgroundColor: "green",
     height: "20%",
-    width: "90%",
+    width: "100%",
+    color: "#f2f2f2",
   },
   confirmTxt: {
     color: "white",
@@ -573,7 +601,7 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     textAlign: "left,",
     minHeight: 52,
-    backgroundColor: "#712626", 
+    backgroundColor: "#712626",
     width: "100%",
   },
 });

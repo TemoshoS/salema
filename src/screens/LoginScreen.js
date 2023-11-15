@@ -111,8 +111,6 @@ const handleRegister = () => {
         <TouchableOpacity style={styles.button} onPress={handleRegister}>
         <Text style={{ color: "#FFF" }}>Register</Text>
         </TouchableOpacity>
-          
-          
         </View>
       </View>
 
@@ -121,8 +119,6 @@ const handleRegister = () => {
         source={require("../../assets/undraw_different_love_a-3-rg 1.png")}
         style={styles.bottomImage}
       />
-
-      {/* Bottom Tab */}
     </View>
   );
 };
@@ -133,8 +129,9 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     alignItems: "center",
-    justifyContent: "space-between",
-    marginTop: 25,
+    justifyContent: "center",
+    // marginTop: 25,
+    // paddingHorizontal: 8,
   },
   image: {
     width: 100,
@@ -168,15 +165,19 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
   signupForm: {
-    width: 400,
-    height: 380,
     padding: 30,
-    borderRadius: 20,
+    borderRadius: "16px",
     backgroundColor: "#002E15",
-    alignItems: "center",
+    alignItems: "flex-start",
     justifyContent: "center",
-    bottom: 210,
+    // bottom: 210,
     gap: 20,
+    color: "white",
+    display: "flex",
+    flexDirection: "column",
+    alignSelf: "stretch",
+    marginHorizontal: 8,
+    bottom: 100,
   },
   signupText: {
     fontWeight: "bold",

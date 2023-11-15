@@ -71,6 +71,7 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     width: "100%",
     flexDirection: "column",
+    paddingHorizontal: 8,
   },
   bottom: {
     bottom: 0,
@@ -129,7 +130,7 @@ const styles = StyleSheet.create({
     position: "relative",
     flexDirection: "row",
     flexWrap: "wrap",
-
+    gap: 10,
     justifyContent: "space-between",
   },
   bgGreen: {
