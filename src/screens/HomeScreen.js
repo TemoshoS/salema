@@ -426,14 +426,15 @@ const HomeScreen = () => {
               <View style={styles.buttonGroup}>
                 <Button2
                   title="Update"
-                  onPress={showUpdateModal}
+                  onPress={handleUpdateContact}
                   altText="Update Edit"
                 />
                 <Button2
                   title="Cancel"
-                  onPress={() => handleRemoveContact(selectedContact.id)}
+                  onPress={() => hideUpdateModal()}
                   altText="Cancel Edit"
                 />
+
               </View>
 
             </View>
@@ -513,7 +514,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     width: "100%",
-
   },
   contactCard: {
     width: "100%",
@@ -574,7 +574,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     backgroundColor: "green",
     height: "20%",
-    width: "90%",
+    width: "100%",
     color: "#f2f2f2",
   },
   confirmTxt: {
