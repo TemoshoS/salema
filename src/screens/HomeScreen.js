@@ -3,8 +3,8 @@ import { View, StyleSheet, Text, Image, Button, TouchableOpacity, Modal, ScrollV
 import ChipButton from "../components/ChipButton";
 import { getContacts, addContact, updateContact, removeContact } from "../services/homeServices";
 import { getAuth, onAuthStateChanged } from "@firebase/auth";
-// import {ShakeTrigger} from '../services/ShakeTrigger';
-
+import ShakeTrigger from "../services/ShakeTrigger";
+ 
 
 const HomeScreen = () => {
   const [currentUser, setCurrentUser] = useState(null);
@@ -16,6 +16,8 @@ const HomeScreen = () => {
   const [nameError, setNameError] = useState(null);
   const [phoneError, setPhoneError] = useState(null);
   const [relationshipError, setRelationshipError] = useState(null);
+  const [isShakeDetected, setIsShakeDetected]= useState(false);
+
   const [newContactData, setNewContactData] = useState({
     name: '',
     phoneNumber: '',
@@ -194,25 +196,32 @@ const HomeScreen = () => {
   const hideConfirmation = () => {
     setConfirmationVisible(false);
   };
+  
+  //
+  const handleShake = (shakeDetected) => {
+    setIsShakeDetected(shakeDetected);
+  };
 
 
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
+     
       <Image
-        source={require("/assets/Union.png")}
+        source={require("../../assets/Union.png")}
         style={styles.logoImg}
         accessibilityLabel="logo image"
       />
       <Text>Your safety is just a shake away</Text>
       {/* Staus image */}
-
+      {/* <ShakeTrigger onShake={(isShakeDetected)=>setIsShakeDetected(isShakeDetected)}/> */}
       <View style={styles.textContent}>
         <Image
-          source={require("/assets/Vector.png")}
+          source={isShakeDetected  ? require("../../assets/Vector.png") : require("../../assets/Inactive.png")}
           style={styles.signalImg}
           accessibilityLabel="status signalimage"
         />
+        <ShakeTrigger onShake={handleShake} />
         <Text style={styles.title}>"Shake to Alert"</Text>
         <Text style={styles.text}>
           In an emergency, every second counts, just give your phone a quick
@@ -222,7 +231,7 @@ const HomeScreen = () => {
 
       {/* Backkground Image */}
       <Image
-        source={require("/assets/undraw_different_love_a-3-rg 1.png")}
+        source={require("../../assets/undraw_different_love_a-3-rg 1.png")}
         style={styles.BgImage}
         accessibilityLabel="status signalimage"
       />
