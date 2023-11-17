@@ -1,7 +1,14 @@
 import React, { useState } from "react";
-import { Image, StyleSheet, Text, View, TouchableOpacity, Alert } from "react-native";
+import {
+  Image,
+  StyleSheet,
+  Text,
+  View,
+  TouchableOpacity,
+  Alert,
+} from "react-native";
 import { useNavigation } from "@react-navigation/native";
-import Ionicons from 'react-native-vector-icons/Ionicons';
+import Ionicons from "react-native-vector-icons/Ionicons";
 import {
   getAuth,
   signInWithEmailAndPassword,
@@ -12,7 +19,6 @@ import Button from "../components/Button";
 import InputText from "../components/InputText";
 import ShakeFeedback from "../components/ShakeFeedback";
 
-import { getAuth, signInWithEmailAndPassword } from 'firebase/auth';
 const LoginScreen = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -23,7 +29,7 @@ const LoginScreen = () => {
   const loginUser = async () => {
     try {
       await signInWithEmailAndPassword(getAuth(), email, password);
-      navigation.navigate('Home');
+      navigation.navigate("Home");
     } catch (error) {
       Alert.alert(error.message);
       setLoginAttempts(loginAttempts + 1);
@@ -31,20 +37,19 @@ const LoginScreen = () => {
       // Check if login attempts exceed the limit (e.g., 3)
       if (loginAttempts >= 2) {
         // Block the user or perform any other action (e.g., show a message)
-        Alert.alert('Login attempts exceeded. Your account is blocked.');
+        Alert.alert("Login attempts exceeded. Your account is blocked.");
+      }
     }
-  }
   };
 
   // Handle Register button click
-const handleRegister = () => {
-  navigation.navigate("Register");
-}
+  const handleRegister = () => {
+    navigation.navigate("Register");
+  };
   // Handle Forgot password button click
   const handleForgotPassword = () => {
     navigation.navigate("ForgotPassword");
-  }
-
+  };
 
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword);
@@ -75,7 +80,7 @@ const handleRegister = () => {
       <View style={styles.overlay}></View>
       <View style={styles.signupForm}>
         <View style={styles.formContent}>
-          <Text style={styles.title}>Login</Text>
+          <Text style={styles.title}>Reset Password</Text>
 
           <InputText
             value={email}
@@ -88,7 +93,16 @@ const handleRegister = () => {
             value={password}
             onChangeText={(text) => setPassword(text)}
             style={styles.input}
-            placeholder="Password"
+            placeholder="New Password"
+            secureTextEntry={true} // Hide the password with stars
+            placeholderTextColor="#f2f2f2"
+          />
+
+          <InputText
+            value={Number}
+            onChangeText={(text) => setPassword(text)}
+            style={styles.input}
+            placeholder="Code/ OTP"
             secureTextEntry={true} // Hide the password with stars
             placeholderTextColor="#f2f2f2"
           />
@@ -96,24 +110,37 @@ const handleRegister = () => {
 
         <View style={styles.buttonGroup}>
           <Button
-            onPress={loginUser}
-            title="Login"
-            altText={"Login"}
+            // edit for back end
+            onPress={() => {
+              sendPasswordResetEmail(getAuth(), email);
+            }}
+            title="Resend Code"
+            altText={"Resend Code"}
+            color={"#055a2b"}
+          />
+          <Button
+            onPress={() => {
+              console.log("Cancelled Password Reset");
+            }}
+            title="Cancel"
+            altText={"Cancel"}
             color={"#055a2b"}
           />
         </View>
 
-        <View style={styles.linksContainer}>
-        {/* NAVIGATION LINKS */}
-        <TouchableOpacity style={styles.button} onPress={handleForgotPassword}>
-          <Text style={{ color: "#FFF" }}>Forgot password</Text>
-        </TouchableOpacity>
+        {/* <View style={styles.linksContainer}>
+          <TouchableOpacity
+            style={styles.button}
+            onPress={handleForgotPassword}
+          >
+            <Text style={{ color: "#FFF" }}>Login</Text>
+          </TouchableOpacity>
 
-        <TouchableOpacity style={styles.button} onPress={handleRegister}>
-        <Text style={{ color: "#FFF" }}>Register</Text>
-        </TouchableOpacity>
-        </View>
-      </View>
+          <TouchableOpacity style={styles.button} onPress={handleRegister}>
+            <Text style={{ color: "#FFF" }}>Register</Text>
+          </TouchableOpacity>
+        </View>*/}
+      </View> 
 
       {/* Image at the bottom center */}
       <Image
@@ -167,7 +194,7 @@ const styles = StyleSheet.create({
   },
   signupForm: {
     padding: 30,
-    borderRadius: 16,
+    borderRadius: "16px",
     backgroundColor: "#002E15",
     alignItems: "flex-start",
     justifyContent: "center",
@@ -237,7 +264,7 @@ const styles = StyleSheet.create({
     margin: 5,
   },
   bottomImage: {
-    zIndex: -1,   //sent to back z-index to allow over lay
+    zIndex: -1, //sent to back z-index to allow over lay
     width: 200,
     height: 200,
     position: "absolute",

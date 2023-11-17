@@ -4,11 +4,13 @@ import LoginScreen from './src/screens/LoginScreen';
 import HomeScreen from './src/screens/HomeScreen';
 import AboutScreen from './src/screens/AboutScreen';
 import { NavigationContainer } from '@react-navigation/native';
-import { createStackNavigator } from '@react-navigation/stack';
+import { createStackNavigator, CardStyleInterpolators } from '@react-navigation/stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import SplashScreen from './src/screens/SplashScreen';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import ForgotPassword from './src/screens/ForgotPassword';
 import PasswordReset from './src/components/PasswordReset';
+import BottomNav from './src/components/BottomNav';
 
 
 const Stack = createStackNavigator();
@@ -18,14 +20,16 @@ const Tab = createBottomTabNavigator();
 export default function App() {
   function MainStack() {
     return (
-
-      <Stack.Navigator initialRouteName='Home'>
-        <Stack.Screen name='Home' component={HomeScreen} options={{ headerShown: false }} />
-        <Stack.Screen name='Splash' component={SplashScreen} options={{ headerShown: false }} />
-        <Stack.Screen name='Login' component={LoginScreen} options={{ headerShown: false }} />
-        <Stack.Screen name='ResetPassword' component={PasswordReset} options={{ headerShown: false }} />
-        <Stack.Screen name='Register' component={RegistrationScreen} options={{ headerShown: false }} />
-        <Stack.Screen name='About' component={AboutScreen} options={{ headerShown: false }} />
+// Naviagtions have slight animation slies (cardStyleInterpolator:CardStyleInterpolators.forHorizontalIOS) from '@react-navigation/stack'; 
+      <Stack.Navigator initialRouteName='Login'>
+        <Stack.Screen name='Home' component={HomeScreen} options={{ headerShown: false}} />
+        <Stack.Screen name='Splash' component={SplashScreen} options={{ headerShown: false}} />
+        <Stack.Screen name='ResetPassword' component={PasswordReset} options={{ headerShown: false , cardStyleInterpolator:CardStyleInterpolators.forHorizontalIOS }} />
+        <Stack.Screen name='Register' component={RegistrationScreen} options={{ headerShown: false , cardStyleInterpolator:CardStyleInterpolators.forHorizontalIOS }} />
+        <Stack.Screen name='Login' component={LoginScreen} options={{ headerShown: false , cardStyleInterpolator:CardStyleInterpolators.forHorizontalIOS }} />
+        <Stack.Screen name='About' component={AboutScreen} options={{ headerShown: false, cardStyleInterpolator: CardStyleInterpolators.forVerticalIOS, }} />
+        <Stack.Screen name='ForgotPassword' component={ForgotPassword} options={{title: 'Reset Password', cardStyleInterpolator: CardStyleInterpolators.forVerticalIOS,}}  />
+        
       </Stack.Navigator>
 
     );
@@ -34,8 +38,8 @@ export default function App() {
     return (
       <Tab.Navigator
         tabBarOptions={{
-          activeTintColor: '#808080',
-          inactiveTintColor: '#AFEEEE',
+          activeTintColor: '#117000',
+          inactiveTintColor: '#6ECC5E',
         }}
       >
         <Tab.Screen
@@ -82,6 +86,7 @@ export default function App() {
     );
   }
   return (
+    
     <NavigationContainer>
       <TabNavigator />
     </NavigationContainer>

@@ -1,10 +1,33 @@
 import React, { useEffect, useState } from "react";
-import { View, StyleSheet, Text, Image, Button, TouchableOpacity, Modal, ScrollView, TextInput } from "react-native";
+import {
+  View,
+  StyleSheet,
+  Text,
+  Image,
+  // Button,  this button will be replaced with our custom button.js component
+  TouchableOpacity,
+  Modal,
+  ScrollView,
+  TextInput,
+  Pressable,
+} from "react-native";
 import ChipButton from "../components/ChipButton";
-import { getContacts, addContact, updateContact, removeContact } from "../services/homeServices";
+import {
+  getContacts,
+  addContact,
+  updateContact,
+  removeContact,
+} from "../services/homeServices";
 import { getAuth, onAuthStateChanged } from "@firebase/auth";
 import ShakeTrigger from "../services/ShakeTrigger";
  
+//import {ShakeTrigger} from '../services/ShakeTrigger';
+import TextField from "../components/TextField";
+import Button from "../components/Button";
+import Button2 from "../components/Button2";
+import ShakeFeedback from "../components/ShakeFeedback";
+import InputText from "../components/InputText";
+
 
 const HomeScreen = () => {
   const [currentUser, setCurrentUser] = useState(null);
@@ -19,15 +42,15 @@ const HomeScreen = () => {
   const [isShakeDetected, setIsShakeDetected]= useState(false);
 
   const [newContactData, setNewContactData] = useState({
-    name: '',
-    phoneNumber: '',
-    relationship: '',
-  })
+    name: "",
+    phoneNumber: "",
+    relationship: "",
+  });
   const [isUpdateModalVisible, setUpdateModalVisible] = useState(false);
   const [updatedContactData, setUpdatedContactData] = useState({
     name: "",
     phoneNumber: "",
-    relationship: '',
+    relationship: "",
   });
 
   useEffect(() => {
@@ -36,14 +59,11 @@ const HomeScreen = () => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       if (user) {
         setCurrentUser(user.uid);
-
       } else {
         setCurrentUser(null);
         setContacts([]);
       }
-    })
-
-
+    });
 
     fetchContacts();
     return unsubscribe;
@@ -58,12 +78,11 @@ const HomeScreen = () => {
     } catch (error) {
       console.error("Error fetching contacts:", error);
     }
-  }
+  };
 
-
-
-  const filteredContacts = contacts.filter((contact) => contact.userId === currentUser);
-
+  const filteredContacts = contacts.filter(
+    (contact) => contact.userId === currentUser
+  );
 
   const showContactDetails = (contact) => {
     setSelectedContact(contact);
@@ -79,47 +98,48 @@ const HomeScreen = () => {
 
   const showAddContactModal = () => {
     setNewContactData({
-      name: '',
-      phoneNumber: '',
-      relationship: '',
+      name: "",
+      phoneNumber: "",
+      relationship: "",
     });
 
     setAddContactModalVisible(true);
-  }
+  };
 
   const hideAddContactModal = () => {
     setAddContactModalVisible(false);
   };
 
-
   const handleAddContact = async () => {
     try {
       if (!currentUser) {
-        console.error('No user is signed in. Cannot add contact without a user.');
+        console.error(
+          "No user is signed in. Cannot add contact without a user."
+        );
         return;
       }
 
-      if(!newContactData.name ){
+      if (!newContactData.name) {
         setNameError('Please enter Name');
         return;
-      }else{
-         setNameError(null)
+      } else {
+        setNameError(null)
       }
 
-      if(!newContactData.phoneNumber){
+      if (!newContactData.phoneNumber) {
         setPhoneError('Please enter Phone number');
         return;
       }
-      else{
+      else {
         setPhoneError(null)
-     }
-      if(!newContactData.relationship){
+      }
+      if (!newContactData.relationship) {
         setRelationshipError('Please enter Relationship');
         return;
       }
-      else{
+      else {
         setRelationshipError(null)
-     }
+      }
 
 
 
@@ -129,34 +149,33 @@ const HomeScreen = () => {
       fetchContacts();
       hideAddContactModal();
     } catch (error) {
-      console.error('Error adding contact: ', error);
+      console.error("Error adding contact: ", error);
     }
   };
-
 
   //function to update contact
   const showUpdateModal = () => {
     setUpdateModalVisible(true);
-  }
+  };
 
   const hideUpdateModal = () => {
     setUpdateModalVisible(false);
-  }
+  };
 
   const handleUpdateContact = async () => {
     try {
       if (!selectedContact) {
-        console.error('No contact selected for update');
+        console.error("No contact selected for update");
         return;
       }
 
       if (!selectedContact.id) {
-        console.error('Selected contact has no valid ID');
+        console.error("Selected contact has no valid ID");
         return;
       }
 
       if (!updatedContactData) {
-        console.error('No updated data provided');
+        console.error("No updated data provided");
         return;
       }
 
@@ -164,12 +183,10 @@ const HomeScreen = () => {
       fetchContacts();
       hideUpdateModal();
       setConfirmationVisible(false);
-
     } catch (error) {
-      console.error('Error updating contact: ', error);
+      console.error("Error updating contact: ", error);
     }
   };
-
 
   const selectContactForUpdate = (contact) => {
     setUpdatedContactData({
@@ -191,7 +208,6 @@ const HomeScreen = () => {
     }
   };
 
-
   // Function to hide the confirmation modal
   const hideConfirmation = () => {
     setConfirmationVisible(false);
@@ -201,8 +217,6 @@ const HomeScreen = () => {
   const handleShake = (shakeDetected) => {
     setIsShakeDetected(shakeDetected);
   };
-
-
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
@@ -255,37 +269,48 @@ const HomeScreen = () => {
               <Text>No contacts available</Text>
             )}
           </View>
-          <Button title="Add Contact" onPress={showAddContactModal} />
-
+          <Button
+            title={"Add Contact"}
+            onPress={showAddContactModal}
+            altText={"Add Contact"}
+          />
         </View>
       </View>
 
-      {/* Add contact modal */}
+      {/* Add New Contact modal */}
       <Modal
+
         animationType="slide"
         transparent={false}
         visible={isAddContactModalVisible}
         onRequestClose={hideAddContactModal}
       >
-        <View style={styles.addContactModal}>
-          <Text>Add New Contact</Text>
+        {/* must be converted to ra relevant component */}
+        <View style={styles.overlay}></View>
+        <View style={styles.modalCard}>
+          <Text style={styles.title}>Add New Contact</Text>
+
           <TextInput
+            style={styles.input}
             placeholder="Name"
             value={newContactData.name}
-            onChangeText={(text) => setNewContactData({ ...newContactData, name: text })}
-
+            onChangeText={(text) =>
+              setNewContactData({ ...newContactData, name: text })
+            }
           />
-         {nameError && <Text style={styles.errorText}>{nameError}</Text>}
+
+          {nameError && <Text style={styles.errorText}>{nameError}</Text>}
           <TextInput
+            style={styles.input}
             placeholder="Phone Number"
             value={newContactData.phoneNumber}
             onChangeText={(text) =>
               setNewContactData({ ...newContactData, phoneNumber: text })
             }
-
           />
           {phoneError && <Text style={styles.errorText}>{phoneError}</Text>}
           <TextInput
+            style={styles.input}
             placeholder="Relationship"
             value={newContactData.relationship}
             onChangeText={(text) =>
@@ -293,22 +318,24 @@ const HomeScreen = () => {
             }
           />
           {relationshipError && <Text style={styles.errorText}>{relationshipError}</Text>}
-          <Button
-            title="Add Contact"
-            onPress={handleAddContact}
-          />
-          <Button
-            title="Cancel"
-            onPress={hideAddContactModal}
-          />
-
+          <View style={styles.buttonGroup}>
+            <Button title="Add Contact" onPress={handleAddContact} altText="Add Contact" />
+            {/* <Button2
+              title="Add Contact"
+              onPress={handleAddContact}
+              altText="Add Contact"
+            />
+            <Button2
+            style={styles.cancelBtn}
+              title="Cancel"
+              onPress={hideAddContactModal}
+              altText="Cancel"
+            /> */}
+          </View>
         </View>
-
-
       </Modal>
 
-
-      {/* Display modal */}
+      {/* Display Contacts Modal */}
 
       <Modal
         animationType="slide"
@@ -319,19 +346,23 @@ const HomeScreen = () => {
         <View style={styles.confirmationModal}>
           {selectedContact ? (
             <View>
-              <Text>Trusted Contacts</Text>
+              <Text style={styles.title}>Trusted Contacts</Text>
               <Text style={styles.confirmTxt}>{selectedContact.name}</Text>
-              <Text style={styles.confirmTxt}>{selectedContact.phoneNumber}</Text>
-
-              <TouchableOpacity onPress={showUpdateModal}
-              >
-                <Text>Update contact</Text>
-              </TouchableOpacity>
-
-              <TouchableOpacity onPress={() => handleRemoveContact(selectedContact.id)}>
-                <Text>Remove contact</Text>
-              </TouchableOpacity>
-
+              <Text style={styles.confirmTxt}>
+                {selectedContact.phoneNumber}
+              </Text>
+              <View style={styles.buttonGroup}>
+                <Button
+                  title="Update Contact"
+                  onPress={showUpdateModal}
+                  altText="Update Contact"
+                />
+                <Button
+                  title="Remove Contact"
+                  onPress={() => handleRemoveContact(selectedContact.id)}
+                  altText="Remove Contact"
+                />
+              </View>
             </View>
           ) : (
             <Text>No contact selected</Text>
@@ -342,19 +373,18 @@ const HomeScreen = () => {
         </View>
       </Modal>
 
-      {/* Update Modal*/}
+      {/* Edit/Update Contacts Modal*/}
       <Modal
         animationType="slide"
         transparent={false}
         visible={isUpdateModalVisible}
         onRequestClose={hideUpdateModal}
       >
-        <View style={styles.confirmationModal}>
-
-
+        <View style={styles.card}>
           {selectedContact && (
-            <View>
-              <TextInput
+            <View style={styles.confirmationModal}>
+              <InputText
+                style={styles.input}
                 placeholder="Name"
                 value={updatedContactData.name}
                 onChangeText={(text) =>
@@ -362,28 +392,33 @@ const HomeScreen = () => {
                 }
               />
 
-              <TextInput
+              <InputText
+                style={styles.input}
                 placeholder="Phone Number"
                 value={updatedContactData.phoneNumber}
                 onChangeText={(text) =>
-                  setUpdatedContactData({ ...updatedContactData, phoneNumber: text })
+                  setUpdatedContactData({
+                    ...updatedContactData,
+                    phoneNumber: text,
+                  })
                 }
               />
 
-              <TextInput
+              <InputText
+                style={styles.input}
                 placeholder="Relationship"
                 value={updatedContactData.relationship}
                 onChangeText={(text) =>
-                  setUpdatedContactData({ ...updatedContactData, relationship: text })
+                  setUpdatedContactData({
+                    ...updatedContactData,
+                    relationship: text,
+                  })
                 }
               />
               <ScrollView style={{ maxHeight: 200, marginBottom: 10 }}>
                 {filteredContacts ? (
                   filteredContacts.map((contact, index) => (
-                    <TouchableOpacity
-                      key={index}
-
-                    >
+                    <TouchableOpacity key={index}>
                       <View>
                         <ChipButton
                           key={index}
@@ -391,7 +426,9 @@ const HomeScreen = () => {
                           onPress={() => selectContactForUpdate(contact)}
                           style={{
                             backgroundColor:
-                              selectedContact?.id === contact.id ? 'lightgray' : 'transparent',
+                              selectedContact?.id === contact.id
+                                ? "lightgray"
+                                : "transparent",
                           }}
                         />
                       </View>
@@ -401,18 +438,24 @@ const HomeScreen = () => {
                   <Text>No contacts available</Text>
                 )}
               </ScrollView>
+              <View style={styles.buttonGroup}>
+                <Button2
+                  title="Update"
+                  onPress={handleUpdateContact}
+                  altText="Update Edit"
+                />
+                <Button2
+                  title="Cancel"
+                  onPress={() => hideUpdateModal()}
+                  altText="Cancel Edit"
+                />
 
-              <Button title="Update" onPress={handleUpdateContact} />
-              <Button title="Cancel" onPress={hideUpdateModal} />
+              </View>
+
             </View>
           )}
         </View>
       </Modal>
-
-
-
-
-
     </ScrollView>
   );
 };
@@ -425,7 +468,7 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     width: "100%",
     flexDirection: "column",
-    padding: 8,
+    paddingHorizontal: 8,
   },
   bottom: {
     bottom: 0,
@@ -440,11 +483,10 @@ const styles = StyleSheet.create({
     // marginVertical: 20,
   },
   BgImage: {
-    width: 180,
-    height: 200,
-    // marginTop: -140,
+    width: 60,
+    height: 100,
     resizeMode: "cover",
-    // marginVertical: 20,
+
   },
   signalImg: {
     width: 80,
@@ -455,7 +497,7 @@ const styles = StyleSheet.create({
   },
   bottomTab: {
     bottom: 0,
-    justifyContent: "flex-end",
+    // justifyContent: "flex-end",
   },
   textContent: {
     paddingHorizontal: 0,
@@ -468,8 +510,9 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 24,
     fontWeight: "bold",
-    marginBottom: 5,
-    // color: "#f2f2f2",
+    //marginBottom: 5,
+    color: "#f2f2f2",
+    textAlign: "center",
   },
   text: {
     // fontSize: 14,
@@ -486,19 +529,17 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     width: "100%",
-    // position: "absolute",
-    bottom: -20,
-    // marginHorizontal: 8,
   },
   contactCard: {
     width: "100%",
     position: "absolute",
     flexDirection: "column",
     flexWrap: "wrap",
-    // justifyContent: "space-between",
+    justifyContent: "flex-end",
     //above screen contents
     borderRadius: 20,
     // backgroundColor: '#fff',
+    color: "#f2f2f2",
     backgroundColor: "#055a2b",
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
@@ -508,8 +549,31 @@ const styles = StyleSheet.create({
     marginBottom: 20,
     paddingHorizontal: 16,
     paddingVertical: 12,
-    //
+    minHeight: 200,
     gap: 16,
+  },
+  modalCard: {
+    padding: 30,
+    borderRadius: 16,
+    backgroundColor: "#002E15",
+    alignItems: "center",
+    justifyContent: "center",
+    // bottom: 210,
+    gap: 20,
+    color: "white",
+    display: "flex",
+    flexDirection: "column",
+    alignSelf: "stretch",
+    top: 200,
+    position: "relative",
+  },
+  overlay: {
+    position: "absolute",
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: "rgba(0, 0, 0, 0.601)",
   },
   contactList: {
     width: "100%",
@@ -517,20 +581,46 @@ const styles = StyleSheet.create({
     flexWrap: "wrap",
     alignItems: "center",
     gap: 4,
+    justifyContent: "space-between",
   },
   confirmationModal: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: 'green',
-    height: '20%',
-    width: '90%',
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "green",
+    height: "20%",
+    width: "100%",
+    color: "#f2f2f2",
   },
   confirmTxt: {
-    color: 'white',
+    color: "white",
     fontSize: 20,
-    fontWeight: 'bold'
-  }
+    fontWeight: "bold",
+  },
+  buttonGroup: {
+    width: "100%",
+    flexDirection: "column",
+    // flexWrap: "wrap",
+    alignItems: "left",
+    gap: 8,
+    justifyContent: "flex-end",
+  },
+  card:{
+      backgroundColor: "#002E15",	
+      flex: 1,
+  },
+  // New contact card
+  cancelBtn: {
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    color: "#ff1f1f",
+    fontSize: 16,
+    fontWeight: "bold",
+    textAlign: "left,",
+    minHeight: 52,
+    backgroundColor: "#712626",
+    width: "100%",
+  },
 });
 
 export default HomeScreen;
