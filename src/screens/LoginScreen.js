@@ -12,7 +12,7 @@ import Button from "../components/Button";
 import InputText from "../components/InputText";
 import ShakeFeedback from "../components/ShakeFeedback";
 
-import { getAuth, signInWithEmailAndPassword } from 'firebase/auth';
+
 const LoginScreen = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
