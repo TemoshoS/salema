@@ -2,6 +2,7 @@ import { collection, getDocs,addDoc, updateDoc, deleteDoc, doc } from "firebase/
 import { db } from "./firebaseService";
 
 
+
 async function getContacts() {
   try {
     const collectionRef = collection(db, "emergency_contacts");

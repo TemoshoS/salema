@@ -1,70 +1,53 @@
-import React from 'react';
-import { View, StyleSheet } from 'react-native';
+import React, { useEffect } from 'react';
+import { View, Text, StyleSheet } from 'react-native';
 import { Accelerometer } from 'expo-sensors';
-import { sendCoordinates } from './geolocation';
-import { getContacts } from './homeServices';
 import { Permissions } from 'expo-permissions';
 
-class ShakeTrigger extends React.Component {
-  constructor() {
-    super();
-    this.isShake = false;
-  }
+const ShakeTrigger = ({ onShake }) => {
+  useEffect(() => {
+    const handleAcceleration = ({ x, y, z }) => {
+      // You can use accelerometer data (x, y, z) for motion detection
+      // Example: Trigger an action when a certain threshold is reached
+      if (Math.abs(x) > 2 || Math.abs(y) > 2 || Math.abs(z) > 2) {
+        onShake && onShake(true);
+      }
+    };
 
-  async componentDidMount() {
+    const requestAccelerometerPermission = async () => {
+      try {
+        const { status } = await Permissions.askAsync(Permissions.MOTION);
+        if (status !== 'granted') {
+          // Handle permission denied
+          console.log('Accelerometer permission denied.');
+        }
+      } catch (error) {
+        console.error('Error requesting accelerometer permission:', error);
+      }
+    };
+
     // Request accelerometer permission
-    await this.requestAccelerometerPermission();
+    requestAccelerometerPermission();
 
     // Use the Accelerometer module to start listening for motion data
-    Accelerometer.addListener(this.handleAcceleration);
-  }
+    const subscription = Accelerometer.addListener(handleAcceleration);
 
-  componentWillUnmount() {
-    Accelerometer.removeAllListeners(); // Remove all listeners when the component unmounts
-  }
+    return () => {
+      subscription.remove(); // Remove the listener when the component unmounts
+    };
+  }, [onShake]);
 
-  async requestAccelerometerPermission() {
-    const { status } = await Permissions.askAsync(Permissions.ACCCELEROMETER);
-    if (status !== 'granted') {
-      // Handle permission denied
-      console.log('Accelerometer permission denied.');
-    }
-  }
-
-  handleAcceleration = ({ x, y, z }) => {
-    // You can use accelerometer data (x, y, z) for motion detection
-    // Example: Trigger an action when a certain threshold is reached
-    if (Math.abs(x) > 2 || Math.abs(y) > 2 || Math.abs(z) > 2) {
-      this.handleShake();
-    }
-  };
-
-  async handleShake() {
-    // Fetch the emergency contact phone numbers using the imported function
-    const phoneNumbers = await getContacts();
-
-    // Now you have the phone numbers and can use them as needed
-    phoneNumbers.forEach((phoneNumber) => {
-      sendCoordinates(phoneNumber);
-    });
-
-    // Update the shake status to true
-    this.isShake = true;
-    this.props.onShake(this.isShake);
-  }
-
-  getShakeStatus() {
-    return this.isShake;
-  }
-
-  render() {
-    return <View style={styles.container} />;
-  }
-}
+  return (
+    <View style={styles.container}>
+      <Text>Shake me!</Text>
+    </View>
+  );
+};
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
 });
 

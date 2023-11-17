@@ -19,6 +19,8 @@ import {
   removeContact,
 } from "../services/homeServices";
 import { getAuth, onAuthStateChanged } from "@firebase/auth";
+import ShakeTrigger from "../services/ShakeTrigger";
+ 
 //import {ShakeTrigger} from '../services/ShakeTrigger';
 import TextField from "../components/TextField";
 import Button from "../components/Button";
@@ -44,6 +46,8 @@ const HomeScreen = () => {
   const [nameError, setNameError] = useState(null);
   const [phoneError, setPhoneError] = useState(null);
   const [relationshipError, setRelationshipError] = useState(null);
+  const [isShakeDetected, setIsShakeDetected]= useState(false);
+
   const [newContactData, setNewContactData] = useState({
     name: "",
     phoneNumber: "",
@@ -226,11 +230,17 @@ const HomeScreen = () => {
   const hideConfirmation = () => {
     setConfirmationVisible(false);
   };
+  
+  //
+  const handleShake = (shakeDetected) => {
+    setIsShakeDetected(shakeDetected);
+  };
 
  
   
   return (
     <ScrollView contentContainerStyle={styles.container}>
+     
       <Image
         source={require("../../assets/Union.png")}
         style={styles.logoImg}
@@ -238,7 +248,7 @@ const HomeScreen = () => {
       />
       <Text>Your safety is just a shake away</Text>
       {/* Staus image */}
-
+      {/* <ShakeTrigger onShake={(isShakeDetected)=>setIsShakeDetected(isShakeDetected)}/> */}
       <View style={styles.textContent}>
         <ShakeFeedback />
        {/* Display user's location */}
