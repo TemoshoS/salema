@@ -25,10 +25,17 @@ import Button from "../components/Button";
 import Button2 from "../components/Button2";
 import ShakeFeedback from "../components/ShakeFeedback";
 import InputText from "../components/InputText";
+import { requestForegroundPermissionsAsync, getCurrentPositionAsync } from 'expo-location';
+import { Linking } from 'react-native';
+
+
+
 
 
 const HomeScreen = () => {
   const [currentUser, setCurrentUser] = useState(null);
+  const [userLocation, setUserLocation] = useState(null);
+  const [userLocationMessage, setUserLocationMessage] = useState("");
   const [contacts, setContacts] = useState([]);
   const [isConfirmationVisible, setConfirmationVisible] = useState(false);
   const [selectedContact, setSelectedContact] = useState(null);
@@ -50,11 +57,22 @@ const HomeScreen = () => {
   });
 
   useEffect(() => {
+    const getLocationPermission = async () => {
+      const { status } = await requestForegroundPermissionsAsync();
+      if (status === 'granted') {
+        const location = await getCurrentPositionAsync({});
+        setUserLocation(location.coords);
+        const message = `https://www.google.com/maps/?q=${location.coords.latitude},${location.coords.longitude}`;
+        setUserLocationMessage(message);
+      }
+    };
+
     const auth = getAuth();
 
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       if (user) {
         setCurrentUser(user.uid);
+        getLocationPermission(); 
       } else {
         setCurrentUser(null);
         setContacts([]);
@@ -209,6 +227,8 @@ const HomeScreen = () => {
     setConfirmationVisible(false);
   };
 
+ 
+  
   return (
     <ScrollView contentContainerStyle={styles.container}>
       <Image
@@ -221,6 +241,25 @@ const HomeScreen = () => {
 
       <View style={styles.textContent}>
         <ShakeFeedback />
+       {/* Display user's location */}
+      {userLocation && (
+        <View style={styles.userLocationContainer}>
+          <Text style={styles.userLocationText}>Your Current Location:</Text>
+          <Text style={styles.userLocationText}>
+            Latitude: {userLocation.latitude}
+          </Text>
+          <Text style={styles.userLocationText}>
+            Longitude: {userLocation.longitude}
+          </Text>
+          
+          <TouchableOpacity onPress={() => Linking.openURL(userLocationMessage)}>
+            <Text style={styles.linkText}>{userLocationMessage}</Text>
+          </TouchableOpacity>
+
+          
+        </View>
+      )}
+
         <Text style={styles.title}>"Shake to Alert"</Text>
         <Text style={styles.text}>
           In an emergency, every second counts, just give your phone a quick
@@ -590,10 +629,26 @@ const styles = StyleSheet.create({
     gap: 8,
     justifyContent: "flex-end",
   },
-  card:{
-      backgroundColor: "#002E15",	
-      flex: 1,
+  card: {
+    backgroundColor: "#002E15",
+    flex: 1,
   },
+  userLocationContainer: {
+    marginTop: 20,
+    padding: 10,
+    backgroundColor: '#002E15',
+    borderRadius: 10,
+  },
+  userLocationText: {
+    color: 'white',
+    fontSize: 16,
+  },
+  linkText: {
+    color: 'blue',
+    textDecorationLine: 'underline',
+    marginTop: 5,
+  },
+
   // New contact card
   cancelBtn: {
     paddingVertical: 10,
