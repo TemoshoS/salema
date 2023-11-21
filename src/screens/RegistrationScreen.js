@@ -16,6 +16,7 @@ import Union from "../../assets/Union.png";
 import Vector from "../../assets/Vector.png";
 import InputText from "../components/InputText";
 import Button from "../components/Button";
+import { registerUser } from "../services/authService";
 
 const RegistrationScreen = () => {
   const [name, setName] = useState("");
@@ -32,8 +33,9 @@ const RegistrationScreen = () => {
   const [passwordStrength, setPasswordStrength] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [isConfirmationVisible, setIsConfirmationVisible] = useState(false);
-
+ const [isLoginModalVisible, setLoginModalVisible] = useState(false);
   const navigation = useNavigation();
+
 
   const handlePasswordChange = (text, isConfirmPassword = false) => {
     if (!isConfirmPassword) {
@@ -101,24 +103,14 @@ const RegistrationScreen = () => {
       }
 
       // Create a user using Firebase Authentication
-      const userCredential = await createUserWithEmailAndPassword(
-        auth,
-        email,
-        password
-      );
-
-      // Update the user's display name (optional)
-      await updateProfile(userCredential.user, {
-        displayName: name,
-        phoneNumber: phone,
-      });
+      const user = await registerUser(email, password, name, phone);
 
       setName("");
       setEmail("");
       setPhoneNumber("");
       setPassword("");
       setReenterPassword("");
-
+      navigation.navigate('Login');
       setIsConfirmationVisible(true);
     } catch (error) {
       if (error.code === "auth/email-already-in-use") {
@@ -139,15 +131,13 @@ const RegistrationScreen = () => {
   };
 
   const handleLogin = () => {
-    navigation.navigate("Login");
+    // navigation.navigate("Login"); we nolonger nav to login
+    setLoginModalVisible(true);
   };
 
   return (
     <View style={styles.container}>
-      <Image source={Union} style={styles.image} />
-      <Image source={Vector} style={styles.imageVector} />
-      <Text style={styles.boldText}>Shake to Alert</Text>
-      <Text style={styles.readyText}>READY</Text>
+     
 
       {/* Signup Form */}
       <View style={styles.overlay}></View>
@@ -238,29 +228,11 @@ const RegistrationScreen = () => {
             </TouchableOpacity>
           </View>
 
-          <Modal
-            animationType="slide"
-            transparent={true}
-            visible={isConfirmationVisible}
-            onRequestClose={hideConfirmation}
-          >
-            <View style={styles.confirmationModal}>
-              <Text style={styles.confirmTxt}>
-                User registered successfully
-              </Text>
-              <TouchableOpacity onPress={hideConfirmation}>
-                <Text style={styles.confirmTxt}>Ok</Text>
-              </TouchableOpacity>
-            </View>
-          </Modal>
+          
         </View>
       </View>
 
-      {/* Image at the bottom center */}
-      <Image
-        source={require("../../assets/undraw.png")}
-        style={styles.bottomImage}
-      />
+     
     </View>
   );
 };
@@ -308,7 +280,7 @@ const styles = StyleSheet.create({
   },
   signupForm: {
     padding: 30,
-    borderRadius: "16px",
+    borderRadius: 16,
     backgroundColor: "#002E15",
     alignItems: "flex-start",
     justifyContent: "center",

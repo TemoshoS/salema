@@ -1,8 +1,8 @@
 import React from 'react';
-import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, Image } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 
-const Navbar = () => {
+const Navbar = ({ navigation, route }) => {
   const navigation = useNavigation();
 
   const handleBackPress = () => {
@@ -10,39 +10,33 @@ const Navbar = () => {
   };
 
   return (
-    <View style={styles.container}>
-
+    <View style={styles.header}>
       <TouchableOpacity onPress={handleBackPress}>
-      
-        <Text style={styles.backButton}>            
-        {' < '} 
-        {"Back"}
-        </Text>
+        <Image source={require("../../assets/Arrow_Left.png")} style={styles.icon} />
       </TouchableOpacity>
-      <Text style={styles.title}>name of screen</Text>
+      <Text style={styles.text}>{route.name}</Text>
     </View>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {
-    height: 40,
-    backgroundColor: '#f8f8f8',
-    justifyContent: "space-around", //space evenly
-    alignItems: "center",
+  header: {
     flexDirection: "row",
-    // flex: 1,
-    width: "100%",
+    alignItems: "center",
+    marginLeft: 10,
+    paddingVertical: 10,
+    borderBottomWidth: 1,
+    borderBottomColor: "#e1e1e1", // Adjust as needed
+    backgroundColor: "#ffffff", // Adjust as needed
   },
-  backButton: {
-    fontSize: 12,
-    fontWeight: 'bold',
-    color: '#6ECC5E',
-    marginLeft: 0,
+  icon: {
+    width: 45,
+    height: 20,
   },
-  title: {
-    fontSize: 20,
-    fontWeight: 'bold',
+  text: {
+    fontSize: 18,
+    fontWeight: "bold",
+    marginLeft: 10,
   },
 });
 

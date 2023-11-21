@@ -9,8 +9,8 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import SplashScreen from './src/screens/SplashScreen';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import ForgotPassword from './src/screens/ForgotPassword';
-import PasswordReset from './src/components/PasswordReset';
-import BottomNav from './src/components/BottomNav';
+// import PasswordReset from './src/components/PasswordReset';
+
 
 
 const Stack = createStackNavigator();
@@ -19,19 +19,21 @@ const Tab = createBottomTabNavigator();
 
 export default function App() {
   function MainStack() {
+    
     return (
-// Naviagtions have slight animation slies (cardStyleInterpolator:CardStyleInterpolators.forHorizontalIOS) from '@react-navigation/stack'; 
-      <Stack.Navigator initialRouteName='Login'>
+      <Stack.Navigator initialRouteName='Splash'>
+      
         <Stack.Screen name='Home' component={HomeScreen} options={{ headerShown: false}} />
         <Stack.Screen name='Splash' component={SplashScreen} options={{ headerShown: false}} />
-        <Stack.Screen name='ResetPassword' component={PasswordReset} options={{ headerShown: false , cardStyleInterpolator:CardStyleInterpolators.forHorizontalIOS }} />
+        {/* <Stack.Screen name='ResetPassword' component={PasswordReset} options={{ headerShown: false , cardStyleInterpolator:CardStyleInterpolators.forHorizontalIOS }} /> */}
         <Stack.Screen name='Register' component={RegistrationScreen} options={{ headerShown: false , cardStyleInterpolator:CardStyleInterpolators.forHorizontalIOS }} />
         <Stack.Screen name='Login' component={LoginScreen} options={{ headerShown: false , cardStyleInterpolator:CardStyleInterpolators.forHorizontalIOS }} />
-        <Stack.Screen name='About' component={AboutScreen} options={{ headerShown: false, cardStyleInterpolator: CardStyleInterpolators.forVerticalIOS, }} />
-        <Stack.Screen name='ForgotPassword' component={ForgotPassword} options={{title: 'Reset Password', cardStyleInterpolator: CardStyleInterpolators.forVerticalIOS,}}  />
+        <Stack.Screen name='About' component={AboutScreen} options={{ title: 'About', headerShown: false, cardStyleInterpolator: CardStyleInterpolators.forVerticalIOS, }} />
+        <Stack.Screen name='ForgotPassword' component={ForgotPassword} options={{title: 'Reset Password', cardStyleInterpolator: CardStyleInterpolators.forVerticalIOS,}} />
+        <Stack.Screen name='AboutScreen' component={ForgotPassword} options={{title: 'About', cardStyleInterpolator: CardStyleInterpolators.forVerticalIOS,}} />
         
-      </Stack.Navigator>
-
+       </Stack.Navigator>
+        
     );
   }
   function TabNavigator() {
@@ -101,12 +103,4 @@ const styles = StyleSheet.create({
     paddingHorizontal: 8,
   },
 });
-
-
-
-
-
-
-
-
 

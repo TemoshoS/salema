@@ -1,15 +1,14 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import {
   View,
   StyleSheet,
   Text,
   Image,
-  // Button,  this button will be replaced with our custom button.js component
   TouchableOpacity,
   Modal,
   ScrollView,
   TextInput,
-  Pressable,
+  Alert,
 } from "react-native";
 import ChipButton from "../components/ChipButton";
 import {
@@ -19,15 +18,17 @@ import {
   removeContact,
 } from "../services/homeServices";
 import { getAuth, onAuthStateChanged } from "@firebase/auth";
- import ShakeTrigger from "../services/ShakeTrigger";
+import ShakeTrigger from "../services/ShakeTrigger";
 import TextField from "../components/TextField";
 import Button from "../components/Button";
 import Button2 from "../components/Button2";
 import ShakeFeedback from "../components/ShakeFeedback";
 import InputText from "../components/InputText";
+// import BottomSheet from "react-native-bottom-sheet";
+import { BottomSheet } from '@gorhom/bottom-sheet';
 
 
-const HomeScreen = () => {
+const HomeScreen = ({ navigation }) => {
   const [currentUser, setCurrentUser] = useState(null);
   const [contacts, setContacts] = useState([]);
   const [isConfirmationVisible, setConfirmationVisible] = useState(false);
@@ -37,7 +38,9 @@ const HomeScreen = () => {
   const [nameError, setNameError] = useState(null);
   const [phoneError, setPhoneError] = useState(null);
   const [relationshipError, setRelationshipError] = useState(null);
-  const [isShakeDetected, setIsShakeDetected]= useState(false);
+  const [isShakeDetected, setIsShakeDetected] = useState(false);
+
+  const [enablePanDownToClose, setEnablePanDownToClose] = useState(true);
 
   const [newContactData, setNewContactData] = useState({
     name: "",
@@ -57,6 +60,7 @@ const HomeScreen = () => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       if (user) {
         setCurrentUser(user.uid);
+        getLocationPermission();
       } else {
         setCurrentUser(null);
         setContacts([]);
@@ -67,6 +71,7 @@ const HomeScreen = () => {
     return unsubscribe;
   }, [currentUser]);
 
+  
   const fetchContacts = async () => {
     try {
       if (currentUser) {
@@ -111,35 +116,45 @@ const HomeScreen = () => {
   const handleAddContact = async () => {
     try {
       if (!currentUser) {
-        console.error(
-          "No user is signed in. Cannot add contact without a user."
+        // Alert user to sign in or create an acoount to see contact list
+        Alert.alert(
+          "Not Signed In",
+          "Please sign in or register to add a contact.",
+          [
+            {
+              text: "OK",
+              onPress: () => {
+                // Time the warning message before redirecting the user
+                setTimeout(() => {
+                  navigation.navigate("Splash"); //navigate to the screen where they can sign in
+                }, 2000); // Delay for 2 seconds (2k is in mili sec)
+              },
+            },
+          ]
         );
+
         return;
       }
 
       if (!newContactData.name) {
-        setNameError('Please enter Name');
+        setNameError("Please enter Name");
         return;
       } else {
-        setNameError(null)
+        setNameError(null);
       }
 
       if (!newContactData.phoneNumber) {
-        setPhoneError('Please enter Phone number');
+        setPhoneError("Please enter Phone number");
         return;
-      }
-      else {
-        setPhoneError(null)
+      } else {
+        setPhoneError(null);
       }
       if (!newContactData.relationship) {
-        setRelationshipError('Please enter Relationship');
+        setRelationshipError("Please enter Relationship");
         return;
+      } else {
+        setRelationshipError(null);
       }
-      else {
-        setRelationshipError(null)
-      }
-
-
 
       const contactWithUserId = { ...newContactData, userId: currentUser };
 
@@ -210,15 +225,20 @@ const HomeScreen = () => {
   const hideConfirmation = () => {
     setConfirmationVisible(false);
   };
- 
-  //
-  const handleShake = (shakeDetected) => {
-    setIsShakeDetected(shakeDetected);
+  // bottom sheet stuff
+  const bottomSheetRef = useRef(null);
+
+  const showBottomSheet = () => {
+    bottomSheetRef.current?.expand();
   };
+
+  const hideBottomSheet = () => {
+    bottomSheetRef.current?.close();
+  };
+
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
-     
       <Image
         source={require("../../assets/Union.png")}
         style={styles.logoImg}
@@ -228,13 +248,8 @@ const HomeScreen = () => {
       {/* Staus image */}
      
       <View style={styles.textContent}>
-      <Image
-        source={isShakeDetected ? require("../../assets/main_icon.png") : require("../../assets/Inactive.png")}
-        style={styles.BgImage}
-        accessibilityLabel="status signal image"
-       
-      />
-        <ShakeTrigger onShake={handleShake} />
+        <ShakeFeedback />
+        {/* Display user's location */}
         <Text style={styles.title}>"Shake to Alert"</Text>
         <Text style={styles.text}>
           In an emergency, every second counts, just give your phone a quick
@@ -249,36 +264,45 @@ const HomeScreen = () => {
         accessibilityLabel="status signalimage"
       />
 
-      {/* CONTACT LIST CARD */}
-      <View style={styles.cardContainer}>
-        <Text style={styles.title}>Trusted Contacts</Text>
-        <View style={styles.contactCard}>
-          <View style={styles.contactList}>
-            {filteredContacts ? (
-              filteredContacts.map((contact, index) => (
-                <View key={index}>
-                  <ChipButton
-                    key={index}
-                    title={contact.name}
-                    onPress={() => showContactDetails(contact)}
-                  />
-                </View>
-              ))
-            ) : (
-              <Text>No contacts available</Text>
-            )}
+      {/* Bottom Sheet */}
+      {/* <BottomSheet
+        ref={bottomSheetRef}
+        index={0}
+        snapPoints={[0, '50%', '100%']}
+        onChange={index => {
+          // handle sheet position change if needed
+        }}
+      >
+        <View style={styles.cardContainer}>
+          <Text style={styles.title}>Trusted Contacts</Text>
+          <View style={styles.contactCard}>
+            <View style={styles.contactList}>
+              {filteredContacts.length > 0 ? (
+                filteredContacts.map((contact, index) => (
+                  <View key={index}>
+                    <ChipButton
+                      key={index}
+                      title={contact.name}
+                      onPress={() => showContactDetails(contact)}
+                    />
+                  </View>
+                ))
+              ) : (
+                <Text>No contacts available</Text>
+              )}
+            </View>
+            <Button
+              title={"Add Contact"}
+              onPress={showAddContactModal}
+              altText={"Add Contact"}
+            />
           </View>
-          <Button
-            title={"Add Contact"}
-            onPress={showAddContactModal}
-            altText={"Add Contact"}
-          />
         </View>
-      </View>
+      </BottomSheet> */}
+
 
       {/* Add New Contact modal */}
       <Modal
-
         animationType="slide"
         transparent={false}
         visible={isAddContactModalVisible}
@@ -289,7 +313,7 @@ const HomeScreen = () => {
         <View style={styles.modalCard}>
           <Text style={styles.title}>Add New Contact</Text>
 
-          <TextInput
+          <InputText
             style={styles.input}
             placeholder="Name"
             value={newContactData.name}
@@ -299,7 +323,7 @@ const HomeScreen = () => {
           />
 
           {nameError && <Text style={styles.errorText}>{nameError}</Text>}
-          <TextInput
+          <InputText
             style={styles.input}
             placeholder="Phone Number"
             value={newContactData.phoneNumber}
@@ -308,7 +332,7 @@ const HomeScreen = () => {
             }
           />
           {phoneError && <Text style={styles.errorText}>{phoneError}</Text>}
-          <TextInput
+          <InputText
             style={styles.input}
             placeholder="Relationship"
             value={newContactData.relationship}
@@ -316,20 +340,15 @@ const HomeScreen = () => {
               setNewContactData({ ...newContactData, relationship: text })
             }
           />
-          {relationshipError && <Text style={styles.errorText}>{relationshipError}</Text>}
+          {relationshipError && (
+            <Text style={styles.errorText}>{relationshipError}</Text>
+          )}
           <View style={styles.buttonGroup}>
-            <Button title="Add Contact" onPress={handleAddContact} altText="Add Contact" />
-            {/* <Button2
+            <Button
               title="Add Contact"
               onPress={handleAddContact}
               altText="Add Contact"
             />
-            <Button2
-            style={styles.cancelBtn}
-              title="Cancel"
-              onPress={hideAddContactModal}
-              altText="Cancel"
-            /> */}
           </View>
         </View>
       </Modal>
@@ -342,33 +361,36 @@ const HomeScreen = () => {
         visible={isConfirmationVisible}
         onRequestClose={hideConfirmation}
       >
-        <View style={styles.confirmationModal}>
+        <View style={styles.modalCard}>
           {selectedContact ? (
-            <View>
-              <Text style={styles.title}>Trusted Contacts</Text>
-              <Text style={styles.confirmTxt}>{selectedContact.name}</Text>
-              <Text style={styles.confirmTxt}>
-                {selectedContact.phoneNumber}
-              </Text>
+            <View style={styles.textContent}>
+              {/* <Text style={styles.title}>Trusted Contacts</Text> */}
+              <Text style={styles.title}>{selectedContact.name}</Text>
+              <Text style={styles.text}>{selectedContact.phoneNumber}</Text>
+              <br></br>
               <View style={styles.buttonGroup}>
-                <Button
+                <Button2
                   title="Update Contact"
                   onPress={showUpdateModal}
                   altText="Update Contact"
+                  textColor={"#f2f2f2"}
                 />
-                <Button
+                <Button2
                   title="Remove Contact"
                   onPress={() => handleRemoveContact(selectedContact.id)}
                   altText="Remove Contact"
+                  textColor={"#ff2323"}
                 />
               </View>
             </View>
           ) : (
-            <Text>No contact selected</Text>
+            <Text style={{ color: "#ff2323", textAlign: "left" }}>
+              No contact selected
+            </Text>
           )}
-          <TouchableOpacity onPress={hideConfirmation}>
+          {/* <TouchableOpacity onPress={hideConfirmation}>
             <Text style={styles.confirmTxt}>Close</Text>
-          </TouchableOpacity>
+          </TouchableOpacity> */}
         </View>
       </Modal>
 
@@ -379,9 +401,11 @@ const HomeScreen = () => {
         visible={isUpdateModalVisible}
         onRequestClose={hideUpdateModal}
       >
-        <View style={styles.card}>
+        <View style={styles.overlay}></View>
+        <View style={styles.modalCard}>
+          <Text style={styles.title}>Edit Contact</Text>
           {selectedContact && (
-            <View style={styles.confirmationModal}>
+            <View style={styles.textContent}>
               <InputText
                 style={styles.input}
                 placeholder="Name"
@@ -390,7 +414,7 @@ const HomeScreen = () => {
                   setUpdatedContactData({ ...updatedContactData, name: text })
                 }
               />
-
+              <br />
               <InputText
                 style={styles.input}
                 placeholder="Phone Number"
@@ -402,7 +426,7 @@ const HomeScreen = () => {
                   })
                 }
               />
-
+              <br />
               <InputText
                 style={styles.input}
                 placeholder="Relationship"
@@ -414,11 +438,14 @@ const HomeScreen = () => {
                   })
                 }
               />
-              <ScrollView style={{ maxHeight: 200, marginBottom: 10 }}>
-                {filteredContacts ? (
-                  filteredContacts.map((contact, index) => (
-                    <TouchableOpacity key={index}>
-                      <View>
+
+              <br />
+              {/* list available contacts */}
+              <ScrollView>
+                <View style={styles.contactList}>
+                  {filteredContacts ? (
+                    filteredContacts.map((contact, index) => (
+                      <TouchableOpacity key={index}>
                         <ChipButton
                           key={index}
                           title={contact.name}
@@ -430,27 +457,21 @@ const HomeScreen = () => {
                                 : "transparent",
                           }}
                         />
-                      </View>
-                    </TouchableOpacity>
-                  ))
-                ) : (
-                  <Text>No contacts available</Text>
-                )}
+                      </TouchableOpacity>
+                    ))
+                  ) : (
+                    <Text>No contacts available</Text>
+                  )}
+                </View>
               </ScrollView>
+
               <View style={styles.buttonGroup}>
-                <Button2
+                <Button
                   title="Update"
                   onPress={handleUpdateContact}
                   altText="Update Edit"
                 />
-                <Button2
-                  title="Cancel"
-                  onPress={() => hideUpdateModal()}
-                  altText="Cancel Edit"
-                />
-
               </View>
-
             </View>
           )}
         </View>
@@ -485,7 +506,6 @@ const styles = StyleSheet.create({
     width: 60,
     height: 100,
     resizeMode: "cover",
-
   },
   signalImg: {
     width: 80,
@@ -504,7 +524,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     textAlign: "center",
-    columnGap: 10,
+    columnGap: 12,
   },
   title: {
     fontSize: 24,
@@ -512,16 +532,19 @@ const styles = StyleSheet.create({
     //marginBottom: 5,
     color: "#f2f2f2",
     textAlign: "center",
+    textTransform: "capitalize",
   },
   text: {
-    // fontSize: 14,
+    fontSize: 14,
     fontWeight: "normal",
     marginVertical: 5,
     textAlign: "center",
-    paddingHorizontal: 12,
+    paddingHorizontal: 16,
+    color: "#f2f2f2",
+    letterSpacing: 0.5,
   },
   errorText: {
-    color: 'red',
+    color: "red",
     marginBottom: 10,
   },
   cardContainer: {
@@ -534,22 +557,22 @@ const styles = StyleSheet.create({
     position: "absolute",
     flexDirection: "column",
     flexWrap: "wrap",
-    justifyContent: "flex-end",
+    justifyContent: "stretch",
     //above screen contents
     borderRadius: 20,
     // backgroundColor: '#fff',
     color: "#f2f2f2",
     backgroundColor: "#055a2b",
     shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
+    shadowOffset: { width: 0, height: 2.5 },
     shadowOpacity: 0.3,
     shadowRadius: 4,
     elevation: 5,
-    marginBottom: 20,
+    marginBottom: 16,
     paddingHorizontal: 16,
     paddingVertical: 12,
-    minHeight: 200,
-    gap: 16,
+    minHeight: 180,
+    // gap: 24,
   },
   modalCard: {
     padding: 30,
@@ -560,10 +583,11 @@ const styles = StyleSheet.create({
     // bottom: 210,
     gap: 20,
     color: "white",
+    textColor: "white",
     display: "flex",
     flexDirection: "column",
     alignSelf: "stretch",
-    top: 200,
+    // top: 200,
     position: "relative",
   },
   overlay: {
@@ -579,8 +603,9 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     flexWrap: "wrap",
     alignItems: "center",
-    gap: 4,
-    justifyContent: "space-between",
+    columnGap: 4,
+    rowGap: 6,
+    justifyContent: "left",
   },
   confirmationModal: {
     flex: 1,
@@ -593,8 +618,10 @@ const styles = StyleSheet.create({
   },
   confirmTxt: {
     color: "white",
-    fontSize: 20,
-    fontWeight: "bold",
+    fontSize: 16,
+    fontWeight: "normal",
+    letterSpacing: 1,
+    marginTop: 16,
   },
   buttonGroup: {
     width: "100%",
@@ -603,11 +630,35 @@ const styles = StyleSheet.create({
     alignItems: "left",
     gap: 8,
     justifyContent: "flex-end",
+    color: "#f2f2f2",
+    marginTop: 24,
   },
   card:{
       backgroundColor: "#002E15",
       flex: 1,
   },
+  formConntent: {
+    width: "100%",
+    alignItems: "center",
+    justifyContent: "space-between",
+    gap: 20,
+  },
+  userLocationContainer: {
+    marginTop: 20,
+    padding: 10,
+    backgroundColor: "#002E15",
+    borderRadius: 10,
+  },
+  userLocationText: {
+    color: "white",
+    fontSize: 16,
+  },
+  linkText: {
+    color: "#14ad00f00",
+    textDecorationLine: "underline",
+    marginTop: 5,
+  },
+
   // New contact card
   cancelBtn: {
     paddingVertical: 10,

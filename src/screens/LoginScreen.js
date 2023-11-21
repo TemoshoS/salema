@@ -11,6 +11,7 @@ import Button from "../components/Button";
 // input InputText || Component
 import InputText from "../components/InputText";
 import ShakeFeedback from "../components/ShakeFeedback";
+import { loginUser } from "../services/authService";
 
 
 const LoginScreen = () => {
@@ -20,9 +21,9 @@ const LoginScreen = () => {
   const [showPassword, setShowPassword] = useState(false);
   const navigation = useNavigation();
 
-  const loginUser = async () => {
+  const handleLogin = async () => {
     try {
-      await signInWithEmailAndPassword(getAuth(), email, password);
+      await loginUser(email, password);
       navigation.navigate('Home');
     } catch (error) {
       Alert.alert(error.message);
@@ -52,24 +53,7 @@ const handleRegister = () => {
 
   return (
     <View style={styles.container}>
-      <View style={styles.formContent}>
-        <Image
-          source={require("../../assets/Union.png")}
-          style={styles.logoImg}
-          accessibilityLabel="logo image"
-        />
-        <ShakeFeedback />
-        <Text style={styles.TextButton}>Your safety is just a shake away</Text>
-        {/* Staus image */}
-
-        <View style={styles.textContent}>
-          {/* HERE IS THE STATUS OF THE SHAKE APP {IN USE OR NOT} */}
-
-          <Text style={styles.boldText}>Shake to Alert</Text>
-          <Text style={styles.readyText}>READY</Text>
-          {/* <Text style={styles.title}>"Shake to Alert"</Text> */}
-        </View>
-      </View>
+      
 
       {/* Signup Form */}
       <View style={styles.overlay}></View>
@@ -96,7 +80,7 @@ const handleRegister = () => {
 
         <View style={styles.buttonGroup}>
           <Button
-            onPress={loginUser}
+            onPress={handleLogin}
             title="Login"
             altText={"Login"}
             color={"#055a2b"}
@@ -105,7 +89,7 @@ const handleRegister = () => {
 
         <View style={styles.linksContainer}>
         {/* NAVIGATION LINKS */}
-        <TouchableOpacity style={styles.button} onPress={handleForgotPassword}>
+         <TouchableOpacity style={styles.button} onPress={handleForgotPassword}>
           <Text style={{ color: "#FFF" }}>Forgot password</Text>
         </TouchableOpacity>
 
@@ -114,12 +98,8 @@ const handleRegister = () => {
         </TouchableOpacity>
         </View>
       </View>
+      
 
-      {/* Image at the bottom center */}
-      <Image
-        source={require("../../assets/undraw.png")}
-        style={styles.bottomImage}
-      />
     </View>
   );
 };
