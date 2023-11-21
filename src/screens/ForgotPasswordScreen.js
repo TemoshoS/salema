@@ -4,57 +4,26 @@ import {
   StyleSheet,
   Text,
   View,
-  TouchableOpacity,
-  Alert,
+  
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
-import Ionicons from "react-native-vector-icons/Ionicons";
-import {
-  getAuth,
-  signInWithEmailAndPassword,
-  sendPasswordResetEmail,
-} from "firebase/auth";
 import Button from "../components/Button";
-// input InputText || Component
 import InputText from "../components/InputText";
 import ShakeFeedback from "../components/ShakeFeedback";
+import { resetPassword } from "../services/authService";
 
-const LoginScreen = () => {
+const ForgotPasswordScreen = () => {
   const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [loginAttempts, setLoginAttempts] = useState(0);
-  const [showPassword, setShowPassword] = useState(false);
-  const navigation = useNavigation();
 
-  const loginUser = async () => {
-    try {
-      await signInWithEmailAndPassword(getAuth(), email, password);
-      navigation.navigate("Home");
-    } catch (error) {
-      Alert.alert(error.message);
-      setLoginAttempts(loginAttempts + 1);
 
-      // Check if login attempts exceed the limit (e.g., 3)
-      if (loginAttempts >= 2) {
-        // Block the user or perform any other action (e.g., show a message)
-        Alert.alert("Login attempts exceeded. Your account is blocked.");
-      }
-    }
-  };
-
-  // Handle Register button click
-  const handleRegister = () => {
-    navigation.navigate("Register");
-  };
-  // Handle Forgot password button click
-  const handleForgotPassword = () => {
-    navigation.navigate("ForgotPassword");
-  };
-
-  const togglePasswordVisibility = () => {
-    setShowPassword(!showPassword);
-  };
-
+ 
+const handleForgotPassword = async () => {  
+  try {
+    await resetPassword(email);
+  } catch (error) {
+    
+  }
+}
   return (
     <View style={styles.container}>
       <View style={styles.formContent}>
@@ -89,57 +58,18 @@ const LoginScreen = () => {
             placeholderTextColor="#f2f2f2"
           />
 
-          <InputText
-            value={password}
-            onChangeText={(text) => setPassword(text)}
-            style={styles.input}
-            placeholder="New Password"
-            secureTextEntry={true} // Hide the password with stars
-            placeholderTextColor="#f2f2f2"
-          />
 
-          <InputText
-            value={Number}
-            onChangeText={(text) => setPassword(text)}
-            style={styles.input}
-            placeholder="Code/ OTP"
-            secureTextEntry={true} // Hide the password with stars
-            placeholderTextColor="#f2f2f2"
-          />
         </View>
 
         <View style={styles.buttonGroup}>
           <Button
-            // edit for back end
-            onPress={() => {
-              sendPasswordResetEmail(getAuth(), email);
-            }}
-            title="Resend Code"
-            altText={"Resend Code"}
-            color={"#055a2b"}
-          />
-          <Button
-            onPress={() => {
-              console.log("Cancelled Password Reset");
-            }}
-            title="Cancel"
-            altText={"Cancel"}
-            color={"#055a2b"}
-          />
-        </View>
-
-        {/* <View style={styles.linksContainer}>
-          <TouchableOpacity
-            style={styles.button}
             onPress={handleForgotPassword}
-          >
-            <Text style={{ color: "#FFF" }}>Login</Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity style={styles.button} onPress={handleRegister}>
-            <Text style={{ color: "#FFF" }}>Register</Text>
-          </TouchableOpacity>
-        </View>*/}
+            title="Reset Password"
+            altText={"Reset Password"}
+            color={"#055a2b"}
+          />
+         
+        </View>
       </View> 
 
       {/* Image at the bottom center */}
@@ -151,7 +81,7 @@ const LoginScreen = () => {
   );
 };
 
-export default LoginScreen;
+export default ForgotPasswordScreen;
 
 const styles = StyleSheet.create({
   container: {
@@ -194,7 +124,7 @@ const styles = StyleSheet.create({
   },
   signupForm: {
     padding: 30,
-    borderRadius: "16px",
+    borderRadius: 16,
     backgroundColor: "#002E15",
     alignItems: "flex-start",
     justifyContent: "center",

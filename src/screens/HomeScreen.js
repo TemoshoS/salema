@@ -4,12 +4,10 @@ import {
   StyleSheet,
   Text,
   Image,
-  // Button,  this button will be replaced with our custom button.js component
   TouchableOpacity,
   Modal,
   ScrollView,
   TextInput,
-  Pressable,
 } from "react-native";
 import ChipButton from "../components/ChipButton";
 import {
@@ -20,16 +18,11 @@ import {
 } from "../services/homeServices";
 import { getAuth, onAuthStateChanged } from "@firebase/auth";
 import ShakeTrigger from "../services/ShakeTrigger";
- 
-//import {ShakeTrigger} from '../services/ShakeTrigger';
 import TextField from "../components/TextField";
 import Button from "../components/Button";
 import Button2 from "../components/Button2";
 import ShakeFeedback from "../components/ShakeFeedback";
 import InputText from "../components/InputText";
-import { requestForegroundPermissionsAsync, getCurrentPositionAsync } from 'expo-location';
-import { Linking } from 'react-native';
-
 
 
 
@@ -46,7 +39,7 @@ const HomeScreen = () => {
   const [nameError, setNameError] = useState(null);
   const [phoneError, setPhoneError] = useState(null);
   const [relationshipError, setRelationshipError] = useState(null);
-  const [isShakeDetected, setIsShakeDetected]= useState(false);
+  const [isShakeDetected, setIsShakeDetected] = useState(false);
 
   const [newContactData, setNewContactData] = useState({
     name: "",
@@ -60,23 +53,15 @@ const HomeScreen = () => {
     relationship: "",
   });
 
+
   useEffect(() => {
-    const getLocationPermission = async () => {
-      const { status } = await requestForegroundPermissionsAsync();
-      if (status === 'granted') {
-        const location = await getCurrentPositionAsync({});
-        setUserLocation(location.coords);
-        const message = `https://www.google.com/maps/?q=${location.coords.latitude},${location.coords.longitude}`;
-        setUserLocationMessage(message);
-      }
-    };
 
     const auth = getAuth();
 
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       if (user) {
         setCurrentUser(user.uid);
-        getLocationPermission(); 
+        getLocationPermission();
       } else {
         setCurrentUser(null);
         setContacts([]);
@@ -86,6 +71,7 @@ const HomeScreen = () => {
     fetchContacts();
     return unsubscribe;
   }, [currentUser]);
+
 
   const fetchContacts = async () => {
     try {
@@ -230,17 +216,11 @@ const HomeScreen = () => {
   const hideConfirmation = () => {
     setConfirmationVisible(false);
   };
-  
-  //
-  const handleShake = (shakeDetected) => {
-    setIsShakeDetected(shakeDetected);
-  };
 
- 
-  
+
   return (
     <ScrollView contentContainerStyle={styles.container}>
-     
+
       <Image
         source={require("../../assets/Union.png")}
         style={styles.logoImg}
@@ -251,24 +231,8 @@ const HomeScreen = () => {
       {/* <ShakeTrigger onShake={(isShakeDetected)=>setIsShakeDetected(isShakeDetected)}/> */}
       <View style={styles.textContent}>
         <ShakeFeedback />
-       {/* Display user's location */}
-      {userLocation && (
-        <View style={styles.userLocationContainer}>
-          <Text style={styles.userLocationText}>Your Current Location:</Text>
-          <Text style={styles.userLocationText}>
-            Latitude: {userLocation.latitude}
-          </Text>
-          <Text style={styles.userLocationText}>
-            Longitude: {userLocation.longitude}
-          </Text>
-          
-          <TouchableOpacity onPress={() => Linking.openURL(userLocationMessage)}>
-            <Text style={styles.linkText}>{userLocationMessage}</Text>
-          </TouchableOpacity>
-
-          
-        </View>
-      )}
+        {/* Display user's location */}
+       
 
         <Text style={styles.title}>"Shake to Alert"</Text>
         <Text style={styles.text}>

@@ -1,51 +1,42 @@
-import Geolocation from 'react-native-geolocation-service';
-import SendSMS from 'react-native-sms';
-import { check, PERMISSIONS, RESULTS, request } from 'react-native-permissions';
+import { requestForegroundPermissionsAsync, getCurrentPositionAsync } from 'expo-location';
+import { Linking } from 'react-native';
 
-// Function to get the user's real-time GPS coordinates
-const getCoordinates = () => {
-  return new Promise((resolve, reject) => {
-    Geolocation.getCurrentPosition(
-      (position) => {
-        resolve(position);
-      },
-      (error) => {
-        reject(error);
-      },
-      { enableHighAccuracy: true, timeout: 15000, maximumAge: 10000 }
-    );
-  });
-};
 
-// Function to send an SMS with the user's coordinates
-const sendCoordinates = async (phoneNumber, message) => {
-  try {
-    const position = await getCoordinates();
-    const message = `My current location is: https://www.google.com/maps/?q=${position.coords.latitude},${position.coords.longitude}`;
-    SendSMS.send(
-      {
-        body: message,
-        recipients: [phoneNumber],
-        successTypes: ['sent', 'queued'],
-      },
-      (completed, cancelled, error) => {
-        console.log('SMS Callback: completed: ' + completed + ' cancelled: ' + cancelled + 'error: ' + error);
+const getLocationPermission = async () => {
+  const { status } = await requestForegroundPermissionsAsync();
+  if (status === 'granted') {
+    const location = await getCurrentPositionAsync({});
+    setUserLocation(location.coords);
+    const message = `https://www.google.com/maps/?q=${location.coords.latitude},${location.coords.longitude}`;
+    setUserLocationMessage(message);
+  }
+}; 
+
+   // Function to send location to a single number
+   const sendLocationToNumber = async (phoneNumber) => {
+    try {
+      const { status } = await SMS.sendSMSAsync(
+        [phoneNumber],
+        `Emergency! I need help. My current location is: ${userLocationMessage}`
+      );
+
+      if (status === 'sent') {
+        console.log('SMS sent successfully');
+      } else {
+        console.log('Failed to send SMS');
       }
-    );
-  } catch (error) {
-    console.error('Error getting coordinates: ', error);
-  }
-};
+    } catch (error) {
+      console.error('Error sending SMS:', error);
+    }
+  };
 
-// Function to request the necessary permissions
-const requestPermissions = async () => {
-  const locationPermission = await check(PERMISSIONS.ANDROID.ACCESS_FINE_LOCATION);
-  if (locationPermission !== RESULTS.GRANTED) {
-    await request(PERMISSIONS.ANDROID.ACCESS_FINE_LOCATION);
-  }
-  const smsPermission = await check(PERMISSIONS.ANDROID.SEND_SMS);
-  if (smsPermission !== RESULTS.GRANTED) {
-    await request(PERMISSIONS.ANDROID.SEND_SMS);
-  }
-};
-export { sendCoordinates, requestPermissions };
+  // Function to send location to 5 numbers
+  const sendLocationToNumbers = async () => {
+    const emergencyNumbers = ['0721371977', '0724457811', '0722733147'];
+
+    for (const phoneNumber of emergencyNumbers) {
+      await sendLocationToNumber(phoneNumber);
+    }
+  };
+
+  export {getLocationPermission}

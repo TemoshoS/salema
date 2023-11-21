@@ -11,6 +11,7 @@ import Button from "../components/Button";
 // input InputText || Component
 import InputText from "../components/InputText";
 import ShakeFeedback from "../components/ShakeFeedback";
+import { loginUser } from "../services/authService";
 
 
 const LoginScreen = () => {
@@ -20,9 +21,9 @@ const LoginScreen = () => {
   const [showPassword, setShowPassword] = useState(false);
   const navigation = useNavigation();
 
-  const loginUser = async () => {
+  const handleLogin = async () => {
     try {
-      await signInWithEmailAndPassword(getAuth(), email, password);
+      await loginUser(email, password);
       navigation.navigate('Home');
     } catch (error) {
       Alert.alert(error.message);
@@ -96,7 +97,7 @@ const handleRegister = () => {
 
         <View style={styles.buttonGroup}>
           <Button
-            onPress={loginUser}
+            onPress={handleLogin}
             title="Login"
             altText={"Login"}
             color={"#055a2b"}

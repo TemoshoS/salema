@@ -47,7 +47,9 @@
   "private": true,
   "expo": {
     "android": {
-      "permissions": ["SEND_SMS"]
+      "permissions": [
+        "SEND_SMS"
+      ]
     }
   }
 }
