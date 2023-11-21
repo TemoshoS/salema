@@ -39,24 +39,24 @@ const styles = StyleSheet.create({
   button: {
     alignItems: "center",
     justifyContent: "center",
-    paddingVertical: 4,
-    paddingHorizontal: 12,
+    paddingVertical: 6,
+    paddingHorizontal: 16,
     borderRadius: 25,
     backgroundColor: "transparent",
     borderWidth: 2,
     position: "relative",
     // Any Text inside Chip
-    fontSize: 14,
+    fontSize: 12,
     // lineHeight: 16,
     fontWeight: "bold",
     letterSpacing: 0.25,
     color: "white",
   },
   chip: {
-    width: 100,
+    width: 112,
     height: "auto",
     position: "relative",
-    borderColor: "white",
+    borderColor: "#f2f2f2",
   },
   chipText: {
     fontSize: 12,
@@ -64,6 +64,7 @@ const styles = StyleSheet.create({
     fontWeight: "normal",
     letterSpacing: 0.25,
     color: "white",
+    textTransform: "capitalize",    //capitalize first letter of the name
   },
 });
 

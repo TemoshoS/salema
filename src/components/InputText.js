@@ -29,6 +29,7 @@ const styles = StyleSheet.create({
     color: "white",
     bottomBorderColor: "white",
     fontSize: 15,
+    paddingHorizontal: 10,
   },
   inputFocused: {
     borderColor: "transparent",

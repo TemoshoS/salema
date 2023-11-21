@@ -1,11 +1,11 @@
 import React from "react";
 import { TouchableOpacity, View, Text, StyleSheet } from "react-native";
 
-const Button2 = ({ onPress, title, altText }) => {
+const Button2 = ({ onPress, title, altText, textColor }) => {
   return (
     <View style={styles.container}>
       <TouchableOpacity onPress={onPress} style={styles.button}>
-        <Text style={styles.btnText}>{title}</Text>
+      <Text style={[styles.btnText, { color: textColor }]}>{title}</Text>
       </TouchableOpacity>
       <View style={styles.divider}></View>
      
@@ -15,25 +15,32 @@ const Button2 = ({ onPress, title, altText }) => {
 
 const styles = StyleSheet.create({
   container: {
+    flex: 1,
     flexDirection: "row",
-    alignItems: "left",
-    justifyContent: "flex-start",
+    alignItems: "center",
+    justifyContent: "center",
+    maxWidth: 350,
   },
   button: {
-    // flex: 1,
+    flex: 1,
     backgroundColor: "transparent",
     borderWidth: 0,
-    borderBottomWidth: 2,
-    // borderColor: "black",
+    borderBottomWidth: .08,
+    borderColor: "#00de644e",
     padding: 10,
-    width: "100%",
+    width: 360,
+    textAlign: "left",
   },
   btnText: {
     alignSelf: "flex-start",
-    textAlign: "left",
+    
+    alignSelf: "left",
+    // color: "#f2f2f2",
   },
   divider: {
-    width: 10,
+    // width: "90%",
+    height: 0.8,
+    // borderBottomWidth: .08,
   },
   
 });

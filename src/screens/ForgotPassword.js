@@ -1,14 +1,6 @@
 import React, { useState } from "react";
-import {
-  Image,
-  StyleSheet,
-  Text,
-  View,
-  TouchableOpacity,
-  Alert,
-} from "react-native";
+import { Image, StyleSheet, Text, View, Alert } from "react-native";
 import { useNavigation } from "@react-navigation/native";
-import Ionicons from "react-native-vector-icons/Ionicons";
 import {
   getAuth,
   signInWithEmailAndPassword,
@@ -18,8 +10,9 @@ import Button from "../components/Button";
 // input InputText || Component
 import InputText from "../components/InputText";
 import ShakeFeedback from "../components/ShakeFeedback";
+import Button2 from "../components/Button2";
 
-const LoginScreen = () => {
+const ForgotPassword = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loginAttempts, setLoginAttempts] = useState(0);
@@ -42,10 +35,6 @@ const LoginScreen = () => {
     }
   };
 
-  // Handle Register button click
-  const handleRegister = () => {
-    navigation.navigate("Register");
-  };
   // Handle Forgot password button click
   const handleForgotPassword = () => {
     navigation.navigate("ForgotPassword");
@@ -76,7 +65,7 @@ const LoginScreen = () => {
         </View>
       </View>
 
-      {/* Signup Form */}
+      {/* Reset Password Form Section */}
       <View style={styles.overlay}></View>
       <View style={styles.signupForm}>
         <View style={styles.formContent}>
@@ -88,59 +77,27 @@ const LoginScreen = () => {
             placeholder="Email"
             placeholderTextColor="#f2f2f2"
           />
-
-          <InputText
-            value={password}
-            onChangeText={(text) => setPassword(text)}
-            style={styles.input}
-            placeholder="New Password"
-            secureTextEntry={true} // Hide the password with stars
-            placeholderTextColor="#f2f2f2"
-          />
-
-          <InputText
-            value={Number}
-            onChangeText={(text) => setPassword(text)}
-            style={styles.input}
-            placeholder="Code/ OTP"
-            secureTextEntry={true} // Hide the password with stars
-            placeholderTextColor="#f2f2f2"
-          />
         </View>
 
         <View style={styles.buttonGroup}>
           <Button
-            // edit for back end
             onPress={() => {
               sendPasswordResetEmail(getAuth(), email);
             }}
-            title="Resend Code"
-            altText={"Resend Code"}
+            title="submit"
+            altText={"submit"}
             color={"#055a2b"}
           />
-          <Button
+          {/* <Button2
             onPress={() => {
               console.log("Cancelled Password Reset");
             }}
             title="Cancel"
-            altText={"Cancel"}
-            color={"#055a2b"}
-          />
+            altText="Cancel Password Reset"
+            textColor={"#ff2323"}
+          /> */}
         </View>
-
-        {/* <View style={styles.linksContainer}>
-          <TouchableOpacity
-            style={styles.button}
-            onPress={handleForgotPassword}
-          >
-            <Text style={{ color: "#FFF" }}>Login</Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity style={styles.button} onPress={handleRegister}>
-            <Text style={{ color: "#FFF" }}>Register</Text>
-          </TouchableOpacity>
-        </View>*/}
-      </View> 
+      </View>
 
       {/* Image at the bottom center */}
       <Image
@@ -151,7 +108,6 @@ const LoginScreen = () => {
   );
 };
 
-export default LoginScreen;
 
 const styles = StyleSheet.create({
   container: {
@@ -225,6 +181,15 @@ const styles = StyleSheet.create({
     gap: 8,
     justifyContent: "flex-end",
     marginTop: 12,
+  },
+  buttonSection: {
+    width: "100%",
+    height: "auto",
+    position: "relative",
+    flexDirection: "row",
+    flexWrap: "wrap",
+    gap: 10,
+    justifyContent: "space-between",
   },
   input: {
     width: 300,
@@ -347,3 +312,5 @@ const styles = StyleSheet.create({
     // marginVertical: 20,
   },
 });
+
+export default ForgotPassword;
