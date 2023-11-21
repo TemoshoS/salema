@@ -58,7 +58,7 @@ export default function App() {
         />
         <Tab.Screen
           name="Help"
-          component={HomeScreen}
+          component={HomeScreen } 
           options={{
             headerShown: false,
             tabBarIcon: ({ color, size }) => (
