@@ -4,12 +4,10 @@ import {
   StyleSheet,
   Text,
   Image,
-  // Button,  this button will be replaced with our custom button.js component
   TouchableOpacity,
   Modal,
   ScrollView,
   TextInput,
-  Pressable,
 } from "react-native";
 import ChipButton from "../components/ChipButton";
 import {
@@ -20,19 +18,28 @@ import {
 } from "../services/homeServices";
 import { getAuth, onAuthStateChanged } from "@firebase/auth";
 import ShakeTrigger from "../services/ShakeTrigger";
+<<<<<<< HEAD
 
 //import {ShakeTrigger} from '../services/ShakeTrigger';
+=======
+>>>>>>> 08fa1f66249ae1f9062deed5c55ed170310de87d
 import TextField from "../components/TextField";
 import Button from "../components/Button";
 import Button2 from "../components/Button2";
 import ShakeFeedback from "../components/ShakeFeedback";
 import InputText from "../components/InputText";
+<<<<<<< HEAD
 import {
   requestForegroundPermissionsAsync,
   getCurrentPositionAsync,
 } from "expo-location";
 import { Linking } from "react-native";
 import { Divider } from "@rneui/base";
+=======
+
+
+
+>>>>>>> 08fa1f66249ae1f9062deed5c55ed170310de87d
 
 const HomeScreen = () => {
   const [currentUser, setCurrentUser] = useState(null);
@@ -60,7 +67,9 @@ const HomeScreen = () => {
     relationship: "",
   });
 
+
   useEffect(() => {
+<<<<<<< HEAD
     const getLocationPermission = async () => {
       const { status } = await requestForegroundPermissionsAsync();
       if (status === "granted") {
@@ -70,6 +79,8 @@ const HomeScreen = () => {
         setUserLocationMessage(message);
       }
     };
+=======
+>>>>>>> 08fa1f66249ae1f9062deed5c55ed170310de87d
 
     const auth = getAuth();
 
@@ -86,6 +97,7 @@ const HomeScreen = () => {
     fetchContacts();
     return unsubscribe;
   }, [currentUser]);
+
 
   const fetchContacts = async () => {
     try {
@@ -240,6 +252,7 @@ const HomeScreen = () => {
   const hideConfirmation = () => {
     setConfirmationVisible(false);
   };
+<<<<<<< HEAD
 
   //
   const handleShake = (shakeDetected) => {
@@ -248,6 +261,13 @@ const HomeScreen = () => {
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
+=======
+
+
+  return (
+    <ScrollView contentContainerStyle={styles.container}>
+
+>>>>>>> 08fa1f66249ae1f9062deed5c55ed170310de87d
       <Image
         source={require("../../assets/Union.png")}
         style={styles.logoImg}
@@ -259,6 +279,7 @@ const HomeScreen = () => {
       <View style={styles.textContent}>
         <ShakeFeedback />
         {/* Display user's location */}
+<<<<<<< HEAD
         {userLocation && (
           <View style={styles.userLocationContainer}>
             <Text style={styles.userLocationText}>Your Current Location:</Text>
@@ -276,6 +297,9 @@ const HomeScreen = () => {
             </TouchableOpacity>
           </View>
         )}
+=======
+       
+>>>>>>> 08fa1f66249ae1f9062deed5c55ed170310de87d
 
         <Text style={styles.title}>"Shake to Alert"</Text>
         <Text style={styles.text}>

@@ -16,6 +16,7 @@ import Union from "../../assets/Union.png";
 import Vector from "../../assets/Vector.png";
 import InputText from "../components/InputText";
 import Button from "../components/Button";
+import { registerUser } from "../services/authService";
 
 const RegistrationScreen = () => {
   const [name, setName] = useState("");
@@ -101,24 +102,16 @@ const RegistrationScreen = () => {
       }
 
       // Create a user using Firebase Authentication
-      const userCredential = await createUserWithEmailAndPassword(
-        auth,
-        email,
-        password
-      );
+      const user = await registerUser(email, password, name, phone);
 
-      // Update the user's display name (optional)
-      await updateProfile(userCredential.user, {
-        displayName: name,
-        phoneNumber: phone,
-      });
+     
 
       setName("");
       setEmail("");
       setPhoneNumber("");
       setPassword("");
       setReenterPassword("");
-
+      navigation.navigate('Login');
       setIsConfirmationVisible(true);
     } catch (error) {
       if (error.code === "auth/email-already-in-use") {
@@ -308,7 +301,7 @@ const styles = StyleSheet.create({
   },
   signupForm: {
     padding: 30,
-    borderRadius: "16px",
+    borderRadius: 16,
     backgroundColor: "#002E15",
     alignItems: "flex-start",
     justifyContent: "center",

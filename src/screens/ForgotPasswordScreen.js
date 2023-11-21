@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+<<<<<<< HEAD:src/screens/ForgotPassword.js
 import { Image, StyleSheet, Text, View, Alert } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import {
@@ -6,19 +7,31 @@ import {
   signInWithEmailAndPassword,
   sendPasswordResetEmail,
 } from "firebase/auth";
+=======
+import {
+  Image,
+  StyleSheet,
+  Text,
+  View,
+  
+} from "react-native";
+import { useNavigation } from "@react-navigation/native";
+>>>>>>> 08fa1f66249ae1f9062deed5c55ed170310de87d:src/screens/ForgotPasswordScreen.js
 import Button from "../components/Button";
-// input InputText || Component
 import InputText from "../components/InputText";
 import ShakeFeedback from "../components/ShakeFeedback";
+<<<<<<< HEAD:src/screens/ForgotPassword.js
 import Button2 from "../components/Button2";
 
 const ForgotPassword = () => {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [loginAttempts, setLoginAttempts] = useState(0);
-  const [showPassword, setShowPassword] = useState(false);
-  const navigation = useNavigation();
+=======
+import { resetPassword } from "../services/authService";
 
+const ForgotPasswordScreen = () => {
+>>>>>>> 08fa1f66249ae1f9062deed5c55ed170310de87d:src/screens/ForgotPasswordScreen.js
+  const [email, setEmail] = useState("");
+
+<<<<<<< HEAD:src/screens/ForgotPassword.js
   const loginUser = async () => {
     try {
       await signInWithEmailAndPassword(getAuth(), email, password);
@@ -43,7 +56,17 @@ const ForgotPassword = () => {
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword);
   };
+=======
+>>>>>>> 08fa1f66249ae1f9062deed5c55ed170310de87d:src/screens/ForgotPasswordScreen.js
 
+ 
+const handleForgotPassword = async () => {  
+  try {
+    await resetPassword(email);
+  } catch (error) {
+    
+  }
+}
   return (
     <View style={styles.container}>
       <View style={styles.formContent}>
@@ -77,10 +100,16 @@ const ForgotPassword = () => {
             placeholder="Email"
             placeholderTextColor="#f2f2f2"
           />
+<<<<<<< HEAD:src/screens/ForgotPassword.js
+=======
+
+
+>>>>>>> 08fa1f66249ae1f9062deed5c55ed170310de87d:src/screens/ForgotPasswordScreen.js
         </View>
 
         <View style={styles.buttonGroup}>
           <Button
+<<<<<<< HEAD:src/screens/ForgotPassword.js
             onPress={() => {
               sendPasswordResetEmail(getAuth(), email);
             }}
@@ -98,6 +127,16 @@ const ForgotPassword = () => {
           /> */}
         </View>
       </View>
+=======
+            onPress={handleForgotPassword}
+            title="Reset Password"
+            altText={"Reset Password"}
+            color={"#055a2b"}
+          />
+         
+        </View>
+      </View> 
+>>>>>>> 08fa1f66249ae1f9062deed5c55ed170310de87d:src/screens/ForgotPasswordScreen.js
 
       {/* Image at the bottom center */}
       <Image
@@ -108,6 +147,10 @@ const ForgotPassword = () => {
   );
 };
 
+<<<<<<< HEAD:src/screens/ForgotPassword.js
+=======
+export default ForgotPasswordScreen;
+>>>>>>> 08fa1f66249ae1f9062deed5c55ed170310de87d:src/screens/ForgotPasswordScreen.js
 
 const styles = StyleSheet.create({
   container: {
@@ -150,7 +193,7 @@ const styles = StyleSheet.create({
   },
   signupForm: {
     padding: 30,
-    borderRadius: "16px",
+    borderRadius: 16,
     backgroundColor: "#002E15",
     alignItems: "flex-start",
     justifyContent: "center",
