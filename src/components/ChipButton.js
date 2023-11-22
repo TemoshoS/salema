@@ -53,7 +53,8 @@ const styles = StyleSheet.create({
     color: "white",
   },
   chip: {
-    width: 112,
+    display: "flex",
+    // width: 140,
     height: "auto",
     position: "relative",
     borderColor: "#f2f2f2",

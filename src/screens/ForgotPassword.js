@@ -12,11 +12,9 @@ import InputText from "../components/InputText";
 import ShakeFeedback from "../components/ShakeFeedback";
 import { resetPassword } from "../services/authService";
 
-const ForgotPasswordScreen = () => {
+const ForgotPassword = () => {
   const [email, setEmail] = useState("");
 
-
- 
 const handleForgotPassword = async () => {  
   try {
     await resetPassword(email);
@@ -81,7 +79,7 @@ const handleForgotPassword = async () => {
   );
 };
 
-export default ForgotPasswordScreen;
+export default ForgotPassword;
 
 const styles = StyleSheet.create({
   container: {

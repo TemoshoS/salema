@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import {
   View,
   StyleSheet,
@@ -8,6 +8,7 @@ import {
   Modal,
   ScrollView,
   TextInput,
+  Alert,
 } from "react-native";
 import ChipButton from "../components/ChipButton";
 import {
@@ -23,14 +24,12 @@ import Button from "../components/Button";
 import Button2 from "../components/Button2";
 import ShakeFeedback from "../components/ShakeFeedback";
 import InputText from "../components/InputText";
+// import BottomSheet from "react-native-bottom-sheet";
+import { BottomSheet } from '@gorhom/bottom-sheet';
 
 
-
-
-const HomeScreen = () => {
+const HomeScreen = ({ navigation }) => {
   const [currentUser, setCurrentUser] = useState(null);
-  const [userLocation, setUserLocation] = useState(null);
-  const [userLocationMessage, setUserLocationMessage] = useState("");
   const [contacts, setContacts] = useState([]);
   const [isConfirmationVisible, setConfirmationVisible] = useState(false);
   const [selectedContact, setSelectedContact] = useState(null);
@@ -40,6 +39,8 @@ const HomeScreen = () => {
   const [phoneError, setPhoneError] = useState(null);
   const [relationshipError, setRelationshipError] = useState(null);
   const [isShakeDetected, setIsShakeDetected] = useState(false);
+
+  const [enablePanDownToClose, setEnablePanDownToClose] = useState(true);
 
   const [newContactData, setNewContactData] = useState({
     name: "",
@@ -52,7 +53,6 @@ const HomeScreen = () => {
     phoneNumber: "",
     relationship: "",
   });
-
 
   useEffect(() => {
 
@@ -72,7 +72,7 @@ const HomeScreen = () => {
     return unsubscribe;
   }, [currentUser]);
 
-
+  
   const fetchContacts = async () => {
     try {
       if (currentUser) {
@@ -214,7 +214,7 @@ const HomeScreen = () => {
   //Function to remove contact
   const handleRemoveContact = async (contactId) => {
     try {
-      await removeContact(contactId);
+      await removeContact( currentUser,contactId);
       fetchContacts();
       hideConfirmation();
     } catch (error) {
@@ -226,22 +226,20 @@ const HomeScreen = () => {
   const hideConfirmation = () => {
     setConfirmationVisible(false);
   };
+  // bottom sheet stuff
+  const bottomSheetRef = useRef(null);
 
-  const handleShake = async (shakeDetected) => {
-    if (shakeDetected) {
-      try {
-        await getLocationPermission();
-        // The location is already set in the state by getLocationPermission
-      } catch (error) {
-        console.error('Error getting location:', error);
-      }
-    }
+  const showBottomSheet = () => {
+    bottomSheetRef.current?.expand();
   };
-  
+
+  const hideBottomSheet = () => {
+    bottomSheetRef.current?.close();
+  };
+
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
-
       <Image
         source={require("../../assets/Union.png")}
         style={styles.logoImg}
@@ -249,15 +247,12 @@ const HomeScreen = () => {
       />
       <Text>Your safety is just a shake away</Text>
       {/* Staus image */}
-      {/* <ShakeTrigger onShake={(isShakeDetected)=>setIsShakeDetected(isShakeDetected)}/> */}
+     
       <View style={styles.textContent}>
-      <Image
-        source={isShakeDetected ? require("../../assets/main_icon.png") : require("../../assets/Inactive.png")}
-        style={styles.BgImage}
-        accessibilityLabel="status signal image"
-        
-      />
-        <ShakeTrigger onShake={handleShake} />
+        <ShakeFeedback />
+        {/* Display user's location */}
+       
+
         <Text style={styles.title}>"Shake to Alert"</Text>
         <Text style={styles.text}>
           In an emergency, every second counts, just give your phone a quick
@@ -272,32 +267,42 @@ const HomeScreen = () => {
         accessibilityLabel="status signalimage"
       />
 
-      {/* CONTACT LIST CARD */}
-      <View style={styles.cardContainer}>
-        <Text style={styles.title}>Trusted Contacts</Text>
-        <View style={styles.contactCard}>
-          <View style={styles.contactList}>
-            {filteredContacts ? (
-              filteredContacts.map((contact, index) => (
-                <View key={index}>
-                  <ChipButton
-                    key={index}
-                    title={contact.name}
-                    onPress={() => showContactDetails(contact)}
-                  />
-                </View>
-              ))
-            ) : (
-              <Text>No contacts available</Text>
-            )}
+      {/* Bottom Sheet */}
+      {/* <BottomSheet
+        ref={bottomSheetRef}
+        index={0}
+        snapPoints={[0, '50%', '100%']}
+        onChange={index => {
+          // handle sheet position change if needed
+        }}
+      >
+        <View style={styles.cardContainer}>
+          <Text style={styles.title}>Trusted Contacts</Text>
+          <View style={styles.contactCard}>
+            <View style={styles.contactList}>
+              {filteredContacts.length > 0 ? (
+                filteredContacts.map((contact, index) => (
+                  <View key={index}>
+                    <ChipButton
+                      key={index}
+                      title={contact.name}
+                      onPress={() => showContactDetails(contact)}
+                    />
+                  </View>
+                ))
+              ) : (
+                <Text>No contacts available</Text>
+              )}
+            </View>
+            <Button
+              title={"Add Contact"}
+              onPress={showAddContactModal}
+              altText={"Add Contact"}
+            />
           </View>
-          <Button
-            title={"Add Contact"}
-            onPress={showAddContactModal}
-            altText={"Add Contact"}
-          />
         </View>
-      </View>
+      </BottomSheet> */}
+
 
       {/* Add New Contact modal */}
       <Modal
@@ -347,17 +352,6 @@ const HomeScreen = () => {
               onPress={handleAddContact}
               altText="Add Contact"
             />
-            {/* <Button2
-              title="Add Contact"
-              onPress={handleAddContact}
-              altText="Add Contact"
-            />
-            <Button2
-            style={styles.cancelBtn}
-              title="Cancel"
-              onPress={hideAddContactModal}
-              altText="Cancel"
-            /> */}
           </View>
         </View>
       </Modal>
@@ -615,7 +609,6 @@ const styles = StyleSheet.create({
     columnGap: 4,
     rowGap: 6,
     justifyContent: "left",
-    
   },
   confirmationModal: {
     flex: 1,
@@ -643,9 +636,9 @@ const styles = StyleSheet.create({
     color: "#f2f2f2",
     marginTop: 24,
   },
-  card: {
-    backgroundColor: "#002E15",
-    flex: 1,
+  card:{
+      backgroundColor: "#002E15",
+      flex: 1,
   },
   formConntent: {
     width: "100%",
