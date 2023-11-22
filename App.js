@@ -19,8 +19,8 @@ const Tab = createBottomTabNavigator();
 
 export default function App() {
   function MainStack() {
+    
     return (
-// Naviagtions have slight animation slies (cardStyleInterpolator:CardStyleInterpolators.forHorizontalIOS) from '@react-navigation/stack'; 
       <Stack.Navigator initialRouteName='Splash'>
       
         <Stack.Screen name='Home' component={HomeScreen} options={{ headerShown: false}} />
