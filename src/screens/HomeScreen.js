@@ -18,28 +18,14 @@ import {
 } from "../services/homeServices";
 import { getAuth, onAuthStateChanged } from "@firebase/auth";
 import ShakeTrigger from "../services/ShakeTrigger";
-<<<<<<< HEAD
-
-//import {ShakeTrigger} from '../services/ShakeTrigger';
-=======
->>>>>>> 08fa1f66249ae1f9062deed5c55ed170310de87d
 import TextField from "../components/TextField";
 import Button from "../components/Button";
 import Button2 from "../components/Button2";
 import ShakeFeedback from "../components/ShakeFeedback";
 import InputText from "../components/InputText";
-<<<<<<< HEAD
-import {
-  requestForegroundPermissionsAsync,
-  getCurrentPositionAsync,
-} from "expo-location";
-import { Linking } from "react-native";
-import { Divider } from "@rneui/base";
-=======
 
 
 
->>>>>>> 08fa1f66249ae1f9062deed5c55ed170310de87d
 
 const HomeScreen = () => {
   const [currentUser, setCurrentUser] = useState(null);
@@ -69,18 +55,6 @@ const HomeScreen = () => {
 
 
   useEffect(() => {
-<<<<<<< HEAD
-    const getLocationPermission = async () => {
-      const { status } = await requestForegroundPermissionsAsync();
-      if (status === "granted") {
-        const location = await getCurrentPositionAsync({});
-        setUserLocation(location.coords);
-        const message = `https://www.google.com/maps/?q=${location.coords.latitude},${location.coords.longitude}`;
-        setUserLocationMessage(message);
-      }
-    };
-=======
->>>>>>> 08fa1f66249ae1f9062deed5c55ed170310de87d
 
     const auth = getAuth();
 
@@ -252,22 +226,22 @@ const HomeScreen = () => {
   const hideConfirmation = () => {
     setConfirmationVisible(false);
   };
-<<<<<<< HEAD
 
-  //
-  const handleShake = (shakeDetected) => {
-    setIsShakeDetected(shakeDetected);
+  const handleShake = async (shakeDetected) => {
+    if (shakeDetected) {
+      try {
+        await getLocationPermission();
+        // The location is already set in the state by getLocationPermission
+      } catch (error) {
+        console.error('Error getting location:', error);
+      }
+    }
   };
-
-  return (
-    <ScrollView contentContainerStyle={styles.container}>
-=======
-
+  
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
 
->>>>>>> 08fa1f66249ae1f9062deed5c55ed170310de87d
       <Image
         source={require("../../assets/Union.png")}
         style={styles.logoImg}
@@ -277,30 +251,13 @@ const HomeScreen = () => {
       {/* Staus image */}
       {/* <ShakeTrigger onShake={(isShakeDetected)=>setIsShakeDetected(isShakeDetected)}/> */}
       <View style={styles.textContent}>
-        <ShakeFeedback />
-        {/* Display user's location */}
-<<<<<<< HEAD
-        {userLocation && (
-          <View style={styles.userLocationContainer}>
-            <Text style={styles.userLocationText}>Your Current Location:</Text>
-            <Text style={styles.userLocationText}>
-              Latitude: {userLocation.latitude}
-            </Text>
-            <Text style={styles.userLocationText}>
-              Longitude: {userLocation.longitude}
-            </Text>
-
-            <TouchableOpacity
-              onPress={() => Linking.openURL(userLocationMessage)}
-            >
-              <Text style={styles.linkText}>{userLocationMessage}</Text>
-            </TouchableOpacity>
-          </View>
-        )}
-=======
-       
->>>>>>> 08fa1f66249ae1f9062deed5c55ed170310de87d
-
+      <Image
+        source={isShakeDetected ? require("../../assets/main_icon.png") : require("../../assets/Inactive.png")}
+        style={styles.BgImage}
+        accessibilityLabel="status signal image"
+        
+      />
+        <ShakeTrigger onShake={handleShake} />
         <Text style={styles.title}>"Shake to Alert"</Text>
         <Text style={styles.text}>
           In an emergency, every second counts, just give your phone a quick
