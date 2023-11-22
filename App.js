@@ -32,8 +32,8 @@ export default function App() {
         <Stack.Screen name='ForgotPassword' component={ForgotPassword} options={{title: 'Reset Password', cardStyleInterpolator: CardStyleInterpolators.forVerticalIOS,}} />
         <Stack.Screen name='AboutScreen' component={ForgotPassword} options={{title: 'About', cardStyleInterpolator: CardStyleInterpolators.forVerticalIOS,}} />
         
-      </Stack.Navigator>
-
+       </Stack.Navigator>
+        
     );
   }
   function TabNavigator() {
