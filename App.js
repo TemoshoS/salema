@@ -21,18 +21,18 @@ export default function App() {
   function MainStack() {
     return (
 // Naviagtions have slight animation slies (cardStyleInterpolator:CardStyleInterpolators.forHorizontalIOS) from '@react-navigation/stack'; 
-      <Stack.Navigator initialRouteName='Home'>
+       <Stack.Navigator initialRouteName='Home'>
       
-        <Stack.Screen name='Home' component={HomeScreen} options={{ headerShown: false}} />
-        <Stack.Screen name='Splash' component={SplashScreen} options={{ headerShown: false}} />
-        {/* <Stack.Screen name='ResetPassword' component={PasswordReset} options={{ headerShown: false , cardStyleInterpolator:CardStyleInterpolators.forHorizontalIOS }} /> */}
-        <Stack.Screen name='Register' component={RegistrationScreen} options={{ headerShown: false , cardStyleInterpolator:CardStyleInterpolators.forHorizontalIOS }} />
-        <Stack.Screen name='Login' component={LoginScreen} options={{ headerShown: false , cardStyleInterpolator:CardStyleInterpolators.forHorizontalIOS }} />
-        <Stack.Screen name='About' component={AboutScreen} options={{ headerShown: false, cardStyleInterpolator: CardStyleInterpolators.forVerticalIOS, }} />
-        <Stack.Screen name='ForgotPassword' component={ForgotPasswordScreen} options={{title: 'Reset Password', cardStyleInterpolator: CardStyleInterpolators.forVerticalIOS,}}  />
+         <Stack.Screen name='Home' component={HomeScreen} options={{ headerShown: false}} />
+         <Stack.Screen name='Splash' component={SplashScreen} options={{ headerShown: false}} />
+         {/* <Stack.Screen name='ResetPassword' component={PasswordReset} options={{ headerShown: false , cardStyleInterpolator:CardStyleInterpolators.forHorizontalIOS }} /> */}
+         <Stack.Screen name='Register' component={RegistrationScreen} options={{ headerShown: false , cardStyleInterpolator:CardStyleInterpolators.forHorizontalIOS }} />
+         <Stack.Screen name='Login' component={LoginScreen} options={{ headerShown: false , cardStyleInterpolator:CardStyleInterpolators.forHorizontalIOS }} />
+         <Stack.Screen name='About' component={AboutScreen} options={{ headerShown: false, cardStyleInterpolator: CardStyleInterpolators.forVerticalIOS, }} />
+         <Stack.Screen name='ForgotPassword' component={ForgotPasswordScreen} options={{title: 'Reset Password', cardStyleInterpolator: CardStyleInterpolators.forVerticalIOS,}}  />
         
-      </Stack.Navigator>
-
+       </Stack.Navigator>
+        
     );
   }
   function TabNavigator() {

@@ -73,7 +73,7 @@ const handleRegister = () => {
       </View>
 
       {/* Signup Form */}
-      <View style={styles.overlay}></View>
+      {/* <View style={styles.overlay}></View>
       <View style={styles.signupForm}>
         <View style={styles.formContent}>
           <Text style={styles.title}>Login</Text>
@@ -106,7 +106,7 @@ const handleRegister = () => {
 
         <View style={styles.linksContainer}>
         {/* NAVIGATION LINKS */}
-        <TouchableOpacity style={styles.button} onPress={handleForgotPassword}>
+        {/* <TouchableOpacity style={styles.button} onPress={handleForgotPassword}>
           <Text style={{ color: "#FFF" }}>Forgot password</Text>
         </TouchableOpacity>
 
@@ -114,7 +114,8 @@ const handleRegister = () => {
         <Text style={{ color: "#FFF" }}>Register</Text>
         </TouchableOpacity>
         </View>
-      </View>
+      </View> */} 
+      
 
       {/* Image at the bottom center */}
       <Image

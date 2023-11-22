@@ -1,13 +1,4 @@
 import React, { useState } from "react";
-<<<<<<< HEAD:src/screens/ForgotPassword.js
-import { Image, StyleSheet, Text, View, Alert } from "react-native";
-import { useNavigation } from "@react-navigation/native";
-import {
-  getAuth,
-  signInWithEmailAndPassword,
-  sendPasswordResetEmail,
-} from "firebase/auth";
-=======
 import {
   Image,
   StyleSheet,
@@ -16,48 +7,14 @@ import {
   
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
->>>>>>> 08fa1f66249ae1f9062deed5c55ed170310de87d:src/screens/ForgotPasswordScreen.js
 import Button from "../components/Button";
 import InputText from "../components/InputText";
 import ShakeFeedback from "../components/ShakeFeedback";
-<<<<<<< HEAD:src/screens/ForgotPassword.js
-import Button2 from "../components/Button2";
-
-const ForgotPassword = () => {
-=======
 import { resetPassword } from "../services/authService";
 
-const ForgotPasswordScreen = () => {
->>>>>>> 08fa1f66249ae1f9062deed5c55ed170310de87d:src/screens/ForgotPasswordScreen.js
+const ForgotPassword = () => {
   const [email, setEmail] = useState("");
 
-<<<<<<< HEAD:src/screens/ForgotPassword.js
-  const loginUser = async () => {
-    try {
-      await signInWithEmailAndPassword(getAuth(), email, password);
-      navigation.navigate("Home");
-    } catch (error) {
-      Alert.alert(error.message);
-      setLoginAttempts(loginAttempts + 1);
-
-      // Check if login attempts exceed the limit (e.g., 3)
-      if (loginAttempts >= 2) {
-        // Block the user or perform any other action (e.g., show a message)
-        Alert.alert("Login attempts exceeded. Your account is blocked.");
-      }
-    }
-  };
-
-  // Handle Forgot password button click
-  const handleForgotPassword = () => {
-    navigation.navigate("ForgotPassword");
-  };
-
-  const togglePasswordVisibility = () => {
-    setShowPassword(!showPassword);
-  };
-=======
->>>>>>> 08fa1f66249ae1f9062deed5c55ed170310de87d:src/screens/ForgotPasswordScreen.js
 
  
 const handleForgotPassword = async () => {  
@@ -100,34 +57,12 @@ const handleForgotPassword = async () => {
             placeholder="Email"
             placeholderTextColor="#f2f2f2"
           />
-<<<<<<< HEAD:src/screens/ForgotPassword.js
-=======
 
 
->>>>>>> 08fa1f66249ae1f9062deed5c55ed170310de87d:src/screens/ForgotPasswordScreen.js
         </View>
 
         <View style={styles.buttonGroup}>
           <Button
-<<<<<<< HEAD:src/screens/ForgotPassword.js
-            onPress={() => {
-              sendPasswordResetEmail(getAuth(), email);
-            }}
-            title="submit"
-            altText={"submit"}
-            color={"#055a2b"}
-          />
-          {/* <Button2
-            onPress={() => {
-              console.log("Cancelled Password Reset");
-            }}
-            title="Cancel"
-            altText="Cancel Password Reset"
-            textColor={"#ff2323"}
-          /> */}
-        </View>
-      </View>
-=======
             onPress={handleForgotPassword}
             title="Reset Password"
             altText={"Reset Password"}
@@ -136,7 +71,6 @@ const handleForgotPassword = async () => {
          
         </View>
       </View> 
->>>>>>> 08fa1f66249ae1f9062deed5c55ed170310de87d:src/screens/ForgotPasswordScreen.js
 
       {/* Image at the bottom center */}
       <Image
@@ -146,11 +80,6 @@ const handleForgotPassword = async () => {
     </View>
   );
 };
-
-<<<<<<< HEAD:src/screens/ForgotPassword.js
-=======
-export default ForgotPasswordScreen;
->>>>>>> 08fa1f66249ae1f9062deed5c55ed170310de87d:src/screens/ForgotPasswordScreen.js
 
 const styles = StyleSheet.create({
   container: {
