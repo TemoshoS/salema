@@ -4,10 +4,10 @@
     "slug": "salema",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/icon.png",        //REPLACE WITH SALEMA LOGO
+    "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
     "splash": {
-      "image": "./assets/Union.png",      //Replace with salema sPLASH/logo
+      "image": "./assets/Union.png",
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
@@ -19,12 +19,12 @@
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/adaptive-icon.png",    //Replace with salema logo
+        "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       }
     },
     "web": {
-      "favicon": "./assets/main_icon.png"   //Replace with salema favicon
+      "favicon": "./assets/main_icon.png"
     }
   }
 }

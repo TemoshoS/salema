@@ -53,24 +53,7 @@ const handleRegister = () => {
 
   return (
     <View style={styles.container}>
-      <View style={styles.formContent}>
-        <Image
-          source={require("../../assets/Union.png")}
-          style={styles.logoImg}
-          accessibilityLabel="logo image"
-        />
-        <ShakeFeedback />
-        <Text style={styles.TextButton}>Your safety is just a shake away</Text>
-        {/* Staus image */}
-
-        <View style={styles.textContent}>
-          {/* HERE IS THE STATUS OF THE SHAKE APP {IN USE OR NOT} */}
-
-          <Text style={styles.boldText}>Shake to Alert</Text>
-          <Text style={styles.readyText}>READY</Text>
-          {/* <Text style={styles.title}>"Shake to Alert"</Text> */}
-        </View>
-      </View>
+      
 
       {/* Signup Form */}
       <View style={styles.overlay}></View>
@@ -116,11 +99,6 @@ const handleRegister = () => {
         </View>
       </View>
 
-      {/* Image at the bottom center */}
-      <Image
-        source={require("../../assets/undraw.png")}
-        style={styles.bottomImage}
-      />
     </View>
   );
 };
