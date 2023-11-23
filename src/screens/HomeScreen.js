@@ -24,9 +24,9 @@ import Button from "../components/Button";
 import Button2 from "../components/Button2";
 import ShakeFeedback from "../components/ShakeFeedback";
 import InputText from "../components/InputText";
-// import BottomSheet from "react-native-bottom-sheet";
-import { BottomSheet } from '@gorhom/bottom-sheet';
 
+import { BottomSheetFlatList } from "@gorhom/bottom-sheet";
+import { BottomSheet } from "@rneui/base";
 
 const HomeScreen = ({ navigation }) => {
   const [currentUser, setCurrentUser] = useState(null);
@@ -73,7 +73,6 @@ const HomeScreen = ({ navigation }) => {
     return unsubscribe;
   }, [currentUser]);
 
-  
   const fetchContacts = async () => {
     try {
       if (currentUser) {
@@ -238,20 +237,20 @@ const HomeScreen = ({ navigation }) => {
     bottomSheetRef.current?.close();
   };
 
-
   return (
     <ScrollView contentContainerStyle={styles.container}>
       <Image
         source={require("../../assets/Union.png")}
         style={styles.logoImg}
-        accessibilityLabel="logo image"
+        accessibilityLabel="logo"
       />
       <Text>Your safety is just a shake away</Text>
       {/* Staus image */}
-      {/* <ShakeTrigger onShake={(isShakeDetected)=>setIsShakeDetected(isShakeDetected)}/> */}
+
       <View style={styles.textContent}>
+        {/* HERE IS THE STATUS OF THE SHAKE APP {IN USE OR NOT} */}
         <ShakeFeedback />
-        {/* Display user's location */}
+
         <Text style={styles.title}>"Shake to Alert"</Text>
         <Text style={styles.text}>
           In an emergency, every second counts, just give your phone a quick
@@ -266,7 +265,22 @@ const HomeScreen = ({ navigation }) => {
         accessibilityLabel="status signalimage"
       />
 
+      <BottomSheet ref={bottomSheetRef}>
+        {/* Your components using BottomSheet go here */}
+        <BottomSheetFlatList
+          ref={bottomSheetRef}
+          data={filteredContacts}
+          keyExtractor={(item) => item.id}
+          renderItem={({ item }) => (
+            <ChipButton
+              title={item.name}
+              onPress={() => showContactDetails(item)}
+            />
+          )}
+        />
+      </BottomSheet>
       {/* Bottom Sheet */}
+
       {/* <BottomSheet
         ref={bottomSheetRef}
         index={0}
@@ -301,7 +315,6 @@ const HomeScreen = ({ navigation }) => {
           </View>
         </View>
       </BottomSheet> */}
-
 
       {/* Add New Contact modal */}
       <Modal

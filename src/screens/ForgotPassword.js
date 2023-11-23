@@ -52,8 +52,9 @@ const handleForgotPassword = async () => {
           <InputText
             value={email}
             onChangeText={(text) => setEmail(text)}
-            placeholder="Email"
+            placeholder="existingEmail@123.com"
             placeholderTextColor="#f2f2f2"
+            label={"Email"}
           />
 
 

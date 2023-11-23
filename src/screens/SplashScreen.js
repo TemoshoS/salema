@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import { View, StyleSheet, Text, Image } from "react-native";
 // Navigation Contents
 import { useNavigation } from "@react-navigation/native";
@@ -15,21 +15,18 @@ const SplashScreen = () => {
 
   const [isLoginModalVisible, setLoginModalVisible] = useState(false);
   const [isSignupModalVisible, setSignupModalVisible] = useState(false);
+  const [isForgotPassModalVisible, setForgotPassModalVisible] = useState(false);
+  const bottomSheetRef = useRef(null);
 
-
-  // modal management
   const handleLogin = () => {
-    console.log("opened login modal");
     setLoginModalVisible(true);
   };
 
   const handleSignup = () => {
-    console.log("opened signup modal");
     setSignupModalVisible(true);
   };
 
   const closeModal = () => {
-    console.log("close modal");
     setLoginModalVisible(false);
     setSignupModalVisible(false);
   };
@@ -82,6 +79,7 @@ const SplashScreen = () => {
         />
       </View>
       {/* modals */}
+
       
     </View>
   );
