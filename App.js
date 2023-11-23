@@ -9,6 +9,7 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import SplashScreen from './src/screens/SplashScreen';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import ForgotPassword from './src/screens/ForgotPassword';
+import ProfileScreen from './src/screens/ProfileScreen';
 // import PasswordReset from './src/components/PasswordReset';
 
 
@@ -26,6 +27,7 @@ export default function App() {
         <Stack.Screen name='Home' component={HomeScreen} options={{ headerShown: false}} />
         <Stack.Screen name='Splash' component={SplashScreen} options={{ headerShown: false}} />
         {/* <Stack.Screen name='ResetPassword' component={PasswordReset} options={{ headerShown: false , cardStyleInterpolator:CardStyleInterpolators.forHorizontalIOS }} /> */}
+        <Stack.Screen name='ProfileScreen' component={ProfileScreen} options={{ headerShown: false}} />
         <Stack.Screen name='Register' component={RegistrationScreen} options={{ headerShown: false , cardStyleInterpolator:CardStyleInterpolators.forHorizontalIOS }} />
         <Stack.Screen name='Login' component={LoginScreen} options={{ headerShown: false , cardStyleInterpolator:CardStyleInterpolators.forHorizontalIOS }} />
         <Stack.Screen name='About' component={AboutScreen} options={{ title: 'About', headerShown: false, cardStyleInterpolator: CardStyleInterpolators.forVerticalIOS, }} />
