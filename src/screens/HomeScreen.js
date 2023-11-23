@@ -30,8 +30,6 @@ import { BottomSheet } from '@gorhom/bottom-sheet';
 
 const HomeScreen = ({ navigation }) => {
   const [currentUser, setCurrentUser] = useState(null);
-  const [userLocation, setUserLocation] = useState(null);
-  const [userLocationMessage, setUserLocationMessage] = useState("");
   const [contacts, setContacts] = useState([]);
   const [isConfirmationVisible, setConfirmationVisible] = useState(false);
   const [selectedContact, setSelectedContact] = useState(null);
@@ -57,6 +55,7 @@ const HomeScreen = ({ navigation }) => {
   });
 
   useEffect(() => {
+
     const auth = getAuth();
 
     const unsubscribe = onAuthStateChanged(auth, (user) => {
@@ -215,7 +214,7 @@ const HomeScreen = ({ navigation }) => {
   //Function to remove contact
   const handleRemoveContact = async (contactId) => {
     try {
-      await removeContact(contactId);
+      await removeContact( currentUser,contactId);
       fetchContacts();
       hideConfirmation();
     } catch (error) {
@@ -248,10 +247,12 @@ const HomeScreen = ({ navigation }) => {
       />
       <Text>Your safety is just a shake away</Text>
       {/* Staus image */}
-      {/* <ShakeTrigger onShake={(isShakeDetected)=>setIsShakeDetected(isShakeDetected)}/> */}
+     
       <View style={styles.textContent}>
         <ShakeFeedback />
         {/* Display user's location */}
+       
+
         <Text style={styles.title}>"Shake to Alert"</Text>
         <Text style={styles.text}>
           In an emergency, every second counts, just give your phone a quick
@@ -635,9 +636,9 @@ const styles = StyleSheet.create({
     color: "#f2f2f2",
     marginTop: 24,
   },
-  card: {
-    backgroundColor: "#002E15",
-    flex: 1,
+  card:{
+      backgroundColor: "#002E15",
+      flex: 1,
   },
   formConntent: {
     width: "100%",
