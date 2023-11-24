@@ -25,12 +25,15 @@ const AboutScreen = () => {
   const handleWhatsAppPress = () => {
     Linking.openURL("https://wa.me/your-phone-number");
   };
+  const handleExternalLink = () => {
+    Linking.openURL("#");
+  };
 
   return (
     <ScrollView stickyHeaderIndices={[0]}>
       <View style={styles.container}>
       {/* Topp App bar component */}
-        <AppBar navigation={navigation} showProfileIcon={false} screenName="About Us" />
+        {/* <AppBar navigation={navigation} showProfileIcon={false} screenName="About Us" /> */}
         
         <View style={styles.imageContainer}>
           <Image
@@ -93,10 +96,10 @@ const AboutScreen = () => {
               Your safety is just a shake away.
             </Text>
             <View style={styles.privacyPolicyContainer}>
-              <TouchableOpacity onPress={handleTwitterPress}>
+              <TouchableOpacity onPress={handleExternalLink}>
                 <Text style={styles.extraLinks}>Privacy Policy</Text>
               </TouchableOpacity>
-              <TouchableOpacity onPress={handleTwitterPress}>
+              <TouchableOpacity onPress={handleExternalLink}>
                 <Text style={styles.extraLinks}>Terms & Conditions</Text>
               </TouchableOpacity>
             </View>

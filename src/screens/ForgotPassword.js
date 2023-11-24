@@ -11,39 +11,37 @@ import Button from "../components/Button";
 import InputText from "../components/InputText";
 import ShakeFeedback from "../components/ShakeFeedback";
 import { resetPassword } from "../services/authService";
+import LoginModal from "../components/LoginModal";
+import SignupModal from "../components/SignupModal";
+import ForgotPassModal from "../components/ForgotPassModal";
 
 const ForgotPassword = () => {
   const [email, setEmail] = useState("");
+  const [isForgotPassModalVisible, setForgotPassModalVisible] = useState(false);
+  const [isSignupModalVisible, setSignupModalVisible] = useState(false);
+  const [isLoginModalVisible, setLoginModalVisible] = useState(false);
 
 const handleForgotPassword = async () => {  
+  // closedModal();
   try {
     await resetPassword(email);
+   
   } catch (error) {
     
   }
 }
+
+const closeModal = () =>{
+  console.log ("removing  modals");
+  setLoginModalVisible(false);
+  setSignupModalVisible(false);
+  setForgotPassModalVisible(false);
+}
+
   return (
     <View style={styles.container}>
-      <View style={styles.formContent}>
-        <Image
-          source={require("../../assets/Union.png")}
-          style={styles.logoImg}
-          accessibilityLabel="logo image"
-        />
-        <ShakeFeedback />
-        <Text style={styles.TextButton}>Your safety is just a shake away</Text>
-        {/* Staus image */}
-
-        <View style={styles.textContent}>
-          {/* HERE IS THE STATUS OF THE SHAKE APP {IN USE OR NOT} */}
-
-          <Text style={styles.boldText}>Shake to Alert</Text>
-          <Text style={styles.readyText}>READY</Text>
-          {/* <Text style={styles.title}>"Shake to Alert"</Text> */}
-        </View>
-      </View>
-
-      {/* Signup Form */}
+      
+      {/* Reset Password Form Section */}
       <View style={styles.overlay}></View>
       <View style={styles.signupForm}>
         <View style={styles.formContent}>
@@ -52,8 +50,9 @@ const handleForgotPassword = async () => {
           <InputText
             value={email}
             onChangeText={(text) => setEmail(text)}
-            placeholder="Email"
+            placeholder="existingEmail@123.com"
             placeholderTextColor="#f2f2f2"
+            label={"Email"}
           />
 
 
@@ -61,7 +60,7 @@ const handleForgotPassword = async () => {
 
         <View style={styles.buttonGroup}>
           <Button
-            onPress={handleForgotPassword}
+            onPress={closeModal}
             title="Reset Password"
             altText={"Reset Password"}
             color={"#055a2b"}
@@ -69,12 +68,12 @@ const handleForgotPassword = async () => {
          
         </View>
       </View> 
+      {/* Modals */}
+      <LoginModal isVisible={isLoginModalVisible} onClose={closeModal} />
+      <SignupModal isVisible={isSignupModalVisible} onClose={closeModal} />
+      <ForgotPassModal isVisible={isForgotPassModalVisible} onClose={closeModal}/>
+      
 
-      {/* Image at the bottom center */}
-      <Image
-        source={require("../../assets/undraw.png")}
-        style={styles.bottomImage}
-      />
     </View>
   );
 };

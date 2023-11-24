@@ -1,6 +1,7 @@
 import React from 'react';
 import { StyleSheet, View, Image } from 'react-native';
 import { Button, Icon, Text, Card, Input } from 'react-native-elements';
+import InputText from '../components/InputText';
 
 const ProfileScreen = () => {
   return (
@@ -23,7 +24,7 @@ const ProfileScreen = () => {
       </View>
       <View style={styles.center}>
         <Image
-          source={require('/assets/Ellipse.png')} 
+          source={require('../../assets/profile.svg')} 
           style={styles.image}
           resizeMode="contain"
         />
@@ -31,20 +32,23 @@ const ProfileScreen = () => {
       <View style={styles.cardContainer}>
         <Card containerStyle={styles.card}>
           <Text style={styles.cardText}>Basic</Text>
-          <Input
+          <InputText
             placeholder="Name"
             containerStyle={styles.inputContainer}
             inputStyle={styles.input}
+            label={"Name"}
           />
-          <Input
+          <InputText
             placeholder="Contact"
             containerStyle={styles.inputContainer}
             inputStyle={styles.input}
+            label={"Contact"}
           />
-          <Input
-            placeholder="Emergency Message"
+          <InputText
+            placeholder="Custom Message"
             containerStyle={styles.inputContainer}
             inputStyle={styles.input}
+            label={"Emergency Message"}
           />
           <Text style={styles.changePasswordText}>Change Password</Text>
           <Text style={styles.legalText}>Legal</Text>

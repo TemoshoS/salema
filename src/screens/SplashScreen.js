@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import { View, StyleSheet, Text, Image } from "react-native";
 // Navigation Contents
 import { useNavigation } from "@react-navigation/native";
@@ -9,35 +9,43 @@ import ShakeFeedback from "../components/ShakeFeedback";
 // Modals
 import LoginModal from "../components/LoginModal";
 import SignupModal from "../components/SignupModal";
+import ForgotPassModal from "../components/ForgotPassModal";
 
 const SplashScreen = () => {
   const navigation = useNavigation();
 
   const [isLoginModalVisible, setLoginModalVisible] = useState(false);
   const [isSignupModalVisible, setSignupModalVisible] = useState(false);
+  const [isForgotPassModalVisible, setForgotPassModalVisible] = useState(false);
+  const bottomSheetRef = useRef(null);
 
-
-  // modal management
   const handleLogin = () => {
-    console.log("opened login modal");
     setLoginModalVisible(true);
   };
 
   const handleSignup = () => {
-    console.log("opened signup modal");
     setSignupModalVisible(true);
   };
 
   const closeModal = () => {
-    console.log("close modal");
+    console.log("closed modal on splash")
     setLoginModalVisible(false);
     setSignupModalVisible(false);
+    setForgotPassModalVisible(false)
+  };
+
+  // close the modl login when user logs in:
+  const handleLoginModalClose = () => {
+    console.log("closed Log in modal on splash");
+    setLoginModalVisible(false);
+    setSignupModalVisible(false);
+    setForgotPassModalVisible(false);
   };
 
   return (
     <View style={styles.container}>
-    <LoginModal isVisible={isLoginModalVisible} onClose={closeModal} />
-      <SignupModal isVisible={isSignupModalVisible} onClose={closeModal} />
+    {/* <LoginModal isVisible={isLoginModalVisible} onClose={closeModal} />
+      <SignupModal isVisible={isSignupModalVisible} onClose={closeModal} /> */}
       
       <Image
         source={require("../../assets/Union.png")}
@@ -81,7 +89,11 @@ const SplashScreen = () => {
           color={"#055a2b"}
         />
       </View>
+
       {/* modals */}
+      <LoginModal isVisible={isLoginModalVisible} onClose={handleLoginModalClose} />
+      <SignupModal isVisible={isSignupModalVisible} onClose={closeModal} />
+      <ForgotPassModal isVisible={isForgotPassModalVisible} onClose={closeModal}/>
       
     </View>
   );
@@ -95,7 +107,7 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     width: "100%",
     flexDirection: "column",
-    paddingHorizontal: 8,
+    paddingHorizontal: 20,
   },
   bottom: {
     bottom: 0,
