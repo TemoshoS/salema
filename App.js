@@ -12,7 +12,10 @@ import ForgotPassword from './src/screens/ForgotPassword';
 import ProfileScreen from './src/screens/ProfileScreen';
 import LandingScreen from './src/screens/LandingScreen';
 import BottomNav from './src/components/BottomNav';
+import NotificationService from './src/services/notificationService';
 // import PasswordReset from './src/components/PasswordReset';
+
+
 
 
 
@@ -24,8 +27,7 @@ export default function App() {
   function MainStack() {
     
     return (
-      // <LandingScreen/>
-      <Stack.Navigator initialRouteName='Splash'>
+      <Stack.Navigator initialRouteName='Home'>
       
         <Stack.Screen name='Home' component={HomeScreen} options={{ headerShown: false}} />
         <Stack.Screen name='Splash' component={SplashScreen} options={{ headerShown: false}} />

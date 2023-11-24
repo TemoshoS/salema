@@ -203,7 +203,7 @@ const styles = StyleSheet.create({
     marginTop: 12,
   },
   input: {
-    width: 300,
+    width: 100,
     height: 40,
     borderBottomWidth: 1,
     borderColor: "white",

@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState, useRef } from "react";
 import {
   View,
@@ -9,22 +10,24 @@ import {
   ScrollView,
   TextInput,
   Alert,
-  TouchableWithoutFeedback
+  TouchableWithoutFeedback,
+  Vibration,
 } from "react-native";
+
 import ChipButton from "../components/ChipButton";
-import {
-  getContacts,
-  addContact,
-  updateContact,
-  removeContact,
-} from "../services/homeServices";
-import { getAuth, onAuthStateChanged } from "@firebase/auth";
-import ShakeTrigger from "../services/ShakeTrigger";
-import TextField from "../components/TextField";
+import {getContacts,addContact,updateContact,removeContact} from "../services/homeServices";
 import Button from "../components/Button";
 import Button2 from "../components/Button2";
-import ShakeFeedback from "../components/ShakeFeedback";
 import InputText from "../components/InputText";
+import { initializeAuthState } from "../services/homeServices";
+
+
+import { ShakeEventExpo } from '../services/ShakeTrigger';
+import getLocationPermission from '../services/geolocation';
+import { Linking } from 'react-native';
+import * as Notifications from 'expo-notifications';
+import { send } from "react-native-sms";
+
 
 
 const HomeScreen = ({ navigation }) => {
@@ -38,6 +41,12 @@ const HomeScreen = ({ navigation }) => {
   const [phoneError, setPhoneError] = useState(null);
   const [relationshipError, setRelationshipError] = useState(null);
   const [isShakeDetected, setIsShakeDetected] = useState(false);
+  const [statusImageSource, setStatusImageSource] = useState(require("../../assets/Inactive.png"));
+  const [noSignedInUserErr, setNoSignedInUserErr] = useState(false);
+  const [location, setLocation] = useState(null);
+  const [locationModalVisible, setLocationModalVisible] = useState(false);
+  const [shakeStatusModalVisible, setShakeStatusModalVisible] = useState(false);
+
 
   const [enablePanDownToClose, setEnablePanDownToClose] = useState(true);
 
@@ -54,48 +63,58 @@ const HomeScreen = ({ navigation }) => {
   });
 
   useEffect(() => {
-
-    const auth = getAuth();
-
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
+    const initializeAuth = async () => {
+      const user = await initializeAuthState();
+      setCurrentUser(user);
       if (user) {
-        setCurrentUser(user.uid);
-        getLocationPermission();
+        
+        fetchContacts();
       } else {
-        setCurrentUser(null);
         setContacts([]);
       }
-    });
+    };
 
-    fetchContacts();
-    return unsubscribe;
-  }, [currentUser]);
+    initializeAuth();
 
-  const fetchContacts = async () => {
-    try {
-      if (currentUser) {
-        const data = await getContacts();
-        setContacts(data);
+
+    const shakeHandler = async () => {
+      console.log('Shake detected!');
+      const permissionResult = await getLocationPermission();
+  
+      if (permissionResult) {
+        const newLocation = permissionResult.userLocation;
+        setLocation(newLocation);
+        setShakeStatusModalVisible(true);
+        handleShake(true);
       }
-    } catch (error) {
-      console.error("Error fetching contacts:", error);
-    }
-  };
+    };
+  
+    ShakeEventExpo.addListener(shakeHandler);
+  
+    return () => {
+      ShakeEventExpo.removeListener();
+    }; 
+  }, []);
 
-  const filteredContacts = contacts.filter(
-    (contact) => contact.userId === currentUser
-  );
 
-  const showContactDetails = (contact) => {
-    setSelectedContact(contact);
-    setUpdatedContactData({
-      name: contact.name,
-      phoneNumber: contact.phoneNumber,
-      relationship: contact.relationship,
+
+
+  // Function to get user's contacts
+ const fetchContacts = async () => {
+    await getContacts(currentUser).then((data) => {
+      setContacts(data);
     });
-    setConfirmationVisible(true);
-  };
+ };
 
+ const showContactDetails = (contact) => {
+  setSelectedContact(contact);
+  setUpdatedContactData({
+    name: contact.name,
+    phoneNumber: contact.phoneNumber,
+    relationship: contact.relationship,
+  });
+  setConfirmationVisible(true);
+ };
   //function to add new contact
 
   const showAddContactModal = () => {
@@ -115,6 +134,9 @@ const HomeScreen = ({ navigation }) => {
   const handleAddContact = async () => {
     try {
       if (!currentUser) {
+
+        setNoSignedInUserErr("No user is signed in. Cannot add contact without a user.");
+
         // Alert user to sign in or create an acoount to see contact list
         Alert.alert(
           "Not Signed In",
@@ -132,7 +154,10 @@ const HomeScreen = ({ navigation }) => {
           ]
         );
 
+
         return;
+      } else{
+        setNoSignedInUserErr(null);
       }
 
       if (!newContactData.name) {
@@ -154,6 +179,14 @@ const HomeScreen = ({ navigation }) => {
       } else {
         setRelationshipError(null);
       }
+
+
+      const existingContacts = await getContacts(currentUser);  
+      if(existingContacts.length >= 5){
+        console.error('You can only add 5 contacts');
+      }
+
+
 
       const contactWithUserId = { ...newContactData, userId: currentUser };
 
@@ -190,6 +223,26 @@ const HomeScreen = ({ navigation }) => {
         console.error("No updated data provided");
         return;
       }
+      if (!updatedContactData.name) {
+        setNameError('Please enter Name');
+        return;
+      } 
+      else{
+        setNameError(null);
+      }
+      if(!updatedContactData.phoneNumber){
+        setPhoneError('Please enter Phone number');
+        return;
+      }
+      {
+        setPhoneError(null);
+      }
+      if(!updatedContactData.relationship){
+        setRelationshipError('Please enter Relationship');
+        return;
+      }else{
+        setRelationshipError(null);
+      }
 
       await updateContact(selectedContact.id, updatedContactData);
       fetchContacts();
@@ -206,6 +259,7 @@ const HomeScreen = ({ navigation }) => {
       phoneNumber: contact.phoneNumber,
       relationship: contact.relationship,
     });
+    setSelectedContact(contact);
     setIsEditing(true);
   };
 
@@ -234,6 +288,55 @@ const HomeScreen = ({ navigation }) => {
     }
   };
 
+  const handleShake = async (shakeDetected) => {
+    setIsShakeDetected(shakeDetected);
+  
+    if (shakeDetected) {
+      // Show location modal
+      setLocationModalVisible(true);
+      
+        sendNotification();
+      // Set status image to main_icon.png for 5 seconds
+      setStatusImageSource(require("../../assets/main_icon.png"));
+      
+      // Reset shake detection after 5 seconds
+      setTimeout(() => {
+        setIsShakeDetected(false);
+        setStatusImageSource(require("../../assets/Inactive.png"));
+        setLocationModalVisible(false); 
+        
+      }, 5000); 
+    } else {
+      // Reset status image immediately when shake is not detected
+      
+      setStatusImageSource(require("../../assets/Inactive.png"));
+      setLocationModalVisible(false); 
+  };
+}
+
+const sendNotification = async () => {
+  try {
+    const { status } = await Notifications.getPermissionsAsync();
+
+    const notificationId = await Notifications.scheduleNotificationAsync({
+      content: {
+        title: 'Emergency Alert',
+        body: 'This is an emergency alert',
+      },
+      trigger: null,
+    });
+    
+
+    console.log('Notification scheduled: ', notificationId);
+    
+  } catch (error) {
+    console.error("Error sending notification: ", error);	
+    
+  }
+
+}
+  
+
   return (
     <ScrollView contentContainerStyle={styles.container}>
       <Image
@@ -244,8 +347,13 @@ const HomeScreen = ({ navigation }) => {
       <Text>Your safety is just a shake away</Text>
       {/* Staus image */}
       <View style={styles.textContent}>
-        {/* HERE IS THE STATUS OF THE SHAKE APP {IN USE OR NOT} */}
-        <ShakeFeedback />
+      <Image
+        source={statusImageSource}
+        style={styles.BgImage}
+        accessibilityLabel="status signal image"
+        
+      />
+       
 
         <Text style={styles.title}>"Shake to Alert"</Text>
         <Text style={styles.text}>
@@ -261,6 +369,42 @@ const HomeScreen = ({ navigation }) => {
         accessibilityLabel="status signalimage"
       />
 
+      
+      {/* Bottom Sheet */}
+      <View style={styles.cardContainer}>
+          <Text style={styles.title}>Trusted Contacts</Text>
+          <View style={styles.contactCard}>
+            <View style={styles.contactList}>
+              {contacts.length > 0 ? (
+                contacts.map((contact, index) => (
+                  <View key={index}>
+                    <ChipButton
+                      key={index}
+                      title={contact.name}
+                      onPress={() => showContactDetails(contact)}
+                    />
+                  </View>
+                ))
+              ) : (
+                <View>
+                {/* Add new user component */}
+                <Text style={styles.title}>No contacts available</Text>
+                </View>
+                
+              )}
+            </View>
+            <View>
+               <Button
+              title={"Add Contact"}
+              onPress={showAddContactModal}
+              altText={"Add Contact"}
+            />
+            </View>
+           
+          </View>
+        </View>
+        
+      
       {/* Add New Contact modal */}
       <Modal
         animationType="slide"
@@ -268,8 +412,7 @@ const HomeScreen = ({ navigation }) => {
         visible={isAddContactModalVisible}
         onRequestClose={hideAddContactModal}
       >
-      <TouchableWithoutFeedback>
-      {/* onPress={handleModalPress} */}
+      <TouchableWithoutFeedback onPress={hideAddContactModal}>
       <View style={styles.overlay}/>
         <View style={{ flex: 1, justifyContent: "center", alignItems: "center", backgroundColor: "#00000080" }}>
           {/* must be converted to ra relevant component */}
@@ -444,10 +587,38 @@ const HomeScreen = ({ navigation }) => {
           )}
         </View>
       </Modal>
+
+     
+      <Modal
+  animationType="slide"
+  transparent={true}
+  visible={locationModalVisible}
+  onRequestClose={() => {
+    setLocationModalVisible(false);
+  }}
+ >
+  <View style={styles.modalView}>
+    <Text style={styles.modalText}>
+      My Current location
+    </Text>
+    <TouchableOpacity
+      style={{ ...styles.openButton, backgroundColor: '#2196F3' }}
+      onPress={() =>
+        Linking.openURL(
+          `https://www.google.com/maps/?q=${location.latitude},${location.longitude}`
+        )
+      }
+    >
+      <Text style={styles.textStyle}>Open in Maps</Text>
+    </TouchableOpacity>
+    
+  </View>
+ </Modal>
+
+    
     </ScrollView>
   );
-};
-
+ };
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -639,6 +810,37 @@ display: "flex",
     minHeight: 52,
     backgroundColor: "#712626",
     width: "100%",
+  },
+  modalView: {
+    margin: 20,
+    marginTop: 100,
+    backgroundColor: 'white',
+    borderRadius: 20,
+    padding: 35,
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
+  },
+  openButton: {
+    marginTop: 10,
+    borderRadius: 20,
+    padding: 10,
+    elevation: 2,
+  },
+  textStyle: {
+    color: 'white',
+    fontWeight: 'bold',
+    textAlign: 'center',
+  },
+  modalText: {
+    marginBottom: 15,
+    textAlign: 'center',
   },
 });
 

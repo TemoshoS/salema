@@ -1,9 +1,17 @@
 import React from 'react';
-import { StyleSheet, View, Image } from 'react-native';
+import { StyleSheet, View, Image ,TouchableOpacity} from 'react-native';
 import { Button, Icon, Text, Card, Input } from 'react-native-elements';
 import InputText from '../components/InputText';
+import { signOutUser } from '../services/authService';
+import { useNavigation } from '@react-navigation/native';
 
 const ProfileScreen = () => {
+  const navigation = useNavigation();
+  const handleSignOut = () => {
+    signOutUser();
+    navigation.navigate('Splash');
+  }
+
   return (
     <View style={styles.container}>
       <View style={styles.header}>
@@ -54,7 +62,11 @@ const ProfileScreen = () => {
           <Text style={styles.legalText}>Legal</Text>
           <Text style={styles.privacyPolicyText}>Privacy Policy</Text>
           <Text style={styles.termsConditionsText}>Terms & Conditions</Text>
+
+          <TouchableOpacity onPress={handleSignOut}>
           <Text style={styles.signOutText}>Sign Out</Text>
+          </TouchableOpacity>
+
         </Card>
       </View>
     </View>
