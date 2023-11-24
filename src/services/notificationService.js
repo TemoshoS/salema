@@ -1,8 +1,7 @@
-// Import Button from react-native
 import { StyleSheet, Text, View, Platform, Button } from 'react-native';
 import React, { useState, useRef, useEffect } from 'react';
 import * as Notifications from 'expo-notifications';
-import Constants from 'expo-constants'; // Import Constants
+import Constants from 'expo-constants';
 
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
@@ -35,17 +34,6 @@ const NotificationService = () => {
     };
   }, []);
 
-  async function schedulePushNotification() {
-    await Notifications.scheduleNotificationAsync({
-      content: {
-        title: "You've got mail! 📬",
-        body: 'Here is the notification body',
-        data: { data: 'goes here' },
-      },
-      trigger: { seconds: 2 },
-    });
-  }
-
   async function registerForPushNotificationsAsync() {
     let token;
     if (Constants.isDevice) {
@@ -76,31 +64,6 @@ const NotificationService = () => {
 
     return token;
   }
-
-  return (
-    <View style={styles.container}>
-      <View style={styles.content}>
-        <Text>Title : {notification && notification.request.content.title}</Text>
-        <Text>Name : {notification && notification.request.content.body}</Text>
-        <Text>Data : {notification && JSON.stringify(notification.request.content.data)}</Text>
-      </View>
-
-      {/* Use onPress instead of onpress */}
-      <Button title="Press to schedule a notification" onPress={async () => await schedulePushNotification()} />
-    </View>
-  );
 };
 
 export default NotificationService;
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'space-around',
-  },
-  content: {
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
