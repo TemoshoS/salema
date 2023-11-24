@@ -267,6 +267,32 @@ const HomeScreen = ({ navigation }) => {
         accessibilityLabel="status signalimage"
       />
 
+
+<View style={styles.cardContainer}>
+          <Text style={styles.title}>Trusted Contacts</Text>
+          <View style={styles.contactCard}>
+            <View style={styles.contactList}>
+             {filteredContacts.length > 0 ? (
+                filteredContacts.map((contact, index) => (
+                  <View key={index}>
+                    <ChipButton
+                      key={index}
+                      title={contact.name}
+                      onPress={() => showContactDetails(contact)}
+                    />
+                  </View>
+                ))
+              ) : (
+                <Text> Your emergency contacts will appear here. You currently do not have any emergency contact. Import contacts or add new contacts.</Text>
+              )}
+            </View>
+            <Button
+              title={"Add Contact"}
+              onPress={showAddContactModal}
+              altText={"Add Contact"}
+            />
+          </View>
+        </View>
       {/* Bottom Sheet */}
       {/* <BottomSheet
         ref={bottomSheetRef}
@@ -280,7 +306,7 @@ const HomeScreen = ({ navigation }) => {
           <Text style={styles.title}>Trusted Contacts</Text>
           <View style={styles.contactCard}>
             <View style={styles.contactList}>
-              {filteredContacts.length > 0 ? (
+             {filteredContacts.length > 0 ? (
                 filteredContacts.map((contact, index) => (
                   <View key={index}>
                     <ChipButton
@@ -291,7 +317,7 @@ const HomeScreen = ({ navigation }) => {
                   </View>
                 ))
               ) : (
-                <Text>No contacts available</Text>
+                <Text> Your emergency contacts will appear here. You currently do not have any emergency contact. Import contacts or add new contacts.</Text>
               )}
             </View>
             <Button
