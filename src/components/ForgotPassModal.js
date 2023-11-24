@@ -2,15 +2,22 @@ import React from "react";
 import { Modal, View, Text, TouchableOpacity, TouchableWithoutFeedback } from "react-native";
 import ForgotPassword from "../screens/ForgotPassword";
 
-const ForgotPassModal = ({ isVisible, onClose }) => {
+const ForgotPassModal  = ({ isVisible, onClose }) => {
+  const handleModalPress = (event) => {
+    // Check if the touch event is within the modal content
+    if (event.target === event.currentTarget) {
+      onClose(); // Close the modal only if the user clicked outside the content
+    }
+  };
+
   return (
-    <Modal transparent visible={isVisible} onRequestClose={onClose}>
-      <TouchableWithoutFeedback onPress={onClose}>
+    <Modal transparent visible={isVisible} onRequestClose={onClose} animationType="slide">
+      <TouchableWithoutFeedback onPress={handleModalPress}>
         <View style={{ flex: 1, justifyContent: "center", alignItems: "center", backgroundColor: "#00000080" }}>
-          {/* Your ForgotPassword Modal content goes here */}
+          {/* Your Login Modal content goes here */}
           <ForgotPassword/>
           {/* <View style={{ backgroundColor: "white", padding: 20 }}>
-            <Text>ForgotPassword Modal Content</Text>
+            <Text>Login Modal Content</Text>
             <TouchableOpacity onPress={onClose}>
               <Text>Close</Text>
             </TouchableOpacity>
@@ -21,4 +28,4 @@ const ForgotPassModal = ({ isVisible, onClose }) => {
   );
 };
 
-export default ForgotPassModal;
+export default ForgotPassModal ;

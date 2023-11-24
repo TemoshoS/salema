@@ -24,7 +24,7 @@ import { ShakeEventExpo } from '../services/ShakeTrigger';
 import getLocationPermission from '../services/geolocation';
 import { Linking } from 'react-native';
 
-import { BottomSheetFlatList } from "@gorhom/bottom-sheet";
+import { BottomSheetFlatList, TouchableWithoutFeedback,} from "@gorhom/bottom-sheet";
 import { BottomSheet } from "@rneui/base";
 
 
@@ -309,12 +309,20 @@ const HomeScreen = ({ navigation }) => {
 
   const showBottomSheet = () => {
     bottomSheetRef.current?.expand();
+    console.log("bottomsheet active");
   };
 
   const hideBottomSheet = () => {
     bottomSheetRef.current?.close();
   };
 
+  // modal  controls
+  const handleModalPress = (event) => {
+    // Check if the touch event is within the modal content
+    if (event.target === event.currentTarget) {
+      onClose(); // Close the modal only if the user clicked outside the content
+    }
+  };
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
@@ -344,30 +352,49 @@ const HomeScreen = ({ navigation }) => {
         accessibilityLabel="status signalimage"
       />
 
-      <BottomSheet ref={bottomSheetRef}>
-        {/* Your components using BottomSheet go here */}
-        <BottomSheetFlatList
-          ref={bottomSheetRef}
-          data={filteredContacts}
-          keyExtractor={(item) => item.id}
-          renderItem={({ item }) => (
-            <ChipButton
-              title={item.name}
-              onPress={() => showContactDetails(item)}
-            />
-          )}
-        />
-      </BottomSheet>
+      
       {/* Bottom Sheet */}
-
-      {/* <BottomSheet
+      <View style={styles.cardContainer}>
+          <Text style={styles.title}>Trusted Contacts</Text>
+          <View style={styles.contactCard}>
+            <View style={styles.contactList}>
+              {filteredContacts.length > 0 ? (
+                filteredContacts.map((contact, index) => (
+                  <View key={index}>
+                    <ChipButton
+                      key={index}
+                      title={contact.name}
+                      onPress={() => showContactDetails(contact)}
+                    />
+                  </View>
+                ))
+              ) : (
+                <View>
+                {/* Add new user component */}
+                <Text style={styles.title}>No contacts available</Text>
+                </View>
+                
+              )}
+            </View>
+            <View>
+               <Button
+              title={"Add Contact"}
+              onPress={showAddContactModal}
+              altText={"Add Contact"}
+            />
+            </View>
+           
+          </View>
+        </View>
+        
+      <BottomSheet
         ref={bottomSheetRef}
         index={0}
         snapPoints={[0, '50%', '100%']}
         onChange={index => {
-          // handle sheet position change if needed
         }}
       >
+        {/* Sheet COntents */}
         <View style={styles.cardContainer}>
           <Text style={styles.title}>Trusted Contacts</Text>
           <View style={styles.contactCard}>
@@ -383,32 +410,43 @@ const HomeScreen = ({ navigation }) => {
                   </View>
                 ))
               ) : (
-                <Text>No contacts available</Text>
+                <View>
+                {/* Add new user component */}
+                <Text style={styles.title}>No contacts available</Text>
+                </View>
+                
               )}
             </View>
-            <Button
+            <View>
+               <Button
               title={"Add Contact"}
               onPress={showAddContactModal}
               altText={"Add Contact"}
             />
+            </View>
+           
           </View>
         </View>
-      </BottomSheet> */}
+      </BottomSheet>
 
       {/* Add New Contact modal */}
       <Modal
         animationType="slide"
-        transparent={false}
+        transparent={true}
         visible={isAddContactModalVisible}
         onRequestClose={hideAddContactModal}
       >
-        {/* must be converted to ra relevant component */}
-        <View style={styles.overlay}></View>
+      <TouchableWithoutFeedback onPress={showBottomSheet}>
+      <View style={styles.overlay}/>
+        <View style={{ flex: 1, justifyContent: "center", alignItems: "center", backgroundColor: "#00000080" }}>
+          {/* must be converted to ra relevant component */}
+        
         <View style={styles.modalCard}>
           <Text style={styles.title}>Add New Contact</Text>
 
           <InputText
-            style={styles.input}
+            // style={styles.input}
+            label={"Name"}
             placeholder="Name"
             value={newContactData.name}
             onChangeText={(text) =>
@@ -418,7 +456,7 @@ const HomeScreen = ({ navigation }) => {
 
           {nameError && <Text style={styles.errorText}>{nameError}</Text>}
           <InputText
-            style={styles.input}
+            label={"Number"}
             placeholder="Phone Number"
             value={newContactData.phoneNumber}
             onChangeText={(text) =>
@@ -427,7 +465,7 @@ const HomeScreen = ({ navigation }) => {
           />
           {phoneError && <Text style={styles.errorText}>{phoneError}</Text>}
           <InputText
-            style={styles.input}
+            label={"Relationship"}
             placeholder="Relationship"
             value={newContactData.relationship}
             onChangeText={(text) =>
@@ -445,10 +483,13 @@ const HomeScreen = ({ navigation }) => {
             />
           </View>
         </View>
+        </View>
+        </TouchableWithoutFeedback>
+        
       </Modal>
 
       {/* Display Contacts Modal */}
-
+            
       <Modal
         animationType="slide"
         transparent={false}
@@ -606,7 +647,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff",
     alignItems: "center",
     justifyContent: "space-between",
-    width: "100%",
+    // width: "100%",
     flexDirection: "column",
     paddingHorizontal: 8,
   },
@@ -674,10 +715,10 @@ const styles = StyleSheet.create({
   },
   contactCard: {
     width: "100%",
-    position: "absolute",
+    // position: "absolute",
     flexDirection: "column",
     flexWrap: "wrap",
-    justifyContent: "stretch",
+    justifyContent: "space-between",
     //above screen contents
     borderRadius: 20,
     // backgroundColor: '#fff',
@@ -691,7 +732,8 @@ const styles = StyleSheet.create({
     marginBottom: 16,
     paddingHorizontal: 16,
     paddingVertical: 12,
-    minHeight: 180,
+    minHeight: 200,
+display: "flex",
     // gap: 24,
   },
   modalCard: {
@@ -716,7 +758,7 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     bottom: 0,
-    backgroundColor: "rgba(0, 0, 0, 0.601)",
+    backgroundColor: "#00000099",
   },
   contactList: {
     width: "100%",

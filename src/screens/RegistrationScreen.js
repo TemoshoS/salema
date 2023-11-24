@@ -17,6 +17,7 @@ import Vector from "../../assets/Vector.png";
 import InputText from "../components/InputText";
 import Button from "../components/Button";
 import { registerUser } from "../services/authService";
+import LoginModal from "../components/LoginModal";
 
 const RegistrationScreen = () => {
   const [name, setName] = useState("");
@@ -238,7 +239,8 @@ const RegistrationScreen = () => {
           
         </View>
       </View>
-
+{/* Modals */}
+<LoginModal isVisible={isLoginModalVisible} onClose={() => setLoginModalVisible(false)} />
      
     </View>
   );
