@@ -23,7 +23,7 @@ const ProfileScreen = () => {
       </View>
       <View style={styles.center}>
         <Image
-          source={require('/assets/Ellipse.png')} 
+          // source={require('/assets/Ellipse.png')} 
           style={styles.image}
           resizeMode="contain"
         />

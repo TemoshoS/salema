@@ -324,25 +324,11 @@ const HomeScreen = ({ navigation }) => {
         accessibilityLabel="logo"
       />
       <Text>Your safety is just a shake away</Text>
-
-     {/* Staus image */}
-     
-     <View style={styles.textContent}>
-      <Image
-        source={statusImageSource}
-        style={styles.BgImage}
-        accessibilityLabel="status signal image"
-        
-      />
-      
-       
-
       {/* Staus image */}
 
       <View style={styles.textContent}>
         {/* HERE IS THE STATUS OF THE SHAKE APP {IN USE OR NOT} */}
         <ShakeFeedback />
-
 
         <Text style={styles.title}>"Shake to Alert"</Text>
         <Text style={styles.text}>
@@ -357,26 +343,6 @@ const HomeScreen = ({ navigation }) => {
         style={styles.BgImage}
         accessibilityLabel="status signalimage"
       />
-
-
-      {/* CONTACT LIST CARD */}
-      <View style={styles.cardContainer}>
-        <Text style={styles.title}>Trusted Contacts</Text>
-        <View style={styles.contactCard}>
-          <View style={styles.contactList}>
-            {contacts ? (
-              contacts.map((contact, index) => (
-                <View key={index}>
-                  <ChipButton
-                    key={index}
-                    title={contact.name}
-                    onPress={() => showContactDetails(contact)}
-                  />
-                </View>
-              ))
-            ) : (
-              <Text>No contacts available</Text>
-            )}
 
       <BottomSheet ref={bottomSheetRef}>
         {/* Your components using BottomSheet go here */}
@@ -425,7 +391,6 @@ const HomeScreen = ({ navigation }) => {
               onPress={showAddContactModal}
               altText={"Add Contact"}
             />
-
           </View>
         </View>
       </BottomSheet> */}

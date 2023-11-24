@@ -24,7 +24,7 @@ export default function App() {
   function MainStack() {
     
     return (
-      <Stack.Navigator initialRouteName='Splash'>
+      <Stack.Navigator initialRouteName='Home'>
       
         <Stack.Screen name='Home' component={HomeScreen} options={{ headerShown: false}} />
         <Stack.Screen name='Splash' component={SplashScreen} options={{ headerShown: false}} />
