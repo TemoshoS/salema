@@ -10,6 +10,8 @@ import {
   ScrollView,
   TextInput,
   Alert,
+  TouchableWithoutFeedback,
+  Vibration,
 } from "react-native";
 
 import ChipButton from "../components/ChipButton";
@@ -23,9 +25,9 @@ import { initializeAuthState } from "../services/homeServices";
 import { ShakeEventExpo } from '../services/ShakeTrigger';
 import getLocationPermission from '../services/geolocation';
 import { Linking } from 'react-native';
+import * as Notifications from 'expo-notifications';
+import { send } from "react-native-sms";
 
-import { BottomSheetFlatList, TouchableWithoutFeedback,} from "@gorhom/bottom-sheet";
-import { BottomSheet } from "@rneui/base";
 
 
 const HomeScreen = ({ navigation }) => {
@@ -64,20 +66,17 @@ const HomeScreen = ({ navigation }) => {
     const initializeAuth = async () => {
       const user = await initializeAuthState();
       setCurrentUser(user);
-  
-      const auth = getAuth();
-  
-      const unsubscribe = onAuthStateChanged(auth, (user) => {
-        if (user) {
-          fetchContacts();
-        } else {
-          setContacts([]);
-        }
-      });
+      if (user) {
+        
+        fetchContacts();
+      } else {
+        setContacts([]);
+      }
     };
-  
+
     initializeAuth();
-  
+
+
     const shakeHandler = async () => {
       console.log('Shake detected!');
       const permissionResult = await getLocationPermission();
@@ -94,9 +93,10 @@ const HomeScreen = ({ navigation }) => {
   
     return () => {
       ShakeEventExpo.removeListener();
-    };
+    }; 
   }, []);
-  
+
+
 
 
   // Function to get user's contacts
@@ -279,43 +279,7 @@ const HomeScreen = ({ navigation }) => {
     setConfirmationVisible(false);
   };
   // bottom sheet stuff
-  const bottomSheetRef = useRef(null);
-
-
-  const handleShake = async (shakeDetected) => {
-    setIsShakeDetected(shakeDetected);
   
-    if (shakeDetected) {
-      // Show location modal
-      setLocationModalVisible(true);
-  
-      // Set status image to main_icon.png for 5 seconds
-      setStatusImageSource(require("../../assets/main_icon.png"));
-  
-      // Reset shake detection after 5 seconds
-      setTimeout(() => {
-        setIsShakeDetected(false);
-        setStatusImageSource(require("../../assets/Inactive.png"));
-        setLocationModalVisible(false); // Close the location modal
-      }, 5000); // 5000 milliseconds = 5 seconds
-    } else {
-      // Reset status image immediately when shake is not detected
-      setStatusImageSource(require("../../assets/Inactive.png"));
-      setLocationModalVisible(false); // Close the location modal if it's open
-    }
-  };
-  
-
-
-  const showBottomSheet = () => {
-    bottomSheetRef.current?.expand();
-    console.log("bottomsheet active");
-  };
-
-  const hideBottomSheet = () => {
-    bottomSheetRef.current?.close();
-  };
-
   // modal  controls
   const handleModalPress = (event) => {
     // Check if the touch event is within the modal content
@@ -323,6 +287,60 @@ const HomeScreen = ({ navigation }) => {
       onClose(); // Close the modal only if the user clicked outside the content
     }
   };
+
+  const handleShake = async (shakeDetected) => {
+    setIsShakeDetected(shakeDetected);
+  
+    if (shakeDetected) {
+      // Show location modal
+      setLocationModalVisible(true);
+      sendNotification();
+      // Set status image to main_icon.png for 5 seconds
+      setStatusImageSource(require("../../assets/main_icon.png"));
+      
+      // Reset shake detection after 5 seconds
+      setTimeout(() => {
+        setIsShakeDetected(false);
+        setStatusImageSource(require("../../assets/Inactive.png"));
+        setLocationModalVisible(false); 
+        
+        
+      }, 5000); 
+    } else {
+      // Reset status image immediately when shake is not detected
+      
+      setStatusImageSource(require("../../assets/Inactive.png"));
+      setLocationModalVisible(false); 
+  };
+}
+
+const sendNotification = async () => {
+  try {
+    const { status } = await Notifications.getPermissionsAsync();
+
+    if(status !== 'granted'){
+      console.error('Notification permission not granted');
+      return;
+    }
+
+    Vibration.vibrate(2000);
+    const notificationId = await Notifications.scheduleNotificationAsync({
+      content: {
+        title: 'Emergency Alert',
+        body: 'This is an emergency alert',
+      },
+      trigger: null,
+    });
+
+    console.log('Notification scheduled: ', notificationId);
+    
+  } catch (error) {
+    console.error("Error sending notification: ", error);	
+    
+  }
+
+}
+  
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
@@ -335,8 +353,13 @@ const HomeScreen = ({ navigation }) => {
       {/* Staus image */}
 
       <View style={styles.textContent}>
-        {/* HERE IS THE STATUS OF THE SHAKE APP {IN USE OR NOT} */}
-        <ShakeFeedback />
+      <Image
+        source={statusImageSource}
+        style={styles.BgImage}
+        accessibilityLabel="status signal image"
+        
+      />
+       
 
         <Text style={styles.title}>"Shake to Alert"</Text>
         <Text style={styles.text}>
@@ -358,8 +381,8 @@ const HomeScreen = ({ navigation }) => {
           <Text style={styles.title}>Trusted Contacts</Text>
           <View style={styles.contactCard}>
             <View style={styles.contactList}>
-              {filteredContacts.length > 0 ? (
-                filteredContacts.map((contact, index) => (
+              {contacts.length > 0 ? (
+                contacts.map((contact, index) => (
                   <View key={index}>
                     <ChipButton
                       key={index}
@@ -387,48 +410,7 @@ const HomeScreen = ({ navigation }) => {
           </View>
         </View>
         
-      <BottomSheet
-        ref={bottomSheetRef}
-        index={0}
-        snapPoints={[0, '50%', '100%']}
-        onChange={index => {
-        }}
-      >
-        {/* Sheet COntents */}
-        <View style={styles.cardContainer}>
-          <Text style={styles.title}>Trusted Contacts</Text>
-          <View style={styles.contactCard}>
-            <View style={styles.contactList}>
-              {filteredContacts.length > 0 ? (
-                filteredContacts.map((contact, index) => (
-                  <View key={index}>
-                    <ChipButton
-                      key={index}
-                      title={contact.name}
-                      onPress={() => showContactDetails(contact)}
-                    />
-                  </View>
-                ))
-              ) : (
-                <View>
-                {/* Add new user component */}
-                <Text style={styles.title}>No contacts available</Text>
-                </View>
-                
-              )}
-            </View>
-            <View>
-               <Button
-              title={"Add Contact"}
-              onPress={showAddContactModal}
-              altText={"Add Contact"}
-            />
-            </View>
-           
-          </View>
-        </View>
-      </BottomSheet>
-
+      
       {/* Add New Contact modal */}
       <Modal
         animationType="slide"
@@ -436,7 +418,7 @@ const HomeScreen = ({ navigation }) => {
         visible={isAddContactModalVisible}
         onRequestClose={hideAddContactModal}
       >
-      <TouchableWithoutFeedback onPress={showBottomSheet}>
+      <TouchableWithoutFeedback onPress={hideAddContactModal}>
       <View style={styles.overlay}/>
         <View style={{ flex: 1, justifyContent: "center", alignItems: "center", backgroundColor: "#00000080" }}>
           {/* must be converted to ra relevant component */}
@@ -611,6 +593,8 @@ const HomeScreen = ({ navigation }) => {
           )}
         </View>
       </Modal>
+
+     
       <Modal
   animationType="slide"
   transparent={true}
@@ -835,6 +819,7 @@ display: "flex",
   },
   modalView: {
     margin: 20,
+    marginTop: 100,
     backgroundColor: 'white',
     borderRadius: 20,
     padding: 35,

@@ -11,6 +11,7 @@ import LoginModal from "../components/LoginModal";
 import SignupModal from "../components/SignupModal";
 import ForgotPassModal from "../components/ForgotPassModal";
 
+
 const SplashScreen = () => {
   const navigation = useNavigation();
 
@@ -57,7 +58,7 @@ const SplashScreen = () => {
 
       <View style={styles.textContent}>
         {/* HERE IS THE STATUS OF THE SHAKE APP {IN USE OR NOT} */}
-        <ShakeFeedback />
+        
 
         <Text style={styles.title}>"Shake to Alert"</Text>
         <Text style={styles.text}>
