@@ -78,7 +78,8 @@ const closeModal = () =>{
   );
 };
 
-// export default ForgotPasswordScreen;
+export default ForgotPassword;
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -151,15 +152,6 @@ const styles = StyleSheet.create({
     gap: 8,
     justifyContent: "flex-end",
     marginTop: 12,
-  },
-  buttonSection: {
-    width: "100%",
-    height: "auto",
-    position: "relative",
-    flexDirection: "row",
-    flexWrap: "wrap",
-    gap: 10,
-    justifyContent: "space-between",
   },
   input: {
     width: 300,
@@ -282,5 +274,3 @@ const styles = StyleSheet.create({
     // marginVertical: 20,
   },
 });
-
-export default ForgotPassword;

@@ -266,7 +266,7 @@ const HomeScreen = ({ navigation }) => {
   //Function to remove contact
   const handleRemoveContact = async (contactId) => {
     try {
-      await removeContact(contactId);
+      await removeContact( currentUser,contactId);
       fetchContacts();
       hideConfirmation();
     } catch (error) {
@@ -346,7 +346,6 @@ const sendNotification = async () => {
       />
       <Text>Your safety is just a shake away</Text>
       {/* Staus image */}
-
       <View style={styles.textContent}>
       <Image
         source={statusImageSource}
@@ -774,9 +773,9 @@ display: "flex",
     color: "#f2f2f2",
     marginTop: 24,
   },
-  card: {
-    backgroundColor: "#002E15",
-    flex: 1,
+  card:{
+      backgroundColor: "#002E15",
+      flex: 1,
   },
   formConntent: {
     width: "100%",
