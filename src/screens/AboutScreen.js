@@ -6,8 +6,9 @@ import {
   Image,
   TouchableOpacity,
   Linking,
+  ScrollView,
 } from "react-native";
-import { ScrollView } from "react-native-web";
+
 import AppBar from "../components/Appbar";
 
 const AboutScreen = () => {

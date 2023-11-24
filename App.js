@@ -27,7 +27,7 @@ export default function App() {
   function MainStack() {
     
     return (
-      <Stack.Navigator initialRouteName='Home'>
+      <Stack.Navigator initialRouteName='Splash'>
       
         <Stack.Screen name='Home' component={HomeScreen} options={{ headerShown: false}} />
         <Stack.Screen name='Splash' component={SplashScreen} options={{ headerShown: false}} />
@@ -69,13 +69,13 @@ export default function App() {
           }}
         />
         <Tab.Screen
-          name="Help"
-          component={HomeScreen } 
+          name="Profile"
+          component={ProfileScreen } 
           options={{
             headerShown: false,
             tabBarIcon: ({ color, size }) => (
               <MaterialCommunityIcons
-                name="help-circle"
+                name="account-circle"
                 color={color}
                 size={size}
               />

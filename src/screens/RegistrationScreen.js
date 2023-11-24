@@ -112,12 +112,12 @@ const RegistrationScreen = () => {
       setPassword("");
       setReenterPassword("");
       navigation.navigate('Login');
-      setIsConfirmationVisible(true);
+     
     } catch (error) {
       if (error.code === "auth/email-already-in-use") {
         setEmailError("Email is already in use");
-      } else {
-        setEmailError(null);
+      } else if (error.code === "auth/invalid-email") {
+        setEmailError("Email is invalid");
       }
     }
   };

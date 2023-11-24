@@ -1,16 +1,10 @@
 import React, { useState } from "react";
-import { Image, StyleSheet, Text, View, TouchableOpacity, Alert } from "react-native";
+import {  StyleSheet, Text, View, TouchableOpacity, Alert } from "react-native";
 import { useNavigation } from "@react-navigation/native";
-import Ionicons from 'react-native-vector-icons/Ionicons';
-import {
-  getAuth,
-  signInWithEmailAndPassword,
-  sendPasswordResetEmail,
-} from "firebase/auth";
+
 import Button from "../components/Button";
 // input InputText || Component
 import InputText from "../components/InputText";
-import ShakeFeedback from "../components/ShakeFeedback";
 import { loginUser } from "../services/authService";
 import SignupModal from "../components/SignupModal";
 import ForgotPassModal from "../components/ForgotPassModal";
@@ -31,7 +25,7 @@ const LoginScreen = () => {
   const handleLogin = async ({onCloseModal}) => {
     // Close the modal after successful login
     setLoginModalVisible(false);
-    console.log("Trying to log in & Close modal");
+    
     try {
       await loginUser(email, password);
       navigation.navigate('Home');

@@ -69,6 +69,7 @@ const HomeScreen = ({ navigation }) => {
       if (user) {
         
         fetchContacts();
+        console.log("contacts", contacts);
       } else {
         setContacts([]);
       }
@@ -90,10 +91,10 @@ const HomeScreen = ({ navigation }) => {
     };
   
     ShakeEventExpo.addListener(shakeHandler);
-  
-    return () => {
-      ShakeEventExpo.removeListener();
-    }; 
+
+  return () => {
+    ShakeEventExpo.removeListener(shakeHandler);
+  };
   }, []);
 
 
@@ -307,7 +308,7 @@ const HomeScreen = ({ navigation }) => {
         
       }, 5000); 
     } else {
-      // Reset status image immediately when shake is not detected
+      
       
       setStatusImageSource(require("../../assets/Inactive.png"));
       setLocationModalVisible(false); 
@@ -707,7 +708,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.3,
     shadowRadius: 4,
     elevation: 5,
-    marginBottom: 16,
+    marginBottom: 56,
     paddingHorizontal: 16,
     paddingVertical: 12,
     minHeight: 200,
