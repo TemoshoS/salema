@@ -30,7 +30,7 @@ export default function App() {
         <Stack.Screen name='ProfileScreen' component={ProfileScreen} options={{ headerShown: false}} />
         <Stack.Screen name='Register' component={RegistrationScreen} options={{ headerShown: false , cardStyleInterpolator:CardStyleInterpolators.forHorizontalIOS }} />
         <Stack.Screen name='Login' component={LoginScreen} options={{ headerShown: false , cardStyleInterpolator:CardStyleInterpolators.forHorizontalIOS }} />
-        <Stack.Screen name='About' component={AboutScreen} options={{ title: 'About', headerShown: false, cardStyleInterpolator: CardStyleInterpolators.forVerticalIOS, }} />
+        <Stack.Screen name='About' component={AboutScreen} options={{ title: 'About', headerShown: true, cardStyleInterpolator: CardStyleInterpolators.forVerticalIOS, }} />
         <Stack.Screen name='ForgotPassword' component={ForgotPassword} options={{title: 'Reset Password', cardStyleInterpolator: CardStyleInterpolators.forVerticalIOS,}} />
         <Stack.Screen name='AboutScreen' component={ForgotPassword} options={{title: 'About', cardStyleInterpolator: CardStyleInterpolators.forVerticalIOS,}} />
         
@@ -77,7 +77,7 @@ export default function App() {
           name="About Us"
           component={AboutScreen}
           options={{
-            headerShown: false,
+            headerShown: true,
             tabBarIcon: ({ color, size }) => (
               <MaterialCommunityIcons
                 name="information-outline"

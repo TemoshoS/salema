@@ -1,13 +1,18 @@
 import React from "react";
-import { View, Image, Text, TouchableOpacity, StyleSheet } from "react-native";
+import { View, Image, Text, TouchableOpacity, StyleSheet, Pressable } from "react-native";
 
 const AppBar = ({ navigation, showProfileIcon = false, screenName }) => {
   const content = (
-    <View style={styles.content}>
+    <View style={styles.container}>
+      <Pressable style={styles.backButton}>
       <Image
-        source={require("../../assets/Arrow_Left.png")}
+        source={require("../../assets/Icon.png")}
+        
         style={styles.icon}
+        
       />
+      </Pressable>
+     
       <Text style={styles.text}>{screenName}</Text>
     </View>
   );
@@ -43,16 +48,17 @@ const styles = StyleSheet.create({
     height: "auto",
   },
   appNav: {
+    zIndex: 0,
     // width: '100%',
     flex: 1,
     backgroundColor: "#df2929",
-    // padding: 10,
+   // padding: 10,
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
     alignSelf: "stretch",
   },
-  content: {
+  container: {
     flexDirection: "row",
     alignItems: "center",
     gap: 10,
@@ -63,7 +69,9 @@ const styles = StyleSheet.create({
   icon: {
     width: 32,
     height: 32,
+    backgroundColor: "#FFF",
     margin: 12,
+  
   },
   text: {
     color: "#fff",

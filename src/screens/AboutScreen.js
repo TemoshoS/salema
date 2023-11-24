@@ -30,7 +30,7 @@ const AboutScreen = () => {
     <ScrollView stickyHeaderIndices={[0]}>
       <View style={styles.container}>
       {/* Topp App bar component */}
-        <AppBar navigation={navigation} showProfileIcon={false} screenName="About Us" />
+        {/* <AppBar navigation={navigation} showProfileIcon={false} screenName="About Us" /> */}
         
         <View style={styles.imageContainer}>
           <Image
