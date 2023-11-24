@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-import React, { useEffect, useState } from "react";
-import { View,StyleSheet,Text,Image,TouchableOpacity,Modal,ScrollView,TextInput} from "react-native";
-=======
+
 import React, { useEffect, useState, useRef } from "react";
 import {
   View,
@@ -14,7 +11,7 @@ import {
   TextInput,
   Alert,
 } from "react-native";
->>>>>>> b014243731dcb062f4e592e19c94f8560a1790ea
+
 import ChipButton from "../components/ChipButton";
 import {getContacts,addContact,updateContact,removeContact} from "../services/homeServices";
 import Button from "../components/Button";
@@ -22,14 +19,14 @@ import Button2 from "../components/Button2";
 import InputText from "../components/InputText";
 import { initializeAuthState } from "../services/homeServices";
 
-<<<<<<< HEAD
+
 import { ShakeEventExpo } from '../services/ShakeTrigger';
 import getLocationPermission from '../services/geolocation';
 import { Linking } from 'react-native';
-=======
+
 import { BottomSheetFlatList } from "@gorhom/bottom-sheet";
 import { BottomSheet } from "@rneui/base";
->>>>>>> b014243731dcb062f4e592e19c94f8560a1790ea
+
 
 const HomeScreen = ({ navigation }) => {
   const [currentUser, setCurrentUser] = useState(null);
@@ -46,7 +43,7 @@ const HomeScreen = ({ navigation }) => {
   const [noSignedInUserErr, setNoSignedInUserErr] = useState(false);
   const [location, setLocation] = useState(null);
   const [locationModalVisible, setLocationModalVisible] = useState(false);
-const [shakeStatusModalVisible, setShakeStatusModalVisible] = useState(false);
+  const [shakeStatusModalVisible, setShakeStatusModalVisible] = useState(false);
 
 
   const [enablePanDownToClose, setEnablePanDownToClose] = useState(true);
@@ -64,27 +61,23 @@ const [shakeStatusModalVisible, setShakeStatusModalVisible] = useState(false);
   });
 
   useEffect(() => {
-<<<<<<< HEAD
     const initializeAuth = async () => {
       const user = await initializeAuthState();
       setCurrentUser(user);
-=======
-    const auth = getAuth();
-
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
->>>>>>> b014243731dcb062f4e592e19c94f8560a1790ea
-      if (user) {
-        
-        fetchContacts();
-      } else {
-        setContacts([]);
-      }
+  
+      const auth = getAuth();
+  
+      const unsubscribe = onAuthStateChanged(auth, (user) => {
+        if (user) {
+          fetchContacts();
+        } else {
+          setContacts([]);
+        }
+      });
     };
-
+  
     initializeAuth();
-
-<<<<<<< HEAD
-
+  
     const shakeHandler = async () => {
       console.log('Shake detected!');
       const permissionResult = await getLocationPermission();
@@ -94,13 +87,6 @@ const [shakeStatusModalVisible, setShakeStatusModalVisible] = useState(false);
         setLocation(newLocation);
         setShakeStatusModalVisible(true);
         handleShake(true);
-=======
-  const fetchContacts = async () => {
-    try {
-      if (currentUser) {
-        const data = await getContacts();
-        setContacts(data);
->>>>>>> b014243731dcb062f4e592e19c94f8560a1790ea
       }
     };
   
@@ -108,9 +94,9 @@ const [shakeStatusModalVisible, setShakeStatusModalVisible] = useState(false);
   
     return () => {
       ShakeEventExpo.removeListener();
-    }; 
+    };
   }, []);
-
+  
 
 
   // Function to get user's contacts
@@ -128,7 +114,7 @@ const [shakeStatusModalVisible, setShakeStatusModalVisible] = useState(false);
     relationship: contact.relationship,
   });
   setConfirmationVisible(true);
-};
+ };
   //function to add new contact
 
   const showAddContactModal = () => {
@@ -148,9 +134,9 @@ const [shakeStatusModalVisible, setShakeStatusModalVisible] = useState(false);
   const handleAddContact = async () => {
     try {
       if (!currentUser) {
-<<<<<<< HEAD
+
         setNoSignedInUserErr("No user is signed in. Cannot add contact without a user.");
-=======
+
         // Alert user to sign in or create an acoount to see contact list
         Alert.alert(
           "Not Signed In",
@@ -168,7 +154,7 @@ const [shakeStatusModalVisible, setShakeStatusModalVisible] = useState(false);
           ]
         );
 
->>>>>>> b014243731dcb062f4e592e19c94f8560a1790ea
+
         return;
       } else{
         setNoSignedInUserErr(null);
@@ -193,18 +179,14 @@ const [shakeStatusModalVisible, setShakeStatusModalVisible] = useState(false);
       } else {
         setRelationshipError(null);
       }
-<<<<<<< HEAD
-      else {
-        setRelationshipError(null)
-      }
+
 
       const existingContacts = await getContacts(currentUser);  
       if(existingContacts.length >= 5){
         console.error('You can only add 5 contacts');
       }
 
-=======
->>>>>>> b014243731dcb062f4e592e19c94f8560a1790ea
+
 
       const contactWithUserId = { ...newContactData, userId: currentUser };
 
@@ -299,7 +281,7 @@ const [shakeStatusModalVisible, setShakeStatusModalVisible] = useState(false);
   // bottom sheet stuff
   const bottomSheetRef = useRef(null);
 
-<<<<<<< HEAD
+
   const handleShake = async (shakeDetected) => {
     setIsShakeDetected(shakeDetected);
   
@@ -324,7 +306,7 @@ const [shakeStatusModalVisible, setShakeStatusModalVisible] = useState(false);
   };
   
 
-=======
+
   const showBottomSheet = () => {
     bottomSheetRef.current?.expand();
   };
@@ -332,7 +314,7 @@ const [shakeStatusModalVisible, setShakeStatusModalVisible] = useState(false);
   const hideBottomSheet = () => {
     bottomSheetRef.current?.close();
   };
->>>>>>> b014243731dcb062f4e592e19c94f8560a1790ea
+
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
@@ -342,7 +324,7 @@ const [shakeStatusModalVisible, setShakeStatusModalVisible] = useState(false);
         accessibilityLabel="logo"
       />
       <Text>Your safety is just a shake away</Text>
-<<<<<<< HEAD
+
      {/* Staus image */}
      
      <View style={styles.textContent}>
@@ -354,13 +336,13 @@ const [shakeStatusModalVisible, setShakeStatusModalVisible] = useState(false);
       />
       
        
-=======
+
       {/* Staus image */}
 
       <View style={styles.textContent}>
         {/* HERE IS THE STATUS OF THE SHAKE APP {IN USE OR NOT} */}
         <ShakeFeedback />
->>>>>>> b014243731dcb062f4e592e19c94f8560a1790ea
+
 
         <Text style={styles.title}>"Shake to Alert"</Text>
         <Text style={styles.text}>
@@ -376,7 +358,7 @@ const [shakeStatusModalVisible, setShakeStatusModalVisible] = useState(false);
         accessibilityLabel="status signalimage"
       />
 
-<<<<<<< HEAD
+
       {/* CONTACT LIST CARD */}
       <View style={styles.cardContainer}>
         <Text style={styles.title}>Trusted Contacts</Text>
@@ -395,7 +377,7 @@ const [shakeStatusModalVisible, setShakeStatusModalVisible] = useState(false);
             ) : (
               <Text>No contacts available</Text>
             )}
-=======
+
       <BottomSheet ref={bottomSheetRef}>
         {/* Your components using BottomSheet go here */}
         <BottomSheetFlatList
@@ -443,7 +425,7 @@ const [shakeStatusModalVisible, setShakeStatusModalVisible] = useState(false);
               onPress={showAddContactModal}
               altText={"Add Contact"}
             />
->>>>>>> b014243731dcb062f4e592e19c94f8560a1790ea
+
           </View>
         </View>
       </BottomSheet> */}
@@ -561,11 +543,7 @@ const [shakeStatusModalVisible, setShakeStatusModalVisible] = useState(false);
                   setUpdatedContactData({ ...updatedContactData, name: text })
                 }
               />
-<<<<<<< HEAD
-        {nameError && <Text style={styles.errorText}>{nameError}</Text>}
-=======
               <br />
->>>>>>> b014243731dcb062f4e592e19c94f8560a1790ea
               <InputText
                 style={styles.input}
                 placeholder="Phone Number"
@@ -577,11 +555,7 @@ const [shakeStatusModalVisible, setShakeStatusModalVisible] = useState(false);
                   })
                 }
               />
-<<<<<<< HEAD
-{phoneError && <Text style={styles.errorText}>{phoneError}</Text>}
-=======
               <br />
->>>>>>> b014243731dcb062f4e592e19c94f8560a1790ea
               <InputText
                 style={styles.input}
                 placeholder="Relationship"
@@ -593,14 +567,6 @@ const [shakeStatusModalVisible, setShakeStatusModalVisible] = useState(false);
                   })
                 }
               />
-<<<<<<< HEAD
-              {relationshipError && <Text style={styles.errorText}>{relationshipError}</Text>}
-              <ScrollView style={{ maxHeight: 200, marginBottom: 10 }}>
-                {contacts ? (
-                  contacts.map((contact, index) => (
-                    <TouchableOpacity key={index}>
-                      <View>
-=======
 
               <br />
               {/* list available contacts */}
@@ -609,7 +575,6 @@ const [shakeStatusModalVisible, setShakeStatusModalVisible] = useState(false);
                   {filteredContacts ? (
                     filteredContacts.map((contact, index) => (
                       <TouchableOpacity key={index}>
->>>>>>> b014243731dcb062f4e592e19c94f8560a1790ea
                         <ChipButton
                           key={index}
                           title={contact.name}
@@ -637,11 +602,9 @@ const [shakeStatusModalVisible, setShakeStatusModalVisible] = useState(false);
                 />
               </View>
             </View>
-
           )}
         </View>
       </Modal>
-
       <Modal
   animationType="slide"
   transparent={true}
@@ -649,7 +612,7 @@ const [shakeStatusModalVisible, setShakeStatusModalVisible] = useState(false);
   onRequestClose={() => {
     setLocationModalVisible(false);
   }}
->
+ >
   <View style={styles.modalView}>
     <Text style={styles.modalText}>
       My Current location
@@ -666,12 +629,12 @@ const [shakeStatusModalVisible, setShakeStatusModalVisible] = useState(false);
     </TouchableOpacity>
     
   </View>
-</Modal>
+ </Modal>
 
+    
     </ScrollView>
   );
-};
-
+ };
 const styles = StyleSheet.create({
   container: {
     flex: 1,

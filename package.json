@@ -35,11 +35,11 @@
     "react-native-bottom-sheet": "^1.0.3",
     "react-native-elements": "^3.4.3",
     "react-native-geolocation-service": "^5.3.1",
-<<<<<<< HEAD
+
     "react-native-modal": "^13.0.1",
-=======
+
     "react-native-modalize": "^2.1.1",
->>>>>>> b014243731dcb062f4e592e19c94f8560a1790ea
+
     "react-native-permissions": "^3.10.1",
     "react-native-safe-area-context": "4.6.3",
     "react-native-sms": "^1.11.0",
