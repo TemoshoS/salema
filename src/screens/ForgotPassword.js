@@ -12,11 +12,9 @@ import InputText from "../components/InputText";
 import ShakeFeedback from "../components/ShakeFeedback";
 import { resetPassword } from "../services/authService";
 
-const ForgotPasswordScreen = () => {
+const ForgotPassword = () => {
   const [email, setEmail] = useState("");
 
-
- 
 const handleForgotPassword = async () => {  
   try {
     await resetPassword(email);
@@ -45,7 +43,7 @@ const handleForgotPassword = async () => {
         </View>
       </View>
 
-      {/* Signup Form */}
+      {/* Reset Password Form Section */}
       <View style={styles.overlay}></View>
       <View style={styles.signupForm}>
         <View style={styles.formContent}>
@@ -54,8 +52,9 @@ const handleForgotPassword = async () => {
           <InputText
             value={email}
             onChangeText={(text) => setEmail(text)}
-            placeholder="Email"
+            placeholder="existingEmail@123.com"
             placeholderTextColor="#f2f2f2"
+            label={"Email"}
           />
 
 
@@ -81,8 +80,7 @@ const handleForgotPassword = async () => {
   );
 };
 
-export default ForgotPasswordScreen;
-
+// export default ForgotPasswordScreen;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -155,6 +153,15 @@ const styles = StyleSheet.create({
     gap: 8,
     justifyContent: "flex-end",
     marginTop: 12,
+  },
+  buttonSection: {
+    width: "100%",
+    height: "auto",
+    position: "relative",
+    flexDirection: "row",
+    flexWrap: "wrap",
+    gap: 10,
+    justifyContent: "space-between",
   },
   input: {
     width: 300,
@@ -277,3 +284,5 @@ const styles = StyleSheet.create({
     // marginVertical: 20,
   },
 });
+
+export default ForgotPassword;

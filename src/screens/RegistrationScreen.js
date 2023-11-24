@@ -33,8 +33,9 @@ const RegistrationScreen = () => {
   const [passwordStrength, setPasswordStrength] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [isConfirmationVisible, setIsConfirmationVisible] = useState(false);
-
+ const [isLoginModalVisible, setLoginModalVisible] = useState(false);
   const navigation = useNavigation();
+
 
   const handlePasswordChange = (text, isConfirmPassword = false) => {
     if (!isConfirmPassword) {
@@ -104,8 +105,6 @@ const RegistrationScreen = () => {
       // Create a user using Firebase Authentication
       const user = await registerUser(email, password, name, phone);
 
-     
-
       setName("");
       setEmail("");
       setPhoneNumber("");
@@ -132,15 +131,13 @@ const RegistrationScreen = () => {
   };
 
   const handleLogin = () => {
-    navigation.navigate("Login");
+    // navigation.navigate("Login"); we nolonger nav to login
+    setLoginModalVisible(true);
   };
 
   return (
     <View style={styles.container}>
-      <Image source={Union} style={styles.image} />
-      <Image source={Vector} style={styles.imageVector} />
-      <Text style={styles.boldText}>Shake to Alert</Text>
-      <Text style={styles.readyText}>READY</Text>
+     
 
       {/* Signup Form */}
       <View style={styles.overlay}></View>
@@ -149,25 +146,28 @@ const RegistrationScreen = () => {
           <Text style={styles.title}>Signup</Text>
           <InputText
             style={styles.input}
-            placeholder="Full Name"
+            placeholder="name & surname"
             placeholderTextColor="white"
             onChangeText={(text) => setName(text)}
+            label={"Full Name"}
           />
           {nameError && <Text style={styles.errorText}>{nameError}</Text>}
 
           <InputText
             style={styles.input}
-            placeholder="Email"
+            placeholder="username@123.com"
             placeholderTextColor="white"
             onChangeText={(text) => setEmail(text)}
+            label={"Email"}
           />
           {emailError && <Text style={styles.errorText}>{emailError}</Text>}
 
           <InputText
             style={styles.input}
-            placeholder="Phone Number"
+            placeholder="0123456789"
             placeholderTextColor="white"
             onChangeText={(text) => setPhoneNumber(text)}
+            label={"Number"}
           />
           {phoneError && <Text style={styles.errorText}>{phoneError}</Text>}
 
@@ -177,19 +177,22 @@ const RegistrationScreen = () => {
               onPress={toggleShowPassword}
               accessibilityLabel="show password"
             >
-              <Feather
-                accessibilityLabel="show password icon"
-                name={showPassword ? "eye-off" : "eye"}
-                size={19}
-                color="white"
-              />
+             
             </TouchableOpacity>
             <InputText
               style={styles.input}
-              placeholder="Password"
+              placeholder="username@123.com"
               onChangeText={(text) => handlePasswordChange(text)}
               secureTextEntry={!showPassword}
+              label={"Password"}
             />
+             <Feather
+                accessibilityLabel="show password"
+                name={showPassword ? "eye-off" : "eye"}
+                size={19}
+                color="white"
+                style={styles.icon}
+              />
           </View>
           {/* WARNING TEXT */}
           {passwordError && (
@@ -200,6 +203,7 @@ const RegistrationScreen = () => {
             placeholder="Confirm Password"
             onChangeText={(text) => handlePasswordChange(text, true)} // Pass true to indicate it's the Confirm Password field
             secureTextEntry={!showPassword}
+            label={"Confirm Password"}
           />
           {reenterPasswordError && (
             <Text style={styles.errorText}>{reenterPasswordError}</Text>
@@ -231,36 +235,18 @@ const RegistrationScreen = () => {
             </TouchableOpacity>
           </View>
 
-          <Modal
-            animationType="slide"
-            transparent={true}
-            visible={isConfirmationVisible}
-            onRequestClose={hideConfirmation}
-          >
-            <View style={styles.confirmationModal}>
-              <Text style={styles.confirmTxt}>
-                User registered successfully
-              </Text>
-              <TouchableOpacity onPress={hideConfirmation}>
-                <Text style={styles.confirmTxt}>Ok</Text>
-              </TouchableOpacity>
-            </View>
-          </Modal>
+          
         </View>
       </View>
 
-      {/* Image at the bottom center */}
-      <Image
-        source={require("../../assets/undraw.png")}
-        style={styles.bottomImage}
-      />
+     
     </View>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
+    // flex: 1,
     alignItems: "center",
     justifyContent: "center",
     alignSelf: "center",
@@ -335,7 +321,7 @@ const styles = StyleSheet.create({
   TextInputGroup: {
     width: "100%",
     alignItems: "center",
-    justifyContent: "space-between",
+    justifyContent: "center",
     flexDirection: "row",
     gap: 20,
   },
@@ -484,6 +470,12 @@ const styles = StyleSheet.create({
     resizeMode: "cover",
     // marginVertical: 20,
   },
+  icon: {
+    width: 30,
+    height: 30,
+    right: 0,
+    position: "absolute",
+  }
 });
 
 export default RegistrationScreen;

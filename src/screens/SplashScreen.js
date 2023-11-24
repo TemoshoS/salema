@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useRef } from "react";
 import { View, StyleSheet, Text, Image } from "react-native";
 // Navigation Contents
 import { useNavigation } from "@react-navigation/native";
@@ -6,12 +6,36 @@ import { useNavigation } from "@react-navigation/native";
 import BottomNav from "../components/BottomNav";
 import Button from "../components/Button";
 import ShakeFeedback from "../components/ShakeFeedback";
+// Modals
+import LoginModal from "../components/LoginModal";
+import SignupModal from "../components/SignupModal";
 
 const SplashScreen = () => {
   const navigation = useNavigation();
 
+  const [isLoginModalVisible, setLoginModalVisible] = useState(false);
+  const [isSignupModalVisible, setSignupModalVisible] = useState(false);
+  const [isForgotPassModalVisible, setForgotPassModalVisible] = useState(false);
+  const bottomSheetRef = useRef(null);
+
+  const handleLogin = () => {
+    setLoginModalVisible(true);
+  };
+
+  const handleSignup = () => {
+    setSignupModalVisible(true);
+  };
+
+  const closeModal = () => {
+    setLoginModalVisible(false);
+    setSignupModalVisible(false);
+  };
+
   return (
     <View style={styles.container}>
+    <LoginModal isVisible={isLoginModalVisible} onClose={closeModal} />
+      <SignupModal isVisible={isSignupModalVisible} onClose={closeModal} />
+      
       <Image
         source={require("../../assets/Union.png")}
         style={styles.logoImg}
@@ -23,11 +47,6 @@ const SplashScreen = () => {
       <View style={styles.textContent}>
         {/* HERE IS THE STATUS OF THE SHAKE APP {IN USE OR NOT} */}
         <ShakeFeedback />
-        {/* <Image
-          source={require("/assets/Vector.png")}
-          style={styles.signalImg}
-          accessibilityLabel="status signalimage"
-        /> */}
 
         <Text style={styles.title}>"Shake to Alert"</Text>
         <Text style={styles.text}>
@@ -47,18 +66,21 @@ const SplashScreen = () => {
         <Button
           style={styles.bgGreen}
           title={"Signup"}
-          onPress={() => navigation.navigate("Register")}
+          onPress={() => handleSignup()}
           altText={"register"}
           color={"#055a2b"}
         />
         <Button
           style={styles.bgGreen}
           title={"Log in"}
-          onPress={() => navigation.navigate("Login")}
+          onPress={() => handleLogin()}
           altText={"Login"}
           color={"#055a2b"}
         />
       </View>
+      {/* modals */}
+
+      
     </View>
   );
 };

@@ -12,6 +12,8 @@ import Button from "../components/Button";
 import InputText from "../components/InputText";
 import ShakeFeedback from "../components/ShakeFeedback";
 import { loginUser } from "../services/authService";
+import SignupModal from "../components/SignupModal";
+import ForgotPassModal from "../components/ForgotPassModal";
 
 
 const LoginScreen = () => {
@@ -19,6 +21,8 @@ const LoginScreen = () => {
   const [password, setPassword] = useState("");
   const [loginAttempts, setLoginAttempts] = useState(0);
   const [showPassword, setShowPassword] = useState(false);
+  const [isForgotPassModalVisible, setForgotPassModalVisible] = useState(false);
+  const [isRegisterModalVisible, setRegisterModalVisible] = useState(false);
   const navigation = useNavigation();
 
   const handleLogin = async () => {
@@ -39,11 +43,13 @@ const LoginScreen = () => {
 
   // Handle Register button click
 const handleRegister = () => {
-  navigation.navigate("Register");
+  // navigation.navigate("Register");
+  setRegisterModalVisible(true);
 }
   // Handle Forgot password button click
   const handleForgotPassword = () => {
-    navigation.navigate("ForgotPassword");
+    // navigation.navigate("ForgotPassword");
+    setForgotPassModalVisible(true);
   }
 
 
@@ -53,45 +59,31 @@ const handleRegister = () => {
 
   return (
     <View style={styles.container}>
-      <View style={styles.formContent}>
-        <Image
-          source={require("../../assets/Union.png")}
-          style={styles.logoImg}
-          accessibilityLabel="logo image"
-        />
-        <ShakeFeedback />
-        <Text style={styles.TextButton}>Your safety is just a shake away</Text>
-        {/* Staus image */}
-
-        <View style={styles.textContent}>
-          {/* HERE IS THE STATUS OF THE SHAKE APP {IN USE OR NOT} */}
-
-          <Text style={styles.boldText}>Shake to Alert</Text>
-          <Text style={styles.readyText}>READY</Text>
-          {/* <Text style={styles.title}>"Shake to Alert"</Text> */}
-        </View>
-      </View>
-
       {/* Signup Form */}
       <View style={styles.overlay}></View>
       <View style={styles.signupForm}>
         <View style={styles.formContent}>
+        <View>
           <Text style={styles.title}>Login</Text>
+        </View>
+          
 
           <InputText
             value={email}
             onChangeText={(text) => setEmail(text)}
-            placeholder="Email"
+            placeholder="username@123.com"
             placeholderTextColor="#f2f2f2"
+            label={"Email"}
           />
 
           <InputText
             value={password}
             onChangeText={(text) => setPassword(text)}
             style={styles.input}
-            placeholder="Password"
+            placeholder="password"
             secureTextEntry={true} // Hide the password with stars
             placeholderTextColor="#f2f2f2"
+            label={"Password"}
           />
         </View>
 
@@ -106,7 +98,7 @@ const handleRegister = () => {
 
         <View style={styles.linksContainer}>
         {/* NAVIGATION LINKS */}
-        <TouchableOpacity style={styles.button} onPress={handleForgotPassword}>
+         <TouchableOpacity style={styles.button} onPress={handleForgotPassword}>
           <Text style={{ color: "#FFF" }}>Forgot password</Text>
         </TouchableOpacity>
 
@@ -115,12 +107,11 @@ const handleRegister = () => {
         </TouchableOpacity>
         </View>
       </View>
+      
+      {/* Modals */}
+      <ForgotPassModal isVisible={isForgotPassModalVisible} onClose={() => setForgotPassModalVisible(false)} />
+      <SignupModal isVisible={isRegisterModalVisible} onClose={() => setRegisterModalVisible(false)} />
 
-      {/* Image at the bottom center */}
-      <Image
-        source={require("../../assets/undraw.png")}
-        style={styles.bottomImage}
-      />
     </View>
   );
 };
@@ -129,7 +120,7 @@ export default LoginScreen;
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
+    // flex: 1,
     alignItems: "center",
     justifyContent: "center",
     // marginTop: 25,
@@ -179,7 +170,7 @@ const styles = StyleSheet.create({
     flexDirection: "column",
     alignSelf: "stretch",
     marginHorizontal: 8,
-    bottom: 100,
+    // bottom: 100,
   },
   signupText: {
     fontWeight: "bold",
@@ -287,6 +278,8 @@ const styles = StyleSheet.create({
     height: 30,
   },
   overlay: {
+    display: "flex",
+    flex: 1,
     position: "absolute",
     top: 0,
     left: 0,

@@ -8,6 +8,7 @@ import {
   Linking,
 } from "react-native";
 import { ScrollView } from "react-native-web";
+import AppBar from "../components/Appbar";
 
 const AboutScreen = () => {
   // Function to open the Facebook page in the browser
@@ -26,15 +27,11 @@ const AboutScreen = () => {
   };
 
   return (
-    <ScrollView>
+    <ScrollView stickyHeaderIndices={[0]}>
       <View style={styles.container}>
-        <View style={styles.content}>
-          <Image
-            source={require("../../assets/Arrow_Left.png")}
-            style={styles.icon}
-          />
-          <Text style={styles.text}>About us</Text>
-        </View>
+      {/* Topp App bar component */}
+        <AppBar navigation={navigation} showProfileIcon={false} screenName="About Us" />
+        
         <View style={styles.imageContainer}>
           <Image
             source={require("../../assets/Frame.png")}
@@ -61,44 +58,49 @@ const AboutScreen = () => {
             />
           </TouchableOpacity>
         </View>
-        <View style={styles.headingContainer}>
-          <Text style={styles.heading}>Your Trusted Contacts</Text>
-          <Text style={styles.Text}>
-            Salema empowers you to build a network of people you trust in times
-            of need. Add your friends, family, and close associates to your
-            contacts list. They'll be the first to know when you need help.
-          </Text>
-        </View>
-        <View style={styles.backgroundServiceStatus}>
-          <Text style={styles.heading2}>Background Service Status</Text>
-          <View style={styles.statusTextContainer}>
-            <View style={styles.mainIconContainer}>
+        <View style={styles.textContent}>
+          <View style={styles.paragraphContainer}>
+            <Text style={styles.heading}>Your Trusted Contacts</Text>
+            <Text style={styles.text}>
+              Salema empowers you to build a network of people you trust in
+              times of need. Add your friends, family, and close associates to
+              your contacts list. They'll be the first to know when you need
+              help.
+            </Text>
+          </View>
+
+          <View style={styles.paragraphContainer}>
+            <View style={styles.backgroundServiceStatus}>
               <Image
                 source={require("../../assets/main_icon.png")}
                 style={styles.mainIcon}
               />
+              <Text style={styles.heading}>Background Service Status</Text>
             </View>
-            <Text style={styles.statusText2}>
-              The core of Salema's magic lies in its ability to work quietly in
-              the background, ready to jump into action when you shake your
-              phone. Our background service is currently [Active/Inactive].
-              Here's why it matters: It ensures a swift response in your moments
-              of distress.
-            </Text>
+            <View style={styles.statusTextContainer}>
+              {/* <View style={styles.mainIconContainer}></View> */}
+              <Text style={styles.text}>
+                The core of Salema's magic lies in its ability to work quietly
+                in the background, ready to jump into action when you shake your
+                phone. Our background service is currently [Active/Inactive].
+                Here's why it matters: It ensures a swift response in your
+                moments of distress.
+              </Text>
+            </View>
           </View>
-        </View>
-        <View style={styles.bottomTextContainer}>
-          <Text style={styles.bottomText}>
-            Your safety is just a shake away.
-          </Text>
-        </View>
-        <View style={styles.privacyPolicyContainer}>
-          <TouchableOpacity onPress={handleTwitterPress}>
-            <Text style={styles.extraLinks}>Privacy Policy</Text>
-          </TouchableOpacity>
-          <TouchableOpacity onPress={handleTwitterPress}>
-            <Text style={styles.extraLinks}>Terms & Conditions</Text>
-          </TouchableOpacity>
+          <View style={styles.paragraphContainer}>
+            <Text style={styles.bottomText}>
+              Your safety is just a shake away.
+            </Text>
+            <View style={styles.privacyPolicyContainer}>
+              <TouchableOpacity onPress={handleTwitterPress}>
+                <Text style={styles.extraLinks}>Privacy Policy</Text>
+              </TouchableOpacity>
+              <TouchableOpacity onPress={handleTwitterPress}>
+                <Text style={styles.extraLinks}>Terms & Conditions</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
         </View>
       </View>
     </ScrollView>
@@ -112,18 +114,53 @@ const styles = StyleSheet.create({
     justifyContent: "flex-start",
     paddingTop: 35,
     gap: 8,
+    padding: 10,
   },
   content: {
     flexDirection: "row",
     alignItems: "center",
     marginLeft: 0,
   },
+  paragraphContainer: {
+    alignItems: "left",
+    justifyContent: "flex-start",
+    gap: 10,
+  },
+  textContent: {
+    display: "flex",
+    alignItems: "left",
+    justifyContent: "flex-start",
+    flexDirection: "column",
+    gap: 30,
+    padding: 10,
+    alignSelf: "stretch",
+  },
   text: {
-    fontFamily: "Roboto",
-    fontWeight: "bold",
-    fontSize: 25,
-    letterSpacing: 0.4,
+    // fontFamily: "Roboto",
+    // fontWeight: "bold",
+    // fontSize: 25,
+    // letterSpacing: 0.4,
     color: "#000000",
+    textAlign: "left",
+    textTransform: "capitalize",
+  },
+  header: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginLeft: 10,
+    paddingVertical: 10,
+    borderBottomWidth: 1,
+    borderBottomColor: "#e1e1e1", // Adjust as needed
+    backgroundColor: "#ffffff", // Adjust as needed
+  },
+  icon: {
+    width: 45,
+    height: 20,
+  },
+  NavText: {
+    fontSize: 18,
+    fontWeight: "bold",
+    marginLeft: 10,
   },
   icon: {
     width: 45,
@@ -158,28 +195,26 @@ const styles = StyleSheet.create({
   },
   headingContainer: {
     marginTop: -1,
+    padding: 10,
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "flex-start",
+    gap: 10,
+    alignSelf: "stretch",
   },
   heading: {
-    fontSize: 25,
+    fontSize: 20,
     fontWeight: "bold",
     color: "#000000",
     fontStyle: "plus jarkarta sans",
-  },
-  heading2: {
-    fontSize: 25,
-    fontWeight: "bold",
-    color: "#000000",
-    fontStyle: "plus jarkarta sans",
-    marginTop: 20,
-    marginLeft: 30,
   },
   Text: {
-    fontSize: 15,
+    fontSize: 14,
     fontStyle: "plus jakarta sans",
     color: "#000000",
     marginTop: 10,
-    width: 353,
-    height: 72,
+    width: 400,
+    // height: 72,
   },
   statusText2: {
     fontSize: 15,
@@ -191,15 +226,20 @@ const styles = StyleSheet.create({
     marginLeft: 15,
   },
   backgroundServiceStatus: {
-    marginTop: 20,
+    alignItems: "center",
+    // justifyContent: "center",
+    gap: 10,
+    flexDirection: "row",
   },
   mainIconContainer: {
     alignItems: "flex-start",
   },
   mainIcon: {
-    width: 30,
-    height: 30,
-    marginTop: -34,
+    width: 32,
+    height: 32,
+    // position: "relative",
+    alignItems: "center",
+    justifyContent: "center",
   },
   bottomTextContainer: {
     marginTop: 20,
@@ -211,20 +251,17 @@ const styles = StyleSheet.create({
     color: "#000000",
     fontStyle: "plus jakarta sans",
     textAlign: "left",
-    marginLeft: 30,
-    marginTop: 40,
   },
   privacyPolicyContainer: {
-    marginTop: 20,
-    marginBottom: 20,
     color: "green",
-    fontSize: 30,
+    fontSize: 18,
     fontStyle: "plus jakarta sans",
-    marginLeft: -220,
+    // marginLeft: -10,
     gap: 16,
   },
   extraLinks: {
     color: "green",
+    fontSize: 18,
   },
 });
 
