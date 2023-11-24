@@ -36,8 +36,8 @@ export default function InputText({
 
 const styles = StyleSheet.create({
   input: {
-    width: 350,
-    height: 40,
+    maxWidth: 350,
+    minHeight: 40,
     borderBottomWidth: 1,
     borderColor: "white",
     color: "white",

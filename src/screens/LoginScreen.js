@@ -14,6 +14,7 @@ import ShakeFeedback from "../components/ShakeFeedback";
 import { loginUser } from "../services/authService";
 import SignupModal from "../components/SignupModal";
 import ForgotPassModal from "../components/ForgotPassModal";
+import LoginModal from "../components/LoginModal";
 
 
 const LoginScreen = () => {
@@ -23,9 +24,14 @@ const LoginScreen = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [isForgotPassModalVisible, setForgotPassModalVisible] = useState(false);
   const [isRegisterModalVisible, setRegisterModalVisible] = useState(false);
+  const[isLoginModalVisible, setLoginModalVisible] = useState(false);
   const navigation = useNavigation();
+  // import {onCloseModal} from "../components/LoginModal";
 
-  const handleLogin = async () => {
+  const handleLogin = async ({onCloseModal}) => {
+    // Close the modal after successful login
+    setLoginModalVisible(false);
+    console.log("Trying to log in & Close modal");
     try {
       await loginUser(email, password);
       navigation.navigate('Home');
@@ -57,15 +63,19 @@ const handleRegister = () => {
     setShowPassword(!showPassword);
   };
 
+  const closeModal = () => {
+    console.log("closed modal on splash")
+    setLoginModalVisible(false);
+    setForgotPassModalVisible(false)
+  };
+
   return (
     <View style={styles.container}>
       {/* Signup Form */}
       <View style={styles.overlay}></View>
       <View style={styles.signupForm}>
         <View style={styles.formContent}>
-        <View>
           <Text style={styles.title}>Login</Text>
-        </View>
           
 
           <InputText
@@ -111,6 +121,7 @@ const handleRegister = () => {
       {/* Modals */}
       <ForgotPassModal isVisible={isForgotPassModalVisible} onClose={() => setForgotPassModalVisible(false)} />
       <SignupModal isVisible={isRegisterModalVisible} onClose={() => setRegisterModalVisible(false)} />
+      <LoginModal isVisible={isLoginModalVisible} onClose={() => setLoginModalVisible(false)} />
 
     </View>
   );
@@ -123,7 +134,7 @@ const styles = StyleSheet.create({
     // flex: 1,
     alignItems: "center",
     justifyContent: "center",
-    // marginTop: 25,
+    marginTop: 25,
     // paddingHorizontal: 8,
   },
   image: {
