@@ -1,36 +1,20 @@
 import React, { useEffect, useState } from "react";
-import {
-  View,
-  StyleSheet,
-  Text,
-  Image,
-  TouchableOpacity,
-  Modal,
-  ScrollView,
-  TextInput,
-} from "react-native";
+import { View,StyleSheet,Text,Image,TouchableOpacity,Modal,ScrollView,TextInput} from "react-native";
 import ChipButton from "../components/ChipButton";
-import {
-  getContacts,
-  addContact,
-  updateContact,
-  removeContact,
-} from "../services/homeServices";
-import { getAuth, onAuthStateChanged } from "@firebase/auth";
-import ShakeTrigger from "../services/ShakeTrigger";
-import TextField from "../components/TextField";
+import {getContacts,addContact,updateContact,removeContact} from "../services/homeServices";
 import Button from "../components/Button";
 import Button2 from "../components/Button2";
-import ShakeFeedback from "../components/ShakeFeedback";
 import InputText from "../components/InputText";
+import { initializeAuthState } from "../services/homeServices";
 
+import { ShakeEventExpo } from '../services/ShakeTrigger';
+import getLocationPermission from '../services/geolocation';
+import { Linking } from 'react-native';
 
 
 
 const HomeScreen = () => {
   const [currentUser, setCurrentUser] = useState(null);
-  const [userLocation, setUserLocation] = useState(null);
-  const [userLocationMessage, setUserLocationMessage] = useState("");
   const [contacts, setContacts] = useState([]);
   const [isConfirmationVisible, setConfirmationVisible] = useState(false);
   const [selectedContact, setSelectedContact] = useState(null);
@@ -40,6 +24,12 @@ const HomeScreen = () => {
   const [phoneError, setPhoneError] = useState(null);
   const [relationshipError, setRelationshipError] = useState(null);
   const [isShakeDetected, setIsShakeDetected] = useState(false);
+  const [statusImageSource, setStatusImageSource] = useState(require("../../assets/Inactive.png"));
+  const [noSignedInUserErr, setNoSignedInUserErr] = useState(false);
+  const [location, setLocation] = useState(null);
+  const [locationModalVisible, setLocationModalVisible] = useState(false);
+const [shakeStatusModalVisible, setShakeStatusModalVisible] = useState(false);
+
 
   const [newContactData, setNewContactData] = useState({
     name: "",
@@ -55,49 +45,57 @@ const HomeScreen = () => {
 
 
   useEffect(() => {
-
-    const auth = getAuth();
-
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
+    const initializeAuth = async () => {
+      const user = await initializeAuthState();
+      setCurrentUser(user);
       if (user) {
-        setCurrentUser(user.uid);
-        getLocationPermission();
+        
+        fetchContacts();
       } else {
-        setCurrentUser(null);
         setContacts([]);
       }
-    });
+    };
 
-    fetchContacts();
-    return unsubscribe;
-  }, [currentUser]);
+    initializeAuth();
 
 
-  const fetchContacts = async () => {
-    try {
-      if (currentUser) {
-        const data = await getContacts();
-        setContacts(data);
+    const shakeHandler = async () => {
+      console.log('Shake detected!');
+      const permissionResult = await getLocationPermission();
+  
+      if (permissionResult) {
+        const newLocation = permissionResult.userLocation;
+        setLocation(newLocation);
+        setShakeStatusModalVisible(true);
+        handleShake(true);
       }
-    } catch (error) {
-      console.error("Error fetching contacts:", error);
-    }
-  };
+    };
+  
+    ShakeEventExpo.addListener(shakeHandler);
+  
+    return () => {
+      ShakeEventExpo.removeListener();
+    }; 
+  }, []);
 
-  const filteredContacts = contacts.filter(
-    (contact) => contact.userId === currentUser
-  );
 
-  const showContactDetails = (contact) => {
-    setSelectedContact(contact);
-    setUpdatedContactData({
-      name: contact.name,
-      phoneNumber: contact.phoneNumber,
-      relationship: contact.relationship,
+
+  // Function to get user's contacts
+ const fetchContacts = async () => {
+    await getContacts(currentUser).then((data) => {
+      setContacts(data);
     });
-    setConfirmationVisible(true);
-  };
+ };
 
+ const showContactDetails = (contact) => {
+  setSelectedContact(contact);
+  setUpdatedContactData({
+    name: contact.name,
+    phoneNumber: contact.phoneNumber,
+    relationship: contact.relationship,
+  });
+  setConfirmationVisible(true);
+};
   //function to add new contact
 
   const showAddContactModal = () => {
@@ -117,10 +115,10 @@ const HomeScreen = () => {
   const handleAddContact = async () => {
     try {
       if (!currentUser) {
-        console.error(
-          "No user is signed in. Cannot add contact without a user."
-        );
+        setNoSignedInUserErr("No user is signed in. Cannot add contact without a user.");
         return;
+      } else{
+        setNoSignedInUserErr(null);
       }
 
       if (!newContactData.name) {
@@ -145,6 +143,10 @@ const HomeScreen = () => {
         setRelationshipError(null)
       }
 
+      const existingContacts = await getContacts(currentUser);  
+      if(existingContacts.length >= 5){
+        console.error('You can only add 5 contacts');
+      }
 
 
       const contactWithUserId = { ...newContactData, userId: currentUser };
@@ -182,6 +184,26 @@ const HomeScreen = () => {
         console.error("No updated data provided");
         return;
       }
+      if (!updatedContactData.name) {
+        setNameError('Please enter Name');
+        return;
+      } 
+      else{
+        setNameError(null);
+      }
+      if(!updatedContactData.phoneNumber){
+        setPhoneError('Please enter Phone number');
+        return;
+      }
+      {
+        setPhoneError(null);
+      }
+      if(!updatedContactData.relationship){
+        setRelationshipError('Please enter Relationship');
+        return;
+      }else{
+        setRelationshipError(null);
+      }
 
       await updateContact(selectedContact.id, updatedContactData);
       fetchContacts();
@@ -198,6 +220,7 @@ const HomeScreen = () => {
       phoneNumber: contact.phoneNumber,
       relationship: contact.relationship,
     });
+    setSelectedContact(contact);
     setIsEditing(true);
   };
 
@@ -217,6 +240,30 @@ const HomeScreen = () => {
     setConfirmationVisible(false);
   };
 
+  const handleShake = async (shakeDetected) => {
+    setIsShakeDetected(shakeDetected);
+  
+    if (shakeDetected) {
+      // Show location modal
+      setLocationModalVisible(true);
+  
+      // Set status image to main_icon.png for 5 seconds
+      setStatusImageSource(require("../../assets/main_icon.png"));
+  
+      // Reset shake detection after 5 seconds
+      setTimeout(() => {
+        setIsShakeDetected(false);
+        setStatusImageSource(require("../../assets/Inactive.png"));
+        setLocationModalVisible(false); // Close the location modal
+      }, 5000); // 5000 milliseconds = 5 seconds
+    } else {
+      // Reset status image immediately when shake is not detected
+      setStatusImageSource(require("../../assets/Inactive.png"));
+      setLocationModalVisible(false); // Close the location modal if it's open
+    }
+  };
+  
+
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
@@ -227,11 +274,16 @@ const HomeScreen = () => {
         accessibilityLabel="logo image"
       />
       <Text>Your safety is just a shake away</Text>
-      {/* Staus image */}
-      {/* <ShakeTrigger onShake={(isShakeDetected)=>setIsShakeDetected(isShakeDetected)}/> */}
-      <View style={styles.textContent}>
-        <ShakeFeedback />
-        {/* Display user's location */}
+     {/* Staus image */}
+     
+     <View style={styles.textContent}>
+      <Image
+        source={statusImageSource}
+        style={styles.BgImage}
+        accessibilityLabel="status signal image"
+        
+      />
+      
        
 
         <Text style={styles.title}>"Shake to Alert"</Text>
@@ -253,8 +305,8 @@ const HomeScreen = () => {
         <Text style={styles.title}>Trusted Contacts</Text>
         <View style={styles.contactCard}>
           <View style={styles.contactList}>
-            {filteredContacts ? (
-              filteredContacts.map((contact, index) => (
+            {contacts ? (
+              contacts.map((contact, index) => (
                 <View key={index}>
                   <ChipButton
                     key={index}
@@ -389,7 +441,7 @@ const HomeScreen = () => {
                   setUpdatedContactData({ ...updatedContactData, name: text })
                 }
               />
-
+        {nameError && <Text style={styles.errorText}>{nameError}</Text>}
               <InputText
                 style={styles.input}
                 placeholder="Phone Number"
@@ -401,7 +453,7 @@ const HomeScreen = () => {
                   })
                 }
               />
-
+{phoneError && <Text style={styles.errorText}>{phoneError}</Text>}
               <InputText
                 style={styles.input}
                 placeholder="Relationship"
@@ -413,9 +465,10 @@ const HomeScreen = () => {
                   })
                 }
               />
+              {relationshipError && <Text style={styles.errorText}>{relationshipError}</Text>}
               <ScrollView style={{ maxHeight: 200, marginBottom: 10 }}>
-                {filteredContacts ? (
-                  filteredContacts.map((contact, index) => (
+                {contacts ? (
+                  contacts.map((contact, index) => (
                     <TouchableOpacity key={index}>
                       <View>
                         <ChipButton
@@ -451,9 +504,37 @@ const HomeScreen = () => {
               </View>
 
             </View>
+
           )}
         </View>
       </Modal>
+
+      <Modal
+  animationType="slide"
+  transparent={true}
+  visible={locationModalVisible}
+  onRequestClose={() => {
+    setLocationModalVisible(false);
+  }}
+>
+  <View style={styles.modalView}>
+    <Text style={styles.modalText}>
+      My Current location
+    </Text>
+    <TouchableOpacity
+      style={{ ...styles.openButton, backgroundColor: '#2196F3' }}
+      onPress={() =>
+        Linking.openURL(
+          `https://www.google.com/maps/?q=${location.latitude},${location.longitude}`
+        )
+      }
+    >
+      <Text style={styles.textStyle}>Open in Maps</Text>
+    </TouchableOpacity>
+    
+  </View>
+</Modal>
+
     </ScrollView>
   );
 };
@@ -634,6 +715,36 @@ const styles = StyleSheet.create({
     minHeight: 52,
     backgroundColor: "#712626",
     width: "100%",
+  },
+  modalView: {
+    margin: 20,
+    backgroundColor: 'white',
+    borderRadius: 20,
+    padding: 35,
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
+  },
+  openButton: {
+    marginTop: 10,
+    borderRadius: 20,
+    padding: 10,
+    elevation: 2,
+  },
+  textStyle: {
+    color: 'white',
+    fontWeight: 'bold',
+    textAlign: 'center',
+  },
+  modalText: {
+    marginBottom: 15,
+    textAlign: 'center',
   },
 });
 

@@ -1,54 +1,39 @@
-import React, { useEffect } from 'react';
-import { View, Text, StyleSheet } from 'react-native';
 import { Accelerometer } from 'expo-sensors';
-import { Permissions } from 'expo-permissions';
+import * as Location from 'expo-location';
 
-const ShakeTrigger = ({ onShake }) => {
-  useEffect(() => {
-    const handleAcceleration = ({ x, y, z }) => {
-      // You can use accelerometer data (x, y, z) for motion detection
-      // Example: Trigger an action when a certain threshold is reached
-      if (Math.abs(x) > 2 || Math.abs(y) > 2 || Math.abs(z) > 2) {
-        onShake && onShake(true);
-      }
-    };
 
-    const requestAccelerometerPermission = async () => {
-      try {
-        const { status } = await Permissions.askAsync(Permissions.MOTION);
-        if (status !== 'granted') {
-          // Handle permission denied
-          console.log('Accelerometer permission denied.');
+const THRESHOLD = 150;
+
+export class ShakeEventExpo {
+  static async addListener(handler) {
+    let last_x, last_y, last_z;
+    let lastUpdate = 0;
+    // Request permission to access location
+    await Location.requestForegroundPermissionsAsync();
+    Accelerometer.addListener(accelerometerData => {
+      let { x, y, z } = accelerometerData;
+      let currTime = Date.now();
+      if ((currTime - lastUpdate) > 100) {
+        let diffTime = (currTime - lastUpdate);
+        lastUpdate = currTime;
+        let speed = Math.abs(x + y + z - last_x - last_y - last_z) / diffTime * 10000;
+        if (speed > THRESHOLD) {
+          // Shake detected, fetch location
+          Location.getCurrentPositionAsync({})
+            .then(location => {
+              handler(location);
+            })
+            .catch(error => {
+              console.error('Error fetching location:', error);
+            });
         }
-      } catch (error) {
-        console.error('Error requesting accelerometer permission:', error);
+        last_x = x;
+        last_y = y;
+        last_z = z;
       }
-    };
-
-    // Request accelerometer permission
-    requestAccelerometerPermission();
-
-    // Use the Accelerometer module to start listening for motion data
-    const subscription = Accelerometer.addListener(handleAcceleration);
-
-    return () => {
-      subscription.remove(); // Remove the listener when the component unmounts
-    };
-  }, [onShake]);
-
-  return (
-    <View style={styles.container}>
-      <Text>Shake me!</Text>
-    </View>
-  );
-};
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-});
-
-export default ShakeTrigger;
+    });
+  }
+  static removeListener() {
+    Accelerometer.removeAllListeners();
+  }
+}

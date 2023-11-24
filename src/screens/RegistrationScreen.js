@@ -340,7 +340,7 @@ const styles = StyleSheet.create({
     gap: 20,
   },
   input: {
-    width: 300,
+    width: 100,
     height: 40,
     borderBottomWidth: 1,
     borderColor: "white",

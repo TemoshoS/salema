@@ -1,7 +1,24 @@
 import { collection, getDocs,addDoc, updateDoc, deleteDoc, doc } from "firebase/firestore";
 import { db } from "./firebaseService";
+import { getAuth, onAuthStateChanged } from "firebase/auth";
 
+const auth = getAuth();
 
+let currentUser = null;
+
+const initializeAuthState = () => {
+  return new Promise((resolve, reject) => {
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if (user) {
+        currentUser = user.uid;
+        resolve(currentUser);
+      } else {
+        currentUser = null;
+        resolve(null);
+      }
+    });
+  });
+};
 
 async function getContacts() {
   try {
@@ -14,7 +31,10 @@ async function getContacts() {
       contacts.push(data);
     });
 
-    return contacts;
+    // Filter contacts based on the current user's ID
+    const filteredContacts = contacts.filter((contact) => contact.userId === currentUser);
+
+    return filteredContacts;
   } catch (error) {
     console.error('Error fetching data: ', error);
     return []; 
@@ -59,4 +79,4 @@ async function removeContact(contactId) {
     }
 }
 
-export { getContacts ,addContact, updateContact, removeContact};
+export { initializeAuthState,getContacts ,addContact, updateContact, removeContact};

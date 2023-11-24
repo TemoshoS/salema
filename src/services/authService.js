@@ -18,7 +18,6 @@ const registerUser = async (email, password, displayName) => {
       password
     );
 
-   
     await updateProfile(userCredential.user, {
       displayName: displayName,
       phoneNumber: phone,
@@ -65,18 +64,23 @@ const signOutUser = async () => {
 
 //check if user is logged in
 const checkUserLoggedIn = (callback) => {
-  const auth = getAuth();
+    
 
-  const unsubscribe = onAuthStateChanged(auth, (user) => {
-    if (user) {
-      callback(true, user);
-    } else {
-      callback(false, null);
-    }
-  });
+    const auth = getAuth();
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        
+        const uid = user.uid;
+       
+      } else {
+ 
+       
+      }
 
-  return unsubscribe;
-};
+      
+    });
+    return unsubscribe;
+}
 
 
 
