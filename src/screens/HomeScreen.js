@@ -294,7 +294,8 @@ const HomeScreen = ({ navigation }) => {
     if (shakeDetected) {
       // Show location modal
       setLocationModalVisible(true);
-      sendNotification();
+      
+        sendNotification();
       // Set status image to main_icon.png for 5 seconds
       setStatusImageSource(require("../../assets/main_icon.png"));
       
@@ -303,7 +304,6 @@ const HomeScreen = ({ navigation }) => {
         setIsShakeDetected(false);
         setStatusImageSource(require("../../assets/Inactive.png"));
         setLocationModalVisible(false); 
-        
         
       }, 5000); 
     } else {
@@ -318,12 +318,6 @@ const sendNotification = async () => {
   try {
     const { status } = await Notifications.getPermissionsAsync();
 
-    if(status !== 'granted'){
-      console.error('Notification permission not granted');
-      return;
-    }
-
-    Vibration.vibrate(2000);
     const notificationId = await Notifications.scheduleNotificationAsync({
       content: {
         title: 'Emergency Alert',
@@ -331,6 +325,7 @@ const sendNotification = async () => {
       },
       trigger: null,
     });
+    
 
     console.log('Notification scheduled: ', notificationId);
     

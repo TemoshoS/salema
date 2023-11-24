@@ -6,7 +6,7 @@ const AppBar = ({ navigation, showProfileIcon = false, screenName }) => {
     <View style={styles.container}>
       <Pressable style={styles.backButton}>
       <Image
-        source={require("../../assets/Icon.png")}
+        // source={require("../../assets/Icon.png")}
         
         style={styles.icon}
         

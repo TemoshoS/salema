@@ -53,6 +53,8 @@ const resetPassword = async (email) => {
   }
 };
 
+
+// Function to sign out a user
 const signOutUser = async () => {
     try {
       await auth.signOut();

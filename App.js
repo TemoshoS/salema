@@ -11,6 +11,7 @@ import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityI
 import ForgotPassword from './src/screens/ForgotPassword';
 import ProfileScreen from './src/screens/ProfileScreen';
 import BottomNav from './src/components/BottomNav';
+import NotificationService from './src/services/notificationService';
 // import PasswordReset from './src/components/PasswordReset';
 
 
