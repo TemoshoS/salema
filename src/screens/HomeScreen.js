@@ -25,9 +25,6 @@ import Button2 from "../components/Button2";
 import ShakeFeedback from "../components/ShakeFeedback";
 import InputText from "../components/InputText";
 
-import { BottomSheetFlatList, TouchableWithoutFeedback,} from "@gorhom/bottom-sheet";
-import { BottomSheet } from "@rneui/base";
-
 
 const HomeScreen = ({ navigation }) => {
   const [currentUser, setCurrentUser] = useState(null);
@@ -228,17 +225,7 @@ const HomeScreen = ({ navigation }) => {
     setConfirmationVisible(false);
   };
   // bottom sheet stuff
-  const bottomSheetRef = useRef(null);
-
-  const showBottomSheet = () => {
-    bottomSheetRef.current?.expand();
-    console.log("bottomsheet active");
-  };
-
-  const hideBottomSheet = () => {
-    bottomSheetRef.current?.close();
-  };
-
+  
   // modal  controls
   const handleModalPress = (event) => {
     // Check if the touch event is within the modal content
@@ -310,48 +297,7 @@ const HomeScreen = ({ navigation }) => {
           </View>
         </View>
         
-      <BottomSheet
-        ref={bottomSheetRef}
-        index={0}
-        snapPoints={[0, '50%', '100%']}
-        onChange={index => {
-        }}
-      >
-        {/* Sheet COntents */}
-        <View style={styles.cardContainer}>
-          <Text style={styles.title}>Trusted Contacts</Text>
-          <View style={styles.contactCard}>
-            <View style={styles.contactList}>
-              {filteredContacts.length > 0 ? (
-                filteredContacts.map((contact, index) => (
-                  <View key={index}>
-                    <ChipButton
-                      key={index}
-                      title={contact.name}
-                      onPress={() => showContactDetails(contact)}
-                    />
-                  </View>
-                ))
-              ) : (
-                <View>
-                {/* Add new user component */}
-                <Text style={styles.title}>No contacts available</Text>
-                </View>
-                
-              )}
-            </View>
-            <View>
-               <Button
-              title={"Add Contact"}
-              onPress={showAddContactModal}
-              altText={"Add Contact"}
-            />
-            </View>
-           
-          </View>
-        </View>
-      </BottomSheet>
-
+      
       {/* Add New Contact modal */}
       <Modal
         animationType="slide"
