@@ -73,7 +73,7 @@ async function removeContact(contactId) {
     try {
         const contactRef = doc(db, "emergency_contacts", contactId);
         await deleteDoc(contactRef);
-        console.log('Contact removed successfully');
+        console.log('Contact removed successfully', contactId);
     } catch (error) {
         console.error('Error removing contact: ', error);
     }

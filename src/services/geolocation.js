@@ -1,5 +1,5 @@
 import { requestForegroundPermissionsAsync, getCurrentPositionAsync } from 'expo-location';
-import { initializeAuthState } from "../services/homeServices";
+
 
 const getLocationPermission = async () => {
   try {

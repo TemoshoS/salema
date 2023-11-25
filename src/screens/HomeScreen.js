@@ -12,6 +12,7 @@ import {
   Alert,
   TouchableWithoutFeedback,
   Vibration,
+  Keyboard,
 } from "react-native";
 
 import ChipButton from "../components/ChipButton";
@@ -26,7 +27,7 @@ import { ShakeEventExpo } from '../services/ShakeTrigger';
 import getLocationPermission from '../services/geolocation';
 import { Linking } from 'react-native';
 import * as Notifications from 'expo-notifications';
-import { send } from "react-native-sms";
+
 
 
 
@@ -68,13 +69,14 @@ const HomeScreen = ({ navigation }) => {
       setCurrentUser(user);
       if (user) {
         
-        fetchContacts();
+        
         console.log("contacts", contacts);
       } else {
         setContacts([]);
       }
     };
 
+    fetchContacts();
     initializeAuth();
 
 
@@ -267,7 +269,7 @@ const HomeScreen = ({ navigation }) => {
   //Function to remove contact
   const handleRemoveContact = async (contactId) => {
     try {
-      await removeContact( currentUser,contactId);
+      await removeContact(contactId);
       fetchContacts();
       hideConfirmation();
     } catch (error) {
@@ -414,7 +416,7 @@ const sendNotification = async () => {
         onRequestClose={hideAddContactModal}
       >
       <TouchableWithoutFeedback onPress={hideAddContactModal}>
-      <View style={styles.overlay}/>
+      
         <View style={{ flex: 1, justifyContent: "center", alignItems: "center", backgroundColor: "#00000080" }}>
           {/* must be converted to ra relevant component */}
         
@@ -460,7 +462,7 @@ const sendNotification = async () => {
             />
           </View>
         </View>
-        </View>
+      </View>
         </TouchableWithoutFeedback>
         
       </Modal>
@@ -555,8 +557,8 @@ const sendNotification = async () => {
               {/* list available contacts */}
               <ScrollView>
                 <View style={styles.contactList}>
-                  {filteredContacts ? (
-                    filteredContacts.map((contact, index) => (
+                  {contacts ? (
+                    contacts.map((contact, index) => (
                       <TouchableOpacity key={index}>
                         <ChipButton
                           key={index}
@@ -599,20 +601,19 @@ const sendNotification = async () => {
   }}
  >
   <View style={styles.modalView}>
-    <Text style={styles.modalText}>
-      My Current location
-    </Text>
-    <TouchableOpacity
-      style={{ ...styles.openButton, backgroundColor: '#2196F3' }}
-      onPress={() =>
-        Linking.openURL(
-          `https://www.google.com/maps/?q=${location.latitude},${location.longitude}`
-        )
-      }
-    >
-      <Text style={styles.textStyle}>Open in Maps</Text>
-    </TouchableOpacity>
-    
+  <Text>
+  Emergency! My current location:{' '}
+  <Text
+    style={styles.linkText}
+    onPress={() => {
+      const url = `https://www.google.com/maps/?q=${location.latitude},${location.longitude}`;
+      Linking.openURL(url);
+    }}
+  >
+    Open Google Maps
+  </Text>
+</Text>
+
   </View>
  </Modal>
 
@@ -842,6 +843,11 @@ display: "flex",
   modalText: {
     marginBottom: 15,
     textAlign: 'center',
+  },
+  linkText: {
+    color: '#14ad00f00',
+    textDecorationLine: 'underline',
+    marginTop: 5,
   },
 });
 
