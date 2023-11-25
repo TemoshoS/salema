@@ -47,7 +47,7 @@ const HomeScreen = ({ navigation }) => {
   const [location, setLocation] = useState(null);
   const [locationModalVisible, setLocationModalVisible] = useState(false);
   const [shakeStatusModalVisible, setShakeStatusModalVisible] = useState(false);
-
+  const [isShakeHandled, setIsShakeHandled] = useState(false);
 
   const [enablePanDownToClose, setEnablePanDownToClose] = useState(true);
 
@@ -68,15 +68,12 @@ const HomeScreen = ({ navigation }) => {
       const user = await initializeAuthState();
       setCurrentUser(user);
       if (user) {
+         fetchContacts();  
         
-        
-        console.log("contacts", contacts);
       } else {
         setContacts([]);
       }
     };
-
-    fetchContacts();
     initializeAuth();
 
 
@@ -97,7 +94,7 @@ const HomeScreen = ({ navigation }) => {
   return () => {
     ShakeEventExpo.removeListener(shakeHandler);
   };
-  }, []);
+  }, [isShakeHandled]);
 
 
 
@@ -292,30 +289,30 @@ const HomeScreen = ({ navigation }) => {
   };
 
   const handleShake = async (shakeDetected) => {
-    setIsShakeDetected(shakeDetected);
+    if (!isShakeHandled) {
+      setIsShakeHandled(true); // Set to true to indicate that shake is handled
   
-    if (shakeDetected) {
-      // Show location modal
-      setLocationModalVisible(true);
-      
+      if (shakeDetected) {
+        // Show location modal
+        setLocationModalVisible(true);
+  
         sendNotification();
-      // Set status image to main_icon.png for 5 seconds
-      setStatusImageSource(require("../../assets/main_icon.png"));
-      
-      // Reset shake detection after 5 seconds
-      setTimeout(() => {
-        setIsShakeDetected(false);
+  
+        // Set status image to main_icon.png for 5 seconds
+        setStatusImageSource(require("../../assets/main_icon.png"));
+  
+        // Reset shake detection after 5 seconds
+        setTimeout(() => {
+          setIsShakeHandled(false); // Reset shake detection
+          setStatusImageSource(require("../../assets/Inactive.png"));
+          setLocationModalVisible(false);
+        }, 5000);
+      } else {
         setStatusImageSource(require("../../assets/Inactive.png"));
-        setLocationModalVisible(false); 
-        
-      }, 5000); 
-    } else {
-      
-      
-      setStatusImageSource(require("../../assets/Inactive.png"));
-      setLocationModalVisible(false); 
+        setLocationModalVisible(false);
+      }
+    }
   };
-}
 
 const sendNotification = async () => {
   try {
@@ -845,7 +842,7 @@ display: "flex",
     textAlign: 'center',
   },
   linkText: {
-    color: '#14ad00f00',
+    color: '#fff',
     textDecorationLine: 'underline',
     marginTop: 5,
   },
