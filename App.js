@@ -39,6 +39,7 @@ export default function App() {
        {/* Screens below Must be scrapped */}
        <Stack.Screen name='Splash' component={SplashScreen} options={{ headerShown: false}} />
        <Stack.Screen name='Home' component={HomeScreen} options={{ headerShown: false}} />
+      
         {/* <Stack.Screen name='ProfileScreen' component={ProfileScreen} options={{ headerShown: false}} />
         <Stack.Screen name='Register' component={RegistrationScreen} options={{ headerShown: false , cardStyleInterpolator:CardStyleInterpolators.forHorizontalIOS }} />
         <Stack.Screen name='Login' component={LoginScreen} options={{ headerShown: false , cardStyleInterpolator:CardStyleInterpolators.forHorizontalIOS }} />

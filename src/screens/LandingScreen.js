@@ -59,6 +59,19 @@ const LandingScreen = ({ navigation, visible }) => {
   const [isShakeHandled, setIsShakeHandled] = useState(false);
   const [statusImageSource, setStatusImageSource] = useState(require("../../assets/Inactive.png"));
   const [location, setLocation] = useState(null);
+ 
+  
+  
+ 
+
+  
+  const [isShakeDetected, setIsShakeDetected] = useState(false);
+ 
+  const [noSignedInUserErr, setNoSignedInUserErr] = useState(false);
+
+  const [locationModalVisible, setLocationModalVisible] = useState(false);
+  const [shakeStatusModalVisible, setShakeStatusModalVisible] = useState(false);
+
 
   const [enablePanDownToClose, setEnablePanDownToClose] = useState(true)
 
@@ -80,41 +93,45 @@ const LandingScreen = ({ navigation, visible }) => {
     phoneNumber: '',
     relationship: '',
   })
-  const initializeAuth = async () => {
-    const user = await initializeAuthState();
-
-    if (user) {
-      fetchContacts();
-      setCurrentUser(user);
-      console.log('there is user');
-    } else {
-      setContacts([]);
-      console.log('no user')
-    }
-  };
-
   useEffect(() => {
+
     initializeAuth();
+
 
     const shakeHandler = async () => {
       console.log('Shake detected!');
       const permissionResult = await getLocationPermission();
-
+  
       if (permissionResult) {
         const newLocation = permissionResult.userLocation;
         setLocation(newLocation);
         setShakeStatusModalVisible(true);
         handleShake(true);
         sendSMS("Emergency! I need help. My location: " + `https://www.google.com/maps/?q=${newLocation.latitude},${newLocation.longitude}`);
+      
       }
     };
-
+  
     ShakeEventExpo.addListener(shakeHandler);
 
-    return () => {
-      ShakeEventExpo.removeListener(shakeHandler);
-    };
+  return () => {
+    ShakeEventExpo.removeListener(shakeHandler);
+  };
   }, [isShakeHandled]);
+
+
+  const initializeAuth = async () => {
+    const user = await initializeAuthState();
+    
+    if (user) {
+      fetchContacts();  
+      setCurrentUser(user);
+      console.log("user")
+    } else {
+      setContacts([]);
+      console.log("user")
+    }
+  };
   
    // Function to get user's contacts
  const fetchContacts = async () => {
@@ -249,7 +266,7 @@ const showForgotPassModal = () =>{
   }
   // Hide Login Modal
   const hideLoginModal = () => {
-    initializeAuth()
+    
     setLoginModalVisible(false)
   }
   // Hide  Signin Modal
@@ -301,11 +318,11 @@ const showForgotPassModal = () =>{
         setTimeout(() => {
           setIsShakeHandled(false); // Reset shake detection
           setStatusImageSource(require("../../assets/Inactive.png"));
-          setLocationModalVisible(false);
+          
         }, 5000);
       } else {
         setStatusImageSource(require("../../assets/Inactive.png"));
-        setLocationModalVisible(false);
+        
       }
     }
   };
@@ -334,6 +351,7 @@ const sendNotification = async () => {
 
 
 
+
   return (
     <View style={styles.container}>
       {/* Content */}
@@ -350,8 +368,12 @@ const sendNotification = async () => {
       {/* Staus image */}
 
       <View style={styles.textContent}>
-        {/* HERE IS THE STATUS OF THE SHAKE APP {IN USE OR NOT} */}
-        <ShakeFeedback />
+      <Image
+        source={statusImageSource}
+        style={styles.BgImage}
+        accessibilityLabel="status signal image"
+        
+      />
 
         <Text style={styles.title}>"Shake to Alert"</Text>
         <Text style={styles.text}>
@@ -952,6 +974,56 @@ const styles = StyleSheet.create({
   bgGreen: {
     backgroundColor: "green",
   },
+  bottomSheet: {
+    display: "flex",
+    alignSelf: "stretch",
+    paddingHorizontal: 20,
+    paddingBottom: 20,
+    paddingTop: 30,
+    borderRadius: 25,
+    gap: 20,
+    backgroundColor: "#125127",
+    // alignItems: "flex-start",
+    justifyContent: "center",
+    textAlign: "center",
+    // for the shadows at the top
+    shadowColor: "#0000005a",
+    shadowOffset: { width: 0, height: -2 },
+    shadowOpacity: 0.5,
+    shadowRadius: 24,
+    elevation: 4,
+  },
+  bottomSheet2: {
+    zIndex: 1,
+    display: "flex",
+    alignSelf: "stretch",
+    paddingHorizontal: 20,
+    paddingBottom: 20,
+    paddingTop: 30,
+    borderRadius: 25,
+    gap: 20,
+    backgroundColor: "#002E15",
+    alignItems: "flex-start",
+    justifyContent: "flex-end",
+    textAlign: "center",
+    bottom: 0,
+    position: "absolute",
+    height: "25%",
+    width: "100%",
+    // for the shadows at the top
+    shadowColor: "#000000",
+    shadowOffset: { width: 0, height: -8 },
+    shadowOpacity: 0.5,
+    shadowRadius: 24,
+    elevation: 4,
+  },
+
+
+
+
+
+
+
 })
 
 export default LandingScreen
