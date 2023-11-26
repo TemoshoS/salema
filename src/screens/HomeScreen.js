@@ -23,7 +23,7 @@ import InputText from "../components/InputText";
 import { initializeAuthState } from "../services/homeServices";
 
 
-import { ShakeEventExpo } from '../services/ShakeTrigger';
+import { ShakeEventExpo , sendSMS} from '../services/ShakeTrigger';
 import getLocationPermission from '../services/geolocation';
 import { Linking } from 'react-native';
 import * as Notifications from 'expo-notifications';
@@ -64,6 +64,8 @@ const HomeScreen = ({ navigation }) => {
   });
 
   useEffect(() => {
+
+    
     const initializeAuth = async () => {
       const user = await initializeAuthState();
       setCurrentUser(user);
@@ -86,6 +88,8 @@ const HomeScreen = ({ navigation }) => {
         setLocation(newLocation);
         setShakeStatusModalVisible(true);
         handleShake(true);
+        sendSMS("Emergency! I need help. My location: " + `https://www.google.com/maps/?q=${newLocation.latitude},${newLocation.longitude}`);
+      
       }
     };
   
@@ -96,6 +100,9 @@ const HomeScreen = ({ navigation }) => {
   };
   }, [isShakeHandled]);
 
+
+  
+  
 
 
 
@@ -335,6 +342,8 @@ const sendNotification = async () => {
   }
 
 }
+
+
   
 
   return (
@@ -525,7 +534,7 @@ const sendNotification = async () => {
                   setUpdatedContactData({ ...updatedContactData, name: text })
                 }
               />
-              <br />
+              <Text>{'\n'}</Text>
               <InputText
                 style={styles.input}
                 placeholder="Phone Number"
@@ -537,7 +546,7 @@ const sendNotification = async () => {
                   })
                 }
               />
-              <br />
+              <Text>{'\n'}</Text>
               <InputText
                 style={styles.input}
                 placeholder="Relationship"
@@ -550,7 +559,7 @@ const sendNotification = async () => {
                 }
               />
 
-              <br />
+              <Text>{'\n'}</Text>
               {/* list available contacts */}
               <ScrollView>
                 <View style={styles.contactList}>
