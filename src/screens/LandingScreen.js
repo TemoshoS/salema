@@ -32,10 +32,10 @@ import { Platform } from 'react-native'
 import LoginScreen from './LoginScreen'
 import RegistrationScreen from './RegistrationScreen'
 
-const LandingScreen = () => {
-  const [modalVisible, setModalVisible] = useState(false)
-  const [updatedContact, setUpdatedContact] = useState('')
-  const [removedContact, setRemovedContact] = useState('')
+const LandingScreen = ({ navigation, visible }) => {
+  const [modalVisible, setModalVisible] = useState(false);
+  const [updatedContact, setUpdatedContact] = useState("");
+  const [removedContact, setRemovedContact] = useState("");
   // from home scrip[t]
   const [currentUser, setCurrentUser] = useState(null)
   const [contacts, setContacts] = useState([])
@@ -74,6 +74,8 @@ const LandingScreen = () => {
 
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       if (user) {
+      setCurrentUser(user);
+
         setCurrentUser(user.uid)
         getLocationPermission()
       } else {
@@ -286,8 +288,9 @@ const LandingScreen = () => {
         style={styles.BgImage}
         accessibilityLabel="status signalimage"
       />
-      {/* User buttons*/}
-      <View style={styles.buttonSection}>
+      {/* Buttons are now move to WelcomeScreen */}
+      {currentUser == null ?
+        <View style={styles.buttonSection}>
         <Button
           style={styles.bgGreen}
           title={"Signup"}
@@ -301,50 +304,58 @@ const LandingScreen = () => {
           onPress={() => handleLogin()}
           altText={"Login"}
           color={"#055a2b"}
-        />
+        /> 
 
-      {/* modals */}
-      {/* <LoginModal isVisible={isLoginModalVisible} onClose={handleLoginModalClose} />
-      <SignupModal isVisible={isSignupModalVisible} onClose={closeModal} />
-      <ForgotPassModal isVisible={isForgotPassModalVisible} onClose={closeModal}/> */}
-      
-    </View>
-
-      {/* Main Activity contents Modals/screens/sheets */}
-      
-      <View style={styles.content}>
-        <View style={styles.card}>
-          <Text style={styles.trustedContact}>Trusted Contact</Text>
-
-          {filteredContacts.length > 0 ? (
-            filteredContacts.map((contact, index) => (
-              <View key={index}>
-                <ChipButton
-                  key={index}
-                  title={contact.name}
-                  onPress={() => showContactDetails(contact)}
-                />
-              </View>
-            ))
-          ) : (
-            <View>
-              {/* Add new user component */}
-              <Text style={styles.paragraph}>
-                {/* YOUR EMERGENCY CONTACTS WILL APPEAR HERE. */}
-              </Text>
-              <Text style={styles.additionalText}>
-                Your emergency contacts will appear here. You currently do not
-                have any emergency contact. Import contacts or add new contacts.
-              </Text>
-              {/* <Text style={styles.title}>No contacts available</Text> */}
-            </View>
-          )}
-
-          <TouchableOpacity style={styles.addButton} onPress={showAddContactModal}>
-            <Text style={styles.addButtonText}>ADD CONTACT</Text>
-          </TouchableOpacity>
-        </View>
+     
       </View>
+      :
+      <View style={styles.bottomSheet}>
+        <View>
+          <Text style={styles.trustedContact}>Trusted Contact</Text>
+          <br />
+          <View style={styles.contactCard}>
+            <View style={styles.contactList}>
+              {contacts.length > 0 ? (
+                contacts.map((contact, index) => (
+                  <View key={index}>
+                    <ChipButton
+                      key={index}
+                      title={contact.name}
+                      onPress={showViewContactSheet}
+                    />
+                  </View>
+                ))
+              ) : (
+                <View style={styles.container}>
+                  <View style={styles.textContent}>
+                    {/* Add new user component */}
+                    <Text style={styles.textContent}>
+                      YOUR EMERGENCY CONTACTS WILL APPEAR HERE.
+                    </Text>
+                    <Text style={styles.textContent}>
+                      You currently do not have any emergency contact. Import
+                      contacts or add new contacts.
+                    </Text>
+                  </View>
+                </View>
+              )}
+            </View>
+            <br />
+            <Button
+              title={"Add Contact"}
+              onPress={showAddContactModal}
+              altText={"Add Contact"}
+            />
+          </View>
+        </View>
+      </View>       
+      }
+       
+
+      {/* Main Activity contents Modals/screens/sheets | Outside the main content frame */}
+
+      {/* view contact bottomsheet */}
+    
 
       {/* Secondary Bottom Sheet  */}
       <View style={styles.content}>
@@ -440,7 +451,14 @@ const LandingScreen = () => {
         onRequestClose={hideLoginModal}
       >
         <View style={styles.modalContainer}>
-          <LoginScreen />
+          <View style={styles.card}>
+            <LoginScreen
+              modalVisible={isLoginModalVisible}
+              closeModal={() => hideLoginModal()}
+              onRegister={showSignupModal}
+              onForgotPass={showForgotPassModal}
+            />
+          </View>
         </View>
       </Modal>
 

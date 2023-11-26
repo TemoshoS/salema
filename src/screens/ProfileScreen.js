@@ -5,6 +5,11 @@ import { getAuth } from 'firebase/auth';
 import { getFirestore, doc, getDoc } from 'firebase/firestore';
 
 const ProfileScreen = () => {
+  const navigation = useNavigation();
+  const handleSignOut = () => {
+    signOutUser();
+    navigation.navigate('LandingPage');
+  }
   const auth = getAuth();
   const [userDetails, setUserDetails] = useState(null);
 
