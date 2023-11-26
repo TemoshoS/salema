@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { StyleSheet, View, Image } from 'react-native';
+import { StyleSheet, View, Image, ScrollView } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
 import { Button, Icon, Text, Card, Input } from 'react-native-elements';
 import { getAuth } from 'firebase/auth';
 import { getFirestore, doc, getDoc } from 'firebase/firestore';
+
 
 const ProfileScreen = () => {
   const navigation = useNavigation();
@@ -40,7 +42,32 @@ const ProfileScreen = () => {
   
     fetchUserDetails();
   }, [auth]);
+
+  const handleUpdateProfile = async () => {
+    try {
+      const user = auth.currentUser;
+      const firestoreInstance = getFirestore();
+
+      // Update the user details in Firebase
+      await setDoc(doc(firestoreInstance, 'users', user.uid), {
+        PhoneNumber: userDetails.phone,
+        emergencyMessage: userDetails.emergencyMessage,
+      });
+
+      // Update the local state
+      setUserDetails({
+        ...userDetails,
+        name: user.displayName,
+      });
+
+      // Show a success message or navigate to another screen if needed
+    } catch (error) {
+      console.error('Error updating user details:', error);
+    }
+  };
   return (
+    <ScrollView>
+    
     <View style={styles.container}>
       {/* <View style={styles.header}>
         <Button
@@ -73,19 +100,35 @@ const ProfileScreen = () => {
             containerStyle={styles.inputContainer}
             inputStyle={styles.input}
             value={userDetails?.name || ''}
+            editable={false}
           />
           <Input
             placeholder="Email"
             containerStyle={styles.inputContainer}
             inputStyle={styles.input}
             value={userDetails?.email || ''}
+            editable={false} 
+          />
+           <Input
+            placeholder="Phone Number"
+            containerStyle={styles.inputContainer}
+            inputStyle={styles.input}
+            value={userDetails?.phone || ''}
+            onChangeText={(text) => setUserDetails({ ...userDetails, phone: text })}
           />
           <Input
             placeholder="Emergency Message"
             containerStyle={styles.inputContainer}
             inputStyle={styles.input}
             value={userDetails?.emergencyMessage || ''}
+            onChangeText={(text) => setUserDetails({ ...userDetails, emergencyMessage: text })}
+
           />
+          <Button
+          title="Update Profile"
+          onPress={handleUpdateProfile}
+          buttonStyle={styles.updateButton}
+        />
           <Text style={styles.changePasswordText}>Change Password</Text>
           <Text style={styles.legalText}>Legal</Text>
           <Text style={styles.privacyPolicyText}>Privacy Policy</Text>
@@ -94,6 +137,7 @@ const ProfileScreen = () => {
         </Card>
       </View>
     </View>
+    </ScrollView>
   );
 };
 const styles = StyleSheet.create({
@@ -192,6 +236,10 @@ const styles = StyleSheet.create({
     color: '#FF4D00',
     textAlign: 'left',
     marginTop: 70
+  },
+  updateButton: {
+    backgroundColor: '#5BA64F',
+    margin: 10,
   },
 });
 export default ProfileScreen;

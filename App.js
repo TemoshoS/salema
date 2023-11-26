@@ -26,7 +26,7 @@ export default function App() {
     
     return (
       <NavigationContainer>
-         <Stack.Navigator initialRouteName='LandingPage'>
+         <Stack.Navigator initialRouteName='ProfileScreen'>
       {/* Welcome is the new Splash SCreen */}
       <Stack.Screen name='Welcome' component={WelcomeScreen} options={{ headerShown: false}} />
       <Stack.Screen name='About' component={AboutScreen} options={{ title: 'About', headerShown: true, cardStyleInterpolator: CardStyleInterpolators.forVerticalIOS, }} />
@@ -34,7 +34,7 @@ export default function App() {
        <Stack.Screen name='LandingPage' component={LandingScreen} options={{cardStyleInterpolator: CardStyleInterpolators.forVerticalIOS, headerShown: false}} />
        <Stack.Screen name='ProfileScreen' component={ProfileScreen} options={{ title:"My Account", headerShown: true
        }} />
-
+      <Stack.Screen name='Login' component={LoginScreen} options={{ headerShown: false , cardStyleInterpolator:CardStyleInterpolators.forHorizontalIOS }} />
 
        {/* Screens below Must be scrapped */}
        <Stack.Screen name='Splash' component={SplashScreen} options={{ headerShown: false}} />
