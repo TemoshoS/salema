@@ -44,8 +44,8 @@ import * as Notifications from 'expo-notifications';
 
 const LandingScreen = ({ navigation, visible }) => {
   const [modalVisible, setModalVisible] = useState(false);
-  const [updatedContact, setUpdatedContact] = useState("");
-  const [removedContact, setRemovedContact] = useState("");
+  const [updatedContact, setUpdatedContact] = useState('');
+  const [removedContact, setRemovedContact] = useState('');
   // from home scrip[t]
   const [currentUser, setCurrentUser] = useState(null)
   const [contacts, setContacts] = useState([])

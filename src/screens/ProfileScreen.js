@@ -1,30 +1,23 @@
 import React, { useState, useEffect } from 'react';
-import { StyleSheet, View, Image, ScrollView } from 'react-native';
+import { StyleSheet, View, ScrollView, TouchableOpacity } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-import { Button, Icon, Text, Card, Input } from 'react-native-elements';
+import { Button, Text, Card, Input } from 'react-native-elements';
 import { getAuth } from 'firebase/auth';
-import { getFirestore, doc, getDoc } from 'firebase/firestore';
-
-
+import { getFirestore, doc, getDoc, setDoc } from 'firebase/firestore';
 const ProfileScreen = () => {
   const navigation = useNavigation();
-  const handleSignOut = () => {
-    signOutUser();
-    navigation.navigate('LandingPage');
-  }
   const auth = getAuth();
   const [userDetails, setUserDetails] = useState(null);
-
+  const [isDirty, setIsDirty] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   useEffect(() => {
     const fetchUserDetails = async () => {
       try {
         const user = auth.currentUser;
-  
         if (user) {
           const firestoreInstance = getFirestore();
           const userDoc = await getDoc(doc(firestoreInstance, 'users', user.uid));
           const userData = userDoc.data();
-  
           setUserDetails({
             name: user.displayName,
             email: user.email,
@@ -32,115 +25,91 @@ const ProfileScreen = () => {
             emergencyMessage: userData?.emergencyMessage || '',
           });
         } else {
-          // Handle the case when there is no authenticated user
           setUserDetails(null);
         }
       } catch (error) {
         console.error('Error fetching user details:', error);
       }
     };
-  
     fetchUserDetails();
   }, [auth]);
-
   const handleUpdateProfile = async () => {
     try {
+      setIsLoading(true);
       const user = auth.currentUser;
-      const firestoreInstance = getFirestore();
+      console.log(user.displayName);
+      console.log(user.phoneNumber);
+      
 
-      // Update the user details in Firebase
+      const firestoreInstance = getFirestore();
       await setDoc(doc(firestoreInstance, 'users', user.uid), {
+        name: userDetails.name,
         PhoneNumber: userDetails.phone,
         emergencyMessage: userDetails.emergencyMessage,
       });
-
-      // Update the local state
       setUserDetails({
         ...userDetails,
         name: user.displayName,
       });
-
-      // Show a success message or navigate to another screen if needed
+      setIsDirty(false);
     } catch (error) {
       console.error('Error updating user details:', error);
+    } finally {
+      setIsLoading(false);
     }
   };
+  const handleInputChange = (field, text) => {
+    setUserDetails({ ...userDetails, [field]: text });
+    setIsDirty(true);
+  };
   return (
-    <ScrollView>
-    
     <View style={styles.container}>
-      {/* <View style={styles.header}>
-        <Button
-          title="MY ACCOUNT"
-          type="clear"
-          icon={
-            <Icon
-              name="arrow-back"
-              type="material-symbols"
-              size={18}
-              color="black"
-            />
-          }
-          iconLeft
-          titleStyle={styles.buttonText}
-        />
-      </View> */}
-      <View style={styles.center}>
-        <Image
-          source={require('../../assets/Ellipse.png')}
-          style={styles.image}
-          resizeMode="contain"
-        />
-      </View>
       <View style={styles.cardContainer}>
         <Card containerStyle={styles.card}>
-          <Text style={styles.cardText}>Basic</Text>
-          <Input
-            placeholder="Name"
-            containerStyle={styles.inputContainer}
-            inputStyle={styles.input}
-            value={userDetails?.name || ''}
-            editable={false}
-          />
-          <Input
-            placeholder="Email"
-            containerStyle={styles.inputContainer}
-            inputStyle={styles.input}
-            value={userDetails?.email || ''}
-            editable={false} 
-          />
-           <Input
-            placeholder="Phone Number"
-            containerStyle={styles.inputContainer}
-            inputStyle={styles.input}
-            value={userDetails?.phone || ''}
-            onChangeText={(text) => setUserDetails({ ...userDetails, phone: text })}
-          />
-          <Input
-            placeholder="Emergency Message"
-            containerStyle={styles.inputContainer}
-            inputStyle={styles.input}
-            value={userDetails?.emergencyMessage || ''}
-            onChangeText={(text) => setUserDetails({ ...userDetails, emergencyMessage: text })}
-
-          />
-          <Button
-          title="Update Profile"
-          onPress={handleUpdateProfile}
-          buttonStyle={styles.updateButton}
-        />
-          <Text style={styles.changePasswordText}>Change Password</Text>
-          <Text style={styles.legalText}>Legal</Text>
-          <Text style={styles.privacyPolicyText}>Privacy Policy</Text>
-          <Text style={styles.termsConditionsText}>Terms & Conditions</Text>
-          <Text style={styles.signOutText}>Sign Out</Text>
+          <ScrollView>
+            <Text style={styles.cardText}>Basic</Text>
+            <Input
+              placeholder='Name'
+              containerStyle={styles.inputContainer}
+              inputStyle={styles.input}
+              value={userDetails?.name || ''}
+              onChangeText={(text) => handleInputChange('name', text)}
+            />
+            <Input
+              placeholder='Email'
+              containerStyle={styles.inputContainer}
+              inputStyle={styles.input}
+              value={userDetails?.email || ''}
+              editable={false}
+            />
+            <Input
+              placeholder='Emergency Message'
+              containerStyle={styles.inputContainer}
+              inputStyle={styles.input}
+              value={userDetails?.emergencyMessage || ''}
+              onChangeText={(text) => handleInputChange('emergencyMessage', text)}
+            />
+            {isDirty && (
+              <Button
+                title={isLoading ? 'Updating...' : 'Update Profile'}
+                onPress={handleUpdateProfile}
+                buttonStyle={styles.updateButton}
+                disabled={isLoading}
+              />
+            )}
+            <Text style={styles.changePasswordText}>Change Password</Text>
+            <Text style={styles.legalText}>Legal</Text>
+            <Text style={styles.privacyPolicyText}>Privacy Policy</Text>
+            <Text style={styles.termsConditionsText}>Terms & Conditions</Text>
+            <TouchableOpacity>
+              <Text style={styles.signOutText}>Sign Out</Text>
+            </TouchableOpacity>
+          </ScrollView>
         </Card>
       </View>
     </View>
-    </ScrollView>
   );
-};
-const styles = StyleSheet.create({
+};const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
@@ -168,7 +137,7 @@ const styles = StyleSheet.create({
   },
   card: {
     width: 373,
-    height: 595,
+    // height: 595,
     backgroundColor: '#125127',
     padding: 20,
     borderRadius: 10,

@@ -16,7 +16,7 @@ import SignupModal from "../components/SignupModal";
 import ForgotPassModal from "../components/ForgotPassModal";
 
 const ForgotPassword = ({onPress, onCloseModal}) => {
-  const [email, setEmail] = useState("");
+  const [email, setEmail] = useState('');
   const [isForgotPassModalVisible, setForgotPassModalVisible] = useState(false);
   const [isRegisterModalVisible, setSignupModalVisible] = useState(false);
   const [isLoginModalVisible, setLoginModalVisible] = useState(false);

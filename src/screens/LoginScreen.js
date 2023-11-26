@@ -13,8 +13,8 @@ import LoginModal from "../components/LoginModal";
 
 
 const LoginScreen = ({onRegister, onLogin, onForgotPass,closeModal}) => {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const [loginAttempts, setLoginAttempts] = useState(0);
   const [showPassword, setShowPassword] = useState(false);
   const [isForgotPassModalVisible, setForgotPassModalVisible] = useState(false);

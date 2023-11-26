@@ -20,18 +20,18 @@ import { registerUser } from "../services/authService";
 import LoginModal from "../components/LoginModal";
 
 const RegistrationScreen = ({onLogin, onRegister}) => {
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-  const [phone, setPhoneNumber] = useState("");
-  const [password, setPassword] = useState("");
-  const [reenterPassword, setReenterPassword] = useState("");
+  const [name, setName] = useState('');
+  const [email, setEmail] = useState('');
+  const [phone, setPhoneNumber] = useState('');
+  const [password, setPassword] = useState('');
+  const [reenterPassword, setReenterPassword] = useState('');
   const [nameError, setNameError] = useState(null);
   const [emailError, setEmailError] = useState(null);
   const [phoneError, setPhoneNumberError] = useState(null);
   const [passwordError, setPasswordError] = useState(null);
   const [reenterPasswordError, setReenterPasswordError] = useState(null);
-  const [userExistsMessage, setUserExistsMessage] = useState("");
-  const [passwordStrength, setPasswordStrength] = useState("");
+  const [userExistsMessage, setUserExistsMessage] = useState('');
+  const [passwordStrength, setPasswordStrength] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [isConfirmationVisible, setIsConfirmationVisible] = useState(false);
   const [isLoginModalVisible, setLoginModalVisible] = useState(false);
@@ -73,7 +73,7 @@ const RegistrationScreen = ({onLogin, onRegister}) => {
       setPhoneNumberError(null);
       setPasswordError(null);
       setReenterPasswordError(null);
-      setUserExistsMessage("");
+      setUserExistsMessage('');
 
       // Validate all fields
       if (!name || !email || !phone || !password || !reenterPassword) {
@@ -105,11 +105,11 @@ const RegistrationScreen = ({onLogin, onRegister}) => {
       // Create a user using Firebase Authentication
       const user = await registerUser(email, password, name, phone);
 
-      setName("");
-      setEmail("");
-      setPhoneNumber("");
-      setPassword("");
-      setReenterPassword("");
+      setName('');
+      setEmail('');
+      setPhoneNumber('');
+      setPassword('');
+      setReenterPassword('');
       // navigation.navigate("Login");
       // terminate modal
     } catch (error) {

@@ -22,6 +22,7 @@ const registerUser = async (email, password, displayName) => {
     await updateProfile(userCredential.user, {
       displayName: displayName,
       phoneNumber: phone,
+      smsMessage:"my message"
     });
 
     return userCredential.user;

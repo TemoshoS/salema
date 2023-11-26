@@ -18,8 +18,8 @@ const Stack = createStackNavigator(); //nav container
 
 export default function ComponentsTest() {
   // testing components
-  const [username, setUsername] = useState("");
-  const [email, setEmail] = useState("");
+  const [username, setUsername] = useState('');
+  const [email, setEmail] = useState('');
 
   const handleRegistration = () => {
     // Handle registration logi

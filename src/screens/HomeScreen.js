@@ -52,15 +52,15 @@ const HomeScreen = ({ navigation }) => {
   const [enablePanDownToClose, setEnablePanDownToClose] = useState(true);
 
   const [newContactData, setNewContactData] = useState({
-    name: "",
-    phoneNumber: "",
-    relationship: "",
+    name: '',
+    phoneNumber: '',
+    relationship: '',
   });
   const [isUpdateModalVisible, setUpdateModalVisible] = useState(false);
   const [updatedContactData, setUpdatedContactData] = useState({
-    name: "",
-    phoneNumber: "",
-    relationship: "",
+    name: '',
+    phoneNumber: '',
+    relationship: '',
   });
 
   useEffect(() => {
@@ -126,9 +126,9 @@ const HomeScreen = ({ navigation }) => {
 
   const showAddContactModal = () => {
     setNewContactData({
-      name: "",
-      phoneNumber: "",
-      relationship: "",
+      name: '',
+      phoneNumber: '',
+      relationship: '',
     });
 
     setAddContactModalVisible(true);
