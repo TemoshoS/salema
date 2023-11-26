@@ -550,9 +550,6 @@ const LandingScreen = () => {
         
       >
         <View style={styles.modalContainer}>
-        <View style={styles.overlay}/>
-        {/* <View style={{ flex: 1, justifyContent: "center", alignItems: "center", backgroundColor: "#00000080" }}> */}
-          {/* must be converted to ra relevant component */}
         
         <View style={styles.modalCard}>
           <Text style={styles.title}>Add New Contact</Text>
