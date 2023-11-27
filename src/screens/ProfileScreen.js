@@ -1,9 +1,8 @@
-import React from 'react';
-import { StyleSheet, View, Image ,TouchableOpacity} from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { StyleSheet, View, Image } from 'react-native';
 import { Button, Icon, Text, Card, Input } from 'react-native-elements';
-import InputText from '../components/InputText';
-import { signOutUser } from '../services/authService';
-import { useNavigation } from '@react-navigation/native';
+import { getAuth } from 'firebase/auth';
+import { getFirestore, doc, getDoc } from 'firebase/firestore';
 
 const ProfileScreen = () => {
   const navigation = useNavigation();
@@ -11,7 +10,36 @@ const ProfileScreen = () => {
     signOutUser();
     navigation.navigate('LandingPage');
   }
+  const auth = getAuth();
+  const [userDetails, setUserDetails] = useState(null);
 
+  useEffect(() => {
+    const fetchUserDetails = async () => {
+      try {
+        const user = auth.currentUser;
+  
+        if (user) {
+          const firestoreInstance = getFirestore();
+          const userDoc = await getDoc(doc(firestoreInstance, 'users', user.uid));
+          const userData = userDoc.data();
+  
+          setUserDetails({
+            name: user.displayName,
+            email: user.email,
+            phone: userData?.PhoneNumber || '',
+            emergencyMessage: userData?.emergencyMessage || '',
+          });
+        } else {
+          // Handle the case when there is no authenticated user
+          setUserDetails(null);
+        }
+      } catch (error) {
+        console.error('Error fetching user details:', error);
+      }
+    };
+  
+    fetchUserDetails();
+  }, [auth]);
   return (
     <View style={styles.container}>
       {/* <View style={styles.header}>
@@ -32,7 +60,7 @@ const ProfileScreen = () => {
       </View> */}
       <View style={styles.center}>
         <Image
-          source={require('../../assets/profile.svg')} 
+          source={require('../../assets/Ellipse.png')}
           style={styles.image}
           resizeMode="contain"
         />
@@ -40,39 +68,34 @@ const ProfileScreen = () => {
       <View style={styles.cardContainer}>
         <Card containerStyle={styles.card}>
           <Text style={styles.cardText}>Basic</Text>
-          <InputText
+          <Input
             placeholder="Name"
             containerStyle={styles.inputContainer}
             inputStyle={styles.input}
-            label={"Name"}
+            value={userDetails?.name || ''}
           />
-          <InputText
-            placeholder="Contact"
+          <Input
+            placeholder="Email"
             containerStyle={styles.inputContainer}
             inputStyle={styles.input}
-            label={"Contact"}
+            value={userDetails?.email || ''}
           />
-          <InputText
-            placeholder="Custom Message"
+          <Input
+            placeholder="Emergency Message"
             containerStyle={styles.inputContainer}
             inputStyle={styles.input}
-            label={"Emergency Message"}
+            value={userDetails?.emergencyMessage || ''}
           />
           <Text style={styles.changePasswordText}>Change Password</Text>
           <Text style={styles.legalText}>Legal</Text>
           <Text style={styles.privacyPolicyText}>Privacy Policy</Text>
           <Text style={styles.termsConditionsText}>Terms & Conditions</Text>
-
-          <TouchableOpacity onPress={handleSignOut}>
           <Text style={styles.signOutText}>Sign Out</Text>
-          </TouchableOpacity>
-
         </Card>
       </View>
     </View>
   );
 };
-
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -88,13 +111,13 @@ const styles = StyleSheet.create({
     color: 'black',
   },
   center: {
-    flex: 1,
+    // flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
   },
   image: {
-    width: 200, 
-    height: 200, 
+    width: 200,
+    height: 200,
   },
   cardContainer: {
     alignItems: 'center',
@@ -165,12 +188,10 @@ const styles = StyleSheet.create({
   signOutText: {
     width: 393,
     height: 20,
-
     marginTop: 5,
     color: '#FF4D00',
     textAlign: 'left',
     marginTop: 70
   },
 });
-
 export default ProfileScreen;
