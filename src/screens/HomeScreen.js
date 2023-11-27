@@ -23,7 +23,7 @@ import InputText from "../components/InputText";
 import { initializeAuthState } from "../services/homeServices";
 
 
-import { ShakeEventExpo } from '../services/ShakeTrigger';
+import { ShakeEventExpo , sendSMS} from '../services/ShakeTrigger';
 import getLocationPermission from '../services/geolocation';
 import { Linking } from 'react-native';
 import * as Notifications from 'expo-notifications';
@@ -88,7 +88,7 @@ const HomeScreen = ({ navigation }) => {
         setLocation(newLocation);
         setShakeStatusModalVisible(true);
         handleShake(true);
-        sendSMS("Emergency! I need help. My location: " + newLocation.latitude + ", " + newLocation.longitude);
+        sendSMS("Emergency! I need help. My location: " + `https://www.google.com/maps/?q=${newLocation.latitude},${newLocation.longitude}`);
       
       }
     };
@@ -100,47 +100,7 @@ const HomeScreen = ({ navigation }) => {
   };
   }, [isShakeHandled]);
 
-  const sendSMS = async (message) => {
-    console.log('Sending SMS');
-    const apiUrl = 'https://e1dypr.api.infobip.com/sms/2/text/advanced';
-    const authorizationToken = 'App ece5a5a8f136c21a74bf2657d89ef5dc-85888b0f-5329-4d8f-9c63-762c92741934';
-  
-    const postData = {
-      messages: [
-        {
-          destinations: [
-            {
-              to: '27721371977',
-            },
-          ],
-          from: 'InfoSMS',
-          text: message,
-        },
-      ],
-    };
-  
-    try {
-      const response = await fetch(apiUrl, {
-        method: 'POST',
-        headers: {
-          Authorization: authorizationToken,
-          'Content-Type': 'application/json',
-          Accept: 'application/json',
-        },
-        body: JSON.stringify(postData),
-      });
-  
-      const responseData = await response.json();
-      console.log('HTTP status code:', response.status);
-      console.log(responseData);
-    } catch (error) {
-      console.error(error);
-    }
-  };
-  
-  
-  
-  
+
   
   
 
