@@ -41,7 +41,7 @@ import LoginScreen from "./LoginScreen";
 import RegistrationScreen from "./RegistrationScreen";
 import ForgotPassword from "./ForgotPassword";
 
-const LandingScreen = ({ navigation }) => {
+const LandingScreen = ({ navigation, visible }) => {
   const [modalVisible, setModalVisible] = useState(false);
   const [updatedContact, setUpdatedContact] = useState("");
   const [removedContact, setRemovedContact] = useState("");
@@ -105,10 +105,12 @@ const LandingScreen = ({ navigation }) => {
   // }, [currentUser])
 
   useEffect(() => {
+    console.log(currentUser);
     const initializeAuth = async () => {
       const user = await initializeAuthState();
-      setCurrentUser(user);
       if (user) {
+      setCurrentUser(user);
+
         fetchContacts();
       } else {
         setContacts([]);
@@ -411,7 +413,8 @@ const LandingScreen = ({ navigation }) => {
         accessibilityLabel="status signalimage"
       />
       {/* Buttons are now move to WelcomeScreen */}
-      {/* <View style={styles.buttonSection}>
+      {currentUser == null ?
+        <View style={styles.buttonSection}>
         <Button
           style={styles.bgGreen}
           title={"Signup"}
@@ -425,14 +428,11 @@ const LandingScreen = ({ navigation }) => {
           onPress={showLoginModal}
           altText={"Login"}
           color={"#055a2b"}
-        /> *
+        /> 
 
      
-      </View>/}
-
-      {/* Main Activity contents Modals/screens/sheets | Outside the main content frame */}
-
-      {/* view contact bottomsheet */}
+      </View>
+      :
       <View style={styles.bottomSheet}>
         <View>
           <Text style={styles.trustedContact}>Trusted Contact</Text>
@@ -472,7 +472,14 @@ const LandingScreen = ({ navigation }) => {
             />
           </View>
         </View>
-      </View>
+      </View>       
+      }
+       
+
+      {/* Main Activity contents Modals/screens/sheets | Outside the main content frame */}
+
+      {/* view contact bottomsheet */}
+    
 
       {/* Secondary Bottom Sheet  */}
       {/* <View style={styles.content}>
@@ -568,6 +575,8 @@ const LandingScreen = ({ navigation }) => {
         <View style={styles.modalContainer}>
           <View style={styles.card}>
             <LoginScreen
+              modalVisible={isLoginModalVisible}
+              closeModal={() => hideLoginModal()}
               onRegister={showSignupModal}
               onForgotPass={showForgotPassModal}
             />

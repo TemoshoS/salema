@@ -9,7 +9,7 @@ const ProfileScreen = () => {
   const navigation = useNavigation();
   const handleSignOut = () => {
     signOutUser();
-    navigation.navigate('Splash');
+    navigation.navigate('LandingPage');
   }
 
   return (
