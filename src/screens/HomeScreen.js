@@ -101,10 +101,7 @@ const HomeScreen = ({ navigation }) => {
   }, [isShakeHandled]);
 
 
-  
-  
-
-
+ 
 
   // Function to get user's contacts
  const fetchContacts = async () => {

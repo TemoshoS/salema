@@ -3,6 +3,7 @@ import * as Location from 'expo-location';
 import { Platform } from 'react-native';
 import * as Notifications from 'expo-notifications';
 import Constants from 'expo-constants';
+import { getPhoneNumbersForCurrentUser } from './homeServices';
 
 
 const THRESHOLD = 150;
@@ -44,24 +45,28 @@ export class ShakeEventExpo {
 //Sms function
 export const sendSMS = async (message) => {
   console.log('Sending SMS');
-  const apiUrl = 'https://e1dypr.api.infobip.com/sms/2/text/advanced';
-  const authorizationToken = 'App ece5a5a8f136c21a74bf2657d89ef5dc-85888b0f-5329-4d8f-9c63-762c92741934';
 
-  const postData = {
-    messages: [
-      {
+  try {
+    // Fetch phone numbers from Firestore
+    const phoneNumbers = await getPhoneNumbersForCurrentUser();
+
+    // Prepare SMS data
+    const apiUrl = 'https://e1dypr.api.infobip.com/sms/2/text/advanced';
+    const authorizationToken = 'App ece5a5a8f136c21a74bf2657d89ef5dc-85888b0f-5329-4d8f-9c63-762c92741934';
+
+    const postData = {
+      messages: phoneNumbers.map((phoneNumber) => ({
         destinations: [
           {
-            to: '27721371977',
+            to: phoneNumber,
           },
         ],
         from: 'InfoSMS',
         text: message,
-      },
-    ],
-  };
+      })),
+    };
 
-  try {
+    // Send SMS messages
     const response = await fetch(apiUrl, {
       method: 'POST',
       headers: {
@@ -76,7 +81,7 @@ export const sendSMS = async (message) => {
     console.log('HTTP status code:', response.status);
     console.log(responseData);
   } catch (error) {
-    console.error(error);
+    console.error('Error sending SMS: ', error);
   }
 };
 

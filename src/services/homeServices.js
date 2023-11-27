@@ -79,4 +79,27 @@ async function removeContact(contactId) {
     }
 }
 
-export { initializeAuthState,getContacts ,addContact, updateContact, removeContact};
+
+// function for getting phoneNumbers
+async function getPhoneNumbersForCurrentUser() {
+  try {
+    const collectionRef = collection(db, "emergency_contacts");
+    const querySnapshot = await getDocs(collectionRef);
+    const phoneNumbers = [];
+
+    querySnapshot.forEach((doc) => {
+      const data = doc.data();
+      if (data.phoneNumber && data.userId === currentUser) {
+        phoneNumbers.push(data.phoneNumber);
+      }
+    });
+
+    return phoneNumbers;
+  } catch (error) {
+    console.error('Error fetching phone numbers: ', error);
+    return [];
+  }
+}
+
+
+export { initializeAuthState,getContacts ,addContact, updateContact, removeContact,getPhoneNumbersForCurrentUser};
