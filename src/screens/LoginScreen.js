@@ -1,7 +1,8 @@
 import React, { useState } from "react";
 import {  StyleSheet, Text, View, TouchableOpacity, Alert } from "react-native";
 import { useNavigation } from "@react-navigation/native";
-
+import { NavigationContainer } from '@react-navigation/native';
+import { createStackNavigator, CardStyleInterpolators } from '@react-navigation/stack';
 import Button from "../components/Button";
 // input InputText || Component
 import InputText from "../components/InputText";
@@ -19,18 +20,16 @@ const LoginScreen = ({onRegister, onLogin, onForgotPass,closeModal}) => {
   const [isForgotPassModalVisible, setForgotPassModalVisible] = useState(false);
   const [isRegisterModalVisible, setRegisterModalVisible] = useState(false);
   const[isLoginModalVisible, setLoginModalVisible] = useState(false);
-  const navigation = useNavigation();
   // import {onCloseModal} from "../components/LoginModal";
 
   const handleLogin = async () => {
   
     try {
      const user = await loginUser(email, password);
-     console.log('use' + user.email);
       // props.closeModal
       closeModal()
       console.log("login method callled");
-      navigation.navigate('LandingPage');
+      // navigation.s('LandingPage');
       // Terminate modal
     } catch (error) {
       Alert.alert(error.message);
@@ -124,7 +123,7 @@ export default LoginScreen;
 
 const styles = StyleSheet.create({
   container: {
-    // flex: 1,
+    flex: 1,
     alignItems: "center",
     justifyContent: "center",
     marginTop: 10,

@@ -20,17 +20,26 @@ import {
   removeContact,
 } from '../services/homeServices'
 import { getAuth, onAuthStateChanged } from '@firebase/auth'
+
 import ShakeTrigger from '../services/ShakeTrigger'
 import TextField from '../components/TextField'
 import Button from '../components/Button'
 import Button2 from '../components/Button2'
 import ShakeFeedback from '../components/ShakeFeedback'
 import InputText from '../components/InputText'
+import { NavigationContainer } from '@react-navigation/native';
+import { createStackNavigator, CardStyleInterpolators } from '@react-navigation/stack';
 
 //
 import { Platform } from 'react-native'
 import LoginScreen from './LoginScreen'
 import RegistrationScreen from './RegistrationScreen'
+import { initializeAuthState } from '../services/homeServices'
+
+import { ShakeEventExpo , sendSMS} from '../services/ShakeTrigger';
+import getLocationPermission from '../services/geolocation';
+import { Linking } from 'react-native';
+import * as Notifications from 'expo-notifications';
 
 const LandingScreen = ({ navigation, visible }) => {
   const [modalVisible, setModalVisible] = useState(false);
@@ -46,7 +55,7 @@ const LandingScreen = ({ navigation, visible }) => {
   const [nameError, setNameError] = useState(null)
   const [phoneError, setPhoneError] = useState(null)
   const [relationshipError, setRelationshipError] = useState(null)
-  const [isShakeDetected, setIsShakeDetected] = useState(false)
+  const [isShakeHandled, setIsShakeHandled] = useState(false);
 
   const [enablePanDownToClose, setEnablePanDownToClose] = useState(true)
 
@@ -68,25 +77,48 @@ const LandingScreen = ({ navigation, visible }) => {
     phoneNumber: '',
     relationship: '',
   })
-
-  useEffect(() => {
-    const auth = getAuth()
-
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
-      if (user) {
+  const initializeAuth = async () => {
+    const user = await initializeAuthState();
+    
+    if (user) {
+      console.log('There is user');
       setCurrentUser(user);
+      fetchContacts();  
+      
+    } else {
+      console.log('no user');
 
-        setCurrentUser(user.uid)
-        getLocationPermission()
-      } else {
-        setCurrentUser(null)
-        setContacts([])
+      setContacts([]);
+    }
+  };
+  useEffect(() => {
+
+    
+  
+    initializeAuth();
+
+
+    const shakeHandler = async () => {
+      console.log('Shake detected!');
+      const permissionResult = await getLocationPermission();
+  
+      if (permissionResult) {
+        const newLocation = permissionResult.userLocation;
+        setLocation(newLocation);
+        setShakeStatusModalVisible(true);
+        handleShake(true);
+        sendSMS("Emergency! I need help. My location: " + `https://www.google.com/maps/?q=${newLocation.latitude},${newLocation.longitude}`);
+      
       }
-    })
+    };
+  
+    ShakeEventExpo.addListener(shakeHandler);
 
-    fetchContacts()
-    return unsubscribe
-  }, [currentUser])
+  return () => {
+    ShakeEventExpo.removeListener(shakeHandler);
+  };
+  }, [isShakeHandled]);
+
 
   const fetchContacts = async () => {
     try {
@@ -209,7 +241,12 @@ const LandingScreen = ({ navigation, visible }) => {
     // Handle logic for updating contact with the value in updatedContact
     console.log(`Updating contact: ${updatedContact}`)
   }
+const showSignupModal = () =>{
 
+}
+const showForgotPassModal = () =>{
+
+}
   const handleRemoveContact = () => {
     // Handle logic for removing contact with the value in removedContact
     console.log(`Removing contact: ${removedContact}`)
@@ -225,6 +262,7 @@ const LandingScreen = ({ navigation, visible }) => {
   }
   // Hide Login Modal
   const hideLoginModal = () => {
+    initializeAuth()
     setLoginModalVisible(false)
   }
   // Hide  Signin Modal
@@ -259,6 +297,56 @@ const LandingScreen = ({ navigation, visible }) => {
     }
   }
 
+  const handleShake = async (shakeDetected) => {
+    if (!isShakeHandled) {
+      setIsShakeHandled(true); // Set to true to indicate that shake is handled
+  
+      if (shakeDetected) {
+        // Show location modal
+        setLocationModalVisible(true);
+  
+        sendNotification();
+  
+        // Set status image to main_icon.png for 5 seconds
+        setStatusImageSource(require("../../assets/main_icon.png"));
+  
+        // Reset shake detection after 5 seconds
+        setTimeout(() => {
+          setIsShakeHandled(false); // Reset shake detection
+          setStatusImageSource(require("../../assets/Inactive.png"));
+          
+        }, 5000);
+      } else {
+        setStatusImageSource(require("../../assets/Inactive.png"));
+       
+      }
+    }
+  };
+
+
+  const sendNotification = async () => {
+    try {
+      const { status } = await Notifications.getPermissionsAsync();
+  
+      const notificationId = await Notifications.scheduleNotificationAsync({
+        content: {
+          title: 'Emergency Alert',
+          body: 'This is an emergency alert',
+        },
+        trigger: null,
+      });
+      
+  
+      console.log('Notification scheduled: ', notificationId);
+      
+    } catch (error) {
+      console.error("Error sending notification: ", error);	
+      
+    }
+  
+  }
+  
+
   return (
     <View style={styles.container}>
       {/* Content */}
@@ -282,14 +370,13 @@ const LandingScreen = ({ navigation, visible }) => {
         </Text>
       </View>
 
-      {/* Backkground Image */}
       <Image
         source={require("../../assets/undraw.png")}
         style={styles.BgImage}
         accessibilityLabel="status signalimage"
       />
-      {/* Buttons are now move to WelcomeScreen */}
       {currentUser == null ?
+      // <></>
         <View style={styles.buttonSection}>
         <Button
           style={styles.bgGreen}
@@ -302,17 +389,17 @@ const LandingScreen = ({ navigation, visible }) => {
           style={styles.bgGreen}
           title={"Log in"}
           onPress={() => handleLogin()}
+         
           altText={"Login"}
           color={"#055a2b"}
         /> 
-
-     
       </View>
       :
+      //  <></>
       <View style={styles.bottomSheet}>
         <View>
           <Text style={styles.trustedContact}>Trusted Contact</Text>
-          <br />
+          
           <View style={styles.contactCard}>
             <View style={styles.contactList}>
               {contacts.length > 0 ? (
@@ -321,14 +408,13 @@ const LandingScreen = ({ navigation, visible }) => {
                     <ChipButton
                       key={index}
                       title={contact.name}
-                      onPress={showViewContactSheet}
+                      // onPress={showViewContactSheet}
                     />
                   </View>
                 ))
               ) : (
                 <View style={styles.container}>
                   <View style={styles.textContent}>
-                    {/* Add new user component */}
                     <Text style={styles.textContent}>
                       YOUR EMERGENCY CONTACTS WILL APPEAR HERE.
                     </Text>
@@ -340,7 +426,6 @@ const LandingScreen = ({ navigation, visible }) => {
                 </View>
               )}
             </View>
-            <br />
             <Button
               title={"Add Contact"}
               onPress={showAddContactModal}
@@ -358,14 +443,13 @@ const LandingScreen = ({ navigation, visible }) => {
     
 
       {/* Secondary Bottom Sheet  */}
-      <View style={styles.content}>
+      {/* <View style={styles.content}>
       <View style={styles.modalCard}>
           {selectedContact ? (
             <View style={styles.textContent}>
-              {/* <Text style={styles.title}>Trusted Contacts</Text> */}
+              <Text style={styles.title}>Trusted Contacts</Text>
               <Text style={styles.title}>{selectedContact.name}</Text>
               <Text style={styles.text}>{selectedContact.phoneNumber}</Text>
-              <br></br>
               <View style={styles.buttonGroup}>
                 <Button2
                   title="Update Contact"
@@ -386,11 +470,11 @@ const LandingScreen = ({ navigation, visible }) => {
               No contact selected
             </Text>
           )}
-          {/* <TouchableOpacity onPress={hideConfirmation}>
+          <TouchableOpacity onPress={hideConfirmation}>
             <Text style={styles.confirmTxt}>Close</Text>
-          </TouchableOpacity> */}
+          </TouchableOpacity>
         </View>
-      </View>
+      </View> */}
 
       {/* Update Contact Modal */}
       <Modal
@@ -455,7 +539,7 @@ const LandingScreen = ({ navigation, visible }) => {
             <LoginScreen
               modalVisible={isLoginModalVisible}
               closeModal={() => hideLoginModal()}
-              onRegister={showSignupModal}
+              onRegister={showSignupModal()}
               onForgotPass={showForgotPassModal}
             />
           </View>
