@@ -12,7 +12,7 @@ import ForgotPassword from './src/screens/ForgotPassword';
 import ProfileScreen from './src/screens/ProfileScreen';
 import LandingScreen from './src/screens/LandingScreen';
 import BottomNav from './src/components/BottomNav';
-import NotificationService from './src/services/notificationService';
+import NotificationService from './src/services/ShakeTrigger';
 import { useEffect } from 'react';
 import WelcomeScreen from './src/screens/WelcomeScreen';
 // import PasswordReset from './src/components/PasswordReset';
