@@ -15,34 +15,31 @@ import LoginModal from "../components/LoginModal";
 import SignupModal from "../components/SignupModal";
 import ForgotPassModal from "../components/ForgotPassModal";
 
-const ForgotPassword = () => {
+const ForgotPassword = ({onPress, onCloseModal}) => {
   const [email, setEmail] = useState("");
   const [isForgotPassModalVisible, setForgotPassModalVisible] = useState(false);
-  const [isSignupModalVisible, setSignupModalVisible] = useState(false);
+  const [isRegisterModalVisible, setSignupModalVisible] = useState(false);
   const [isLoginModalVisible, setLoginModalVisible] = useState(false);
 
-const handleForgotPassword = async () => {  
-  // closedModal();
+const handleForgotPassword = async () => { 
   try {
     await resetPassword(email);
-   
+    closeModal();
   } catch (error) {
-    
+    console.log("error, password reset failed");
   }
 }
 
 const closeModal = () =>{
-  console.log ("removing  modals");
-  setLoginModalVisible(false);
-  setSignupModalVisible(false);
-  setForgotPassModalVisible(false);
+  console.log ("removing  user Requesting to reset Password");
+  // then disable other modals
+ 
 }
 
   return (
     <View style={styles.container}>
       
       {/* Reset Password Form Section */}
-      <View style={styles.overlay}></View>
       <View style={styles.signupForm}>
         <View style={styles.formContent}>
           <Text style={styles.title}>Reset Password</Text>
@@ -60,7 +57,7 @@ const closeModal = () =>{
 
         <View style={styles.buttonGroup}>
           <Button
-            onPress={closeModal}
+            onPress={handleForgotPassword}
             title="Reset Password"
             altText={"Reset Password"}
             color={"#055a2b"}
@@ -68,10 +65,6 @@ const closeModal = () =>{
          
         </View>
       </View> 
-      {/* Modals */}
-      <LoginModal isVisible={isLoginModalVisible} onClose={closeModal} />
-      <SignupModal isVisible={isSignupModalVisible} onClose={closeModal} />
-      <ForgotPassModal isVisible={isForgotPassModalVisible} onClose={closeModal}/>
       
 
     </View>
@@ -82,7 +75,7 @@ export default ForgotPassword;
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
+    // flex: 1,
     alignItems: "center",
     justifyContent: "center",
     // marginTop: 25,
@@ -120,7 +113,7 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
   signupForm: {
-    padding: 30,
+    // padding: 30,
     borderRadius: 16,
     backgroundColor: "#002E15",
     alignItems: "flex-start",
@@ -132,7 +125,7 @@ const styles = StyleSheet.create({
     flexDirection: "column",
     alignSelf: "stretch",
     marginHorizontal: 8,
-    bottom: 100,
+    // bottom: 100,
   },
   signupText: {
     fontWeight: "bold",

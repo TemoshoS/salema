@@ -33,13 +33,27 @@ const AboutScreen = () => {
   return (
     <ScrollView stickyHeaderIndices={[0]}>
       <View style={styles.container}>
-      {/* Topp App bar component */}
+        {/* Topp App bar component */}
         {/* <AppBar navigation={navigation} showProfileIcon={false} screenName="About Us" /> */}
-        
-        <View style={styles.imageContainer}>
+
+        <View style={styles.imageCard}>
           <Image
-            source={require("../../assets/Frame.png")}
-            style={styles.image}
+            style={styles.cardLogo}
+            source={require("../../assets/Union_green.png")}
+          />
+          <Text style={styles.imageText}>Your Personal Safety Companion</Text>
+          <Text style={styles.cardText}>
+            Salema is more than just an app - it's your lifeline when you need
+            it most. Designed with your safety in mind, Salema allows you to
+            quickly and discreetly send emergency SMS alerts to your trusted
+            contacts with a simple shake of your phone.
+          </Text>
+          <Text style={styles.imageCardBGText}>
+            Your safety is just a shake away.
+          </Text>
+          <Image
+            style={styles.imageCardBGImage}
+            source={require("../../assets/undraw_alert.svg")}
           />
         </View>
         <View style={styles.socialIcons}>
@@ -115,10 +129,10 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     alignItems: "center",
-    justifyContent: "flex-start",
-    paddingTop: 35,
+    // justifyContent: "flex-start",
+    // paddingTop: 35,
     gap: 8,
-    padding: 10,
+    marginHorizontal: 10,
   },
   content: {
     flexDirection: "row",
@@ -191,11 +205,78 @@ const styles = StyleSheet.create({
   imageContainer: {
     marginTop: 0,
     borderRadius: 20,
-    overflow: "hidden",
+    // overflow: "hidden",
+    marginHorizontal: 20,
+    padding: 20,
   },
   image: {
-    width: 400,
-    height: 350,
+    width: 300,
+    height: 300,
+  },
+  // aBOUT PAGE TOP IMAGE
+  imageCard: {
+    display: "flex",
+    paddingHorizontal: 20,
+    paddingTop: 20,
+    paddingBottom: 90,
+    gap: 10,
+    alignItems: "flex-start",
+    justifyContent: "center",
+    flexDirection: "column",
+
+    backgroundColor: "#1E1E1E",
+    borderRadius: 20,
+  },
+  imageCardContent: {
+    flexWrap: "wrap",
+  },
+  imageCardBGImage: {
+    width: 180,
+    height: 100,
+    position: "absolute",
+    right: 0,
+    bottom: 0,
+  },
+  imageCardBGText: {
+    zIndex: 0,
+    bottom: 30,
+    position: "absolute",
+    fontSize: "12vw", // Adjust the font size as needed
+    textAlign: "right",
+    alignContent: "center",
+    fontWeight: "700",
+
+    strokeWidth: 1.5,
+    strokeColor: "#0000004c",
+    color: "transparent", // Transparent text color
+    textShadowColor: "#4848485c", // Black outline color
+    textShadowOffset: { width: 1, height: 1 }, // Outline offset
+    textShadowRadius: 2, // Outline thickness
+    backgroundColor: "transparent",
+    lineHeight: "140%",
+    letterSpacing: 1.5,
+  },
+  
+  imageText: {
+    marginVertical: 10,
+    fontSize: 34,
+    fontWeight: 700,
+    color: "#ffffff",
+    fontFamily: "plus jakarta sans",
+  },
+  cardText: {
+    fontSize: 14,
+    fontStyle: "plus jakarta sans",
+    color: "#f2f2f2",
+    // marginTop: 10,
+    // width: 400,
+  },
+  cardLogo: {
+    height: 24,
+    width: 80,
+
+    top: 10,
+    // left : 10,
   },
   headingContainer: {
     marginTop: -1,
@@ -237,6 +318,8 @@ const styles = StyleSheet.create({
   },
   mainIconContainer: {
     alignItems: "flex-start",
+    marginHorizontal: 20,
+    padding: 20,
   },
   mainIcon: {
     width: 32,

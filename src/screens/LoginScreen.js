@@ -11,7 +11,7 @@ import ForgotPassModal from "../components/ForgotPassModal";
 import LoginModal from "../components/LoginModal";
 
 
-const LoginScreen = () => {
+const LoginScreen = ({onRegister, onLogin, onForgotPass}) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loginAttempts, setLoginAttempts] = useState(0);
@@ -22,13 +22,12 @@ const LoginScreen = () => {
   const navigation = useNavigation();
   // import {onCloseModal} from "../components/LoginModal";
 
-  const handleLogin = async ({onCloseModal}) => {
-    // Close the modal after successful login
-    setLoginModalVisible(false);
-    
+  const handleLogin = async () => {
+  
     try {
       await loginUser(email, password);
-      navigation.navigate('Home');
+      // navigation.navigate('Home');
+      // Terminate modal
     } catch (error) {
       Alert.alert(error.message);
       setLoginAttempts(loginAttempts + 1);
@@ -41,7 +40,7 @@ const LoginScreen = () => {
   }
   };
 
-  // Handle Register button click
+  // FUNCTION are now suffixed SHOWfUNTIONnAME
 const handleRegister = () => {
   // navigation.navigate("Register");
   setRegisterModalVisible(true);
@@ -66,7 +65,6 @@ const handleRegister = () => {
   return (
     <View style={styles.container}>
       {/* Signup Form */}
-      <View style={styles.overlay}></View>
       <View style={styles.signupForm}>
         <View style={styles.formContent}>
           <Text style={styles.title}>Login</Text>
@@ -102,20 +100,16 @@ const handleRegister = () => {
 
         <View style={styles.linksContainer}>
         {/* NAVIGATION LINKS */}
-         <TouchableOpacity style={styles.button} onPress={handleForgotPassword}>
+         <TouchableOpacity style={styles.button} onPress={onForgotPass}>
           <Text style={{ color: "#FFF" }}>Forgot password</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity style={styles.button} onPress={handleRegister}>
+        <TouchableOpacity style={styles.button} onPress={onRegister}>
         <Text style={{ color: "#FFF" }}>Register</Text>
         </TouchableOpacity>
         </View>
       </View>
       
-      {/* Modals */}
-      <ForgotPassModal isVisible={isForgotPassModalVisible} onClose={() => setForgotPassModalVisible(false)} />
-      <SignupModal isVisible={isRegisterModalVisible} onClose={() => setRegisterModalVisible(false)} />
-      <LoginModal isVisible={isLoginModalVisible} onClose={() => setLoginModalVisible(false)} />
 
     </View>
   );
@@ -128,7 +122,7 @@ const styles = StyleSheet.create({
     // flex: 1,
     alignItems: "center",
     justifyContent: "center",
-    marginTop: 25,
+    marginTop: 10,
     // paddingHorizontal: 8,
   },
   image: {
@@ -163,7 +157,7 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
   signupForm: {
-    padding: 30,
+    // padding: 30,
     borderRadius: 16,
     backgroundColor: "#002E15",
     alignItems: "flex-start",

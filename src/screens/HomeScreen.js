@@ -531,7 +531,7 @@ const sendNotification = async () => {
                   setUpdatedContactData({ ...updatedContactData, name: text })
                 }
               />
-              <br />
+              <Text>{'\n'}</Text>
               <InputText
                 style={styles.input}
                 placeholder="Phone Number"
@@ -543,7 +543,7 @@ const sendNotification = async () => {
                   })
                 }
               />
-              <br />
+              <Text>{'\n'}</Text>
               <InputText
                 style={styles.input}
                 placeholder="Relationship"
@@ -556,7 +556,7 @@ const sendNotification = async () => {
                 }
               />
 
-              <br />
+              <Text>{'\n'}</Text>
               {/* list available contacts */}
               <ScrollView>
                 <View style={styles.contactList}>
