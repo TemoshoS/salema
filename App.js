@@ -13,10 +13,9 @@ import ProfileScreen from './src/screens/ProfileScreen';
 import LandingScreen from './src/screens/LandingScreen';
 import BottomNav from './src/components/BottomNav';
 import NotificationService from './src/services/notificationService';
+import { useEffect } from 'react';
+import WelcomeScreen from './src/screens/WelcomeScreen';
 // import PasswordReset from './src/components/PasswordReset';
-
-
-
 
 
 const Stack = createStackNavigator();
@@ -24,86 +23,34 @@ const Tab = createBottomTabNavigator();
 
 
 export default function App() {
-  function MainStack() {
     
     return (
-      <Stack.Navigator initialRouteName='Splash'>
-      
-        <Stack.Screen name='Home' component={HomeScreen} options={{ headerShown: false}} />
-        <Stack.Screen name='Splash' component={SplashScreen} options={{ headerShown: false}} />
-        {/* <Stack.Screen name='Landing' component={LandingScreen} options={{ headerShown: false}} /> */}
-        {/* <Stack.Screen name='ResetPassword' component={PasswordReset} options={{ headerShown: false , cardStyleInterpolator:CardStyleInterpolators.forHorizontalIOS }} /> */}
-        <Stack.Screen name='ProfileScreen' component={ProfileScreen} options={{ headerShown: false}} />
+      <NavigationContainer>
+         <Stack.Navigator initialRouteName='LandingPage'>
+      {/* Welcome is the new Splash SCreen */}
+      <Stack.Screen name='Welcome' component={WelcomeScreen} options={{ headerShown: false}} />
+      <Stack.Screen name='About' component={AboutScreen} options={{ title: 'About', headerShown: true, cardStyleInterpolator: CardStyleInterpolators.forVerticalIOS, }} />
+      {/* Landing Page is the new HomePage */}
+       <Stack.Screen name='LandingPage' component={LandingScreen} options={{cardStyleInterpolator: CardStyleInterpolators.forVerticalIOS, headerShown: false}} />
+       <Stack.Screen name='ProfileScreen' component={ProfileScreen} options={{ title:"My Account", headerShown: true
+       }} />
+
+
+       {/* Screens below Must be scrapped */}
+       <Stack.Screen name='Splash' component={SplashScreen} options={{ headerShown: false}} />
+       <Stack.Screen name='Home' component={HomeScreen} options={{ headerShown: false}} />
+        {/* <Stack.Screen name='ProfileScreen' component={ProfileScreen} options={{ headerShown: false}} />
         <Stack.Screen name='Register' component={RegistrationScreen} options={{ headerShown: false , cardStyleInterpolator:CardStyleInterpolators.forHorizontalIOS }} />
         <Stack.Screen name='Login' component={LoginScreen} options={{ headerShown: false , cardStyleInterpolator:CardStyleInterpolators.forHorizontalIOS }} />
-        <Stack.Screen name='About' component={AboutScreen} options={{ title: 'About', headerShown: false, cardStyleInterpolator: CardStyleInterpolators.forVerticalIOS, }} />
-        <Stack.Screen name='ForgotPassword' component={ForgotPassword} options={{title: 'Reset Password', cardStyleInterpolator: CardStyleInterpolators.forVerticalIOS,}} />
-        {/* <Stack.Screen name='AboutScreen' component={ForgotPassword} options={{title: 'About', cardStyleInterpolator: CardStyleInterpolators.forVerticalIOS,}} /> */}
         
-        <Stack.Screen name='LandingPage' component={LandingScreen} options={{cardStyleInterpolator: CardStyleInterpolators.forVerticalIOS,}} />
+        <Stack.Screen name='ForgotPassword' component={ForgotPassword} options={{title: 'Reset Password', cardStyleInterpolator: CardStyleInterpolators.forVerticalIOS,}} /> */}
         
        </Stack.Navigator>
+      </NavigationContainer>
+     
         
     );
-  }
-  function TabNavigator() {
-    return (
-      <Tab.Navigator
-        tabBarOptions={{
-          activeTintColor: '#117000',
-          inactiveTintColor: '#6ECC5E',
-        }}
-      >
-        <Tab.Screen
-          name="Splash"
-          component={MainStack}
-          options={{
-            headerShown: false,
-            tabBarIcon: ({ color, size }) => (
-              <MaterialCommunityIcons
-                name="home"
-                color={color}
-                size={size}
-              />
-            ),
-          }}
-        />
-        <Tab.Screen
-          name="Profile"
-          component={ProfileScreen } 
-          options={{
-            headerShown: false,
-            tabBarIcon: ({ color, size }) => (
-              <MaterialCommunityIcons
-                name="account-circle"
-                color={color}
-                size={size}
-              />
-            ),
-          }} />
-        <Tab.Screen
-          name="About Us"
-          component={AboutScreen}
-          options={{
-            headerShown: true,
-            tabBarIcon: ({ color, size }) => (
-              <MaterialCommunityIcons
-                name="information-outline"
-                color={color}
-                size={size}
-              />
-            ),
-          }} />
-      </Tab.Navigator>
-    );
-  }
-  return (
-    
-    <NavigationContainer>
-      <TabNavigator />
-      {/* <BottomNav/> */}
-    </NavigationContainer>
-  );
+  
 }
 const styles = StyleSheet.create({
   container: {
@@ -111,7 +58,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff",
     alignItems: "center",
     justifyContent: "center",
-    paddingHorizontal: 8,
+    // paddingHorizontal: 8,
   },
 });
 

@@ -19,7 +19,7 @@ import Button from "../components/Button";
 import { registerUser } from "../services/authService";
 import LoginModal from "../components/LoginModal";
 
-const RegistrationScreen = () => {
+const RegistrationScreen = ({onLogin, onRegister}) => {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [phone, setPhoneNumber] = useState("");
@@ -34,9 +34,8 @@ const RegistrationScreen = () => {
   const [passwordStrength, setPasswordStrength] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [isConfirmationVisible, setIsConfirmationVisible] = useState(false);
- const [isLoginModalVisible, setLoginModalVisible] = useState(false);
+  const [isLoginModalVisible, setLoginModalVisible] = useState(false);
   const navigation = useNavigation();
-
 
   const handlePasswordChange = (text, isConfirmPassword = false) => {
     if (!isConfirmPassword) {
@@ -111,8 +110,8 @@ const RegistrationScreen = () => {
       setPhoneNumber("");
       setPassword("");
       setReenterPassword("");
-      navigation.navigate('Login');
-     
+      // navigation.navigate("Login");
+      // terminate modal
     } catch (error) {
       if (error.code === "auth/email-already-in-use") {
         setEmailError("Email is already in use");
@@ -138,77 +137,81 @@ const RegistrationScreen = () => {
 
   return (
     <View style={styles.container}>
-     
-
       {/* Signup Form */}
-      <View style={styles.overlay}></View>
+
       <View style={styles.signupForm}>
         <View style={styles.formContent}>
           <Text style={styles.title}>Signup</Text>
-          <InputText
-            style={styles.input}
-            placeholder="name & surname"
-            placeholderTextColor="white"
-            onChangeText={(text) => setName(text)}
-            label={"Full Name"}
-          />
-          {nameError && <Text style={styles.errorText}>{nameError}</Text>}
-
-          <InputText
-            style={styles.input}
-            placeholder="username@123.com"
-            placeholderTextColor="white"
-            onChangeText={(text) => setEmail(text)}
-            label={"Email"}
-          />
-          {emailError && <Text style={styles.errorText}>{emailError}</Text>}
-
-          <InputText
-            style={styles.input}
-            placeholder="0123456789"
-            placeholderTextColor="white"
-            onChangeText={(text) => setPhoneNumber(text)}
-            label={"Number"}
-          />
-          {phoneError && <Text style={styles.errorText}>{phoneError}</Text>}
-
-          <View style={styles.TextInputGroup}>
-            <TouchableOpacity
-              style={styles.floatIcon}
-              onPress={toggleShowPassword}
-              accessibilityLabel="show password"
-            >
-             
-            </TouchableOpacity>
+          <View>
+            <InputText
+              style={styles.input}
+              placeholder="name & surname"
+              placeholderTextColor="white"
+              onChangeText={(text) => setName(text)}
+              label={"Full Name"}
+            />
+            {nameError && <Text style={styles.errorText}>{nameError}</Text>}
+          </View>
+          <View>
             <InputText
               style={styles.input}
               placeholder="username@123.com"
-              onChangeText={(text) => handlePasswordChange(text)}
-              secureTextEntry={!showPassword}
-              label={"Password"}
+              placeholderTextColor="white"
+              onChangeText={(text) => setEmail(text)}
+              label={"Email"}
             />
-             <Feather
+            {emailError && <Text style={styles.errorText}>{emailError}</Text>}
+          </View>
+          <View>
+            <InputText
+              style={styles.input}
+              placeholder="0123456789"
+              placeholderTextColor="white"
+              onChangeText={(text) => setPhoneNumber(text)}
+              label={"Number"}
+            />
+            {phoneError && <Text style={styles.errorText}>{phoneError}</Text>}
+          </View>
+
+          <View>
+            <View style={styles.TextInputGroup}>
+              <TouchableOpacity
+                style={styles.floatIcon}
+                onPress={toggleShowPassword}
+                accessibilityLabel="show password"
+              ></TouchableOpacity>
+              <InputText
+                style={styles.input}
+                placeholder="username@123.com"
+                onChangeText={(text) => handlePasswordChange(text)}
+                secureTextEntry={!showPassword}
+                label={"Password"}
+              />
+              <Feather
                 accessibilityLabel="show password"
                 name={showPassword ? "eye-off" : "eye"}
                 size={19}
                 color="white"
                 style={styles.icon}
               />
+            </View>
+            {/* WARNING TEXT */}
+            {passwordError && (
+              <Text style={styles.errorText}>{passwordError}</Text>
+            )}
           </View>
-          {/* WARNING TEXT */}
-          {passwordError && (
-            <Text style={styles.errorText}>{passwordError}</Text>
-          )}
-          <InputText
-            style={styles.input}
-            placeholder="Confirm Password"
-            onChangeText={(text) => handlePasswordChange(text, true)} // Pass true to indicate it's the Confirm Password field
-            secureTextEntry={!showPassword}
-            label={"Confirm Password"}
-          />
-          {reenterPasswordError && (
-            <Text style={styles.errorText}>{reenterPasswordError}</Text>
-          )}
+          <View>
+            <InputText
+              style={styles.input}
+              placeholder="Confirm Password"
+              onChangeText={(text) => handlePasswordChange(text, true)} // Pass true to indicate it's the Confirm Password field
+              secureTextEntry={!showPassword}
+              label={"Confirm Password"}
+            />
+            {reenterPasswordError && (
+              <Text style={styles.errorText}>{reenterPasswordError}</Text>
+            )}
+          </View>
 
           {userExistsMessage && (
             <Text style={styles.successMessage}>{userExistsMessage}</Text>
@@ -231,17 +234,12 @@ const RegistrationScreen = () => {
 
           <View style={styles.loginNav}>
             <Text style={styles.loginNav}>Already have an account?</Text>
-            <TouchableOpacity onPress={handleLogin}>
+            <TouchableOpacity onPress={onRegister}>
               <Text style={styles.loginTxt}>Log in</Text>
             </TouchableOpacity>
           </View>
-
-          
         </View>
       </View>
-{/* Modals */}
-<LoginModal isVisible={isLoginModalVisible} onClose={() => setLoginModalVisible(false)} />
-     
     </View>
   );
 };
@@ -253,8 +251,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignSelf: "center",
     // marginTop: 25,
-    paddingHorizontal: 8,   
-    
+    paddingHorizontal: 8,
   },
   image: {
     width: 100,
@@ -288,7 +285,7 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
   signupForm: {
-    padding: 30,
+    // padding: 30,
     borderRadius: 16,
     backgroundColor: "#002E15",
     alignItems: "flex-start",
@@ -425,7 +422,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "right",
     paddingHorizontal: 10,
-  zIndex: 1,  
+    zIndex: 1,
   },
   confirmTxt: {
     color: "white",
@@ -477,7 +474,7 @@ const styles = StyleSheet.create({
     height: 30,
     right: 0,
     position: "absolute",
-  }
+  },
 });
 
 export default RegistrationScreen;

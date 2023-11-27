@@ -14,7 +14,7 @@ const ProfileScreen = () => {
 
   return (
     <View style={styles.container}>
-      <View style={styles.header}>
+      {/* <View style={styles.header}>
         <Button
           title="MY ACCOUNT"
           type="clear"
@@ -29,7 +29,7 @@ const ProfileScreen = () => {
           iconLeft
           titleStyle={styles.buttonText}
         />
-      </View>
+      </View> */}
       <View style={styles.center}>
         <Image
           source={require('../../assets/profile.svg')} 

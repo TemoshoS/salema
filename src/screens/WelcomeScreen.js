@@ -12,7 +12,7 @@ import SignupModal from "../components/SignupModal";
 import ForgotPassModal from "../components/ForgotPassModal";
 
 
-const SplashScreen = () => {
+const WelcomeScreen = ({onLogin, onRegister}) => {
   const navigation = useNavigation();
 
   const [isLoginModalVisible, setLoginModalVisible] = useState(false);
@@ -45,8 +45,6 @@ const SplashScreen = () => {
 
   return (
     <View style={styles.container}>
-    {/* <LoginModal isVisible={isLoginModalVisible} onClose={closeModal} />
-      <SignupModal isVisible={isRegisterModalVisible} onClose={closeModal} /> */}
       
       <Image
         source={require("../../assets/Union.png")}
@@ -54,7 +52,8 @@ const SplashScreen = () => {
         accessibilityLabel="logo"
       />
       <Text>Your safety is just a shake away</Text>
-      {/* Staus image */}
+      {/* Status image */}
+      <ShakeFeedback />
 
       <View style={styles.textContent}>
         {/* HERE IS THE STATUS OF THE SHAKE APP {IN USE OR NOT} */}
@@ -78,23 +77,19 @@ const SplashScreen = () => {
         <Button
           style={styles.bgGreen}
           title={"Signup"}
-          onPress={() => handleSignup()}
+          onPress={onRegister}
           altText={"register"}
           color={"#055a2b"}
         />
         <Button
           style={styles.bgGreen}
           title={"Log in"}
-          onPress={() => handleLogin()}
+          onPress={onLogin}
           altText={"Login"}
           color={"#055a2b"}
         />
       </View>
 
-      {/* modals */}
-      <LoginModal isVisible={isLoginModalVisible} onClose={handleLoginModalClose} />
-      <SignupModal isVisible={isRegisterModalVisible} onClose={closeModal} />
-      <ForgotPassModal isVisible={isForgotPassModalVisible} onClose={closeModal}/>
       
     </View>
   );
@@ -109,6 +104,7 @@ const styles = StyleSheet.create({
     width: "100%",
     flexDirection: "column",
     paddingHorizontal: 20,
+    marginBottom: 20,
   },
   bottom: {
     bottom: 0,
@@ -175,4 +171,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default SplashScreen;
+export default WelcomeScreen;

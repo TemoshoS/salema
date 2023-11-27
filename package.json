@@ -24,6 +24,7 @@
     "expo": "^49.0.16",
     "expo-cli": "^6.3.10",
     "expo-device": "^5.6.0",
+    "expo-font": "^11.6.0",
     "expo-location": "^16.3.0",
     "expo-notifications": "~0.20.1",
     "expo-permissions": "^14.4.0",

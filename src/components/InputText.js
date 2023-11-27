@@ -7,6 +7,7 @@ export default function InputText({
   placeholder,
   // placeholderTextColor,
   label,
+  secureTextEntry,
 }) {
   // check if the user is placing input
   const [isFocused, setIsFocused] = useState(false);
@@ -28,6 +29,7 @@ export default function InputText({
           placeholderTextColor="#ffffff4d"
           onFocus={() => setIsFocused(true)}
           onBlur={() => setIsFocused(false)}
+          secureTextEntry={secureTextEntry}
         />
       </View>
     </View>
@@ -36,7 +38,8 @@ export default function InputText({
 
 const styles = StyleSheet.create({
   input: {
-    maxWidth: 350,
+    maxWidth: 340,
+    display: "flex",
     minHeight: 40,
     borderBottomWidth: 1,
     borderColor: "white",
@@ -45,12 +48,12 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
   },
   inputContainer: {
-    width: 350,
-    borderBottomWidth: 1,
+    width: 320,
+    borderBottomWidth: 0.8,
     borderColor: "white",
     // backgroundColor: "#ffffff4d", // Adjust the opacity here
     color: "#f2f2f2",
-    marginBottom: 10,
+    marginBottom: 8,
   },
   inputFocused: {
     borderColor: "transparent",
@@ -58,6 +61,6 @@ const styles = StyleSheet.create({
   label: {
     color: "white",
     fontSize: 12,
-    marginBottom: 5,
+    marginBottom: 4,
   },
 });

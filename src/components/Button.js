@@ -28,14 +28,15 @@ const styles = StyleSheet.create({
     // marginHorizontal: 6,
   },
   button: {
+    display: "flex",
     paddingVertical: 10,
     paddingHorizontal: 20,
     borderRadius: 100,
-    flexDirection: "row",
+    flexDirection: "column",
     justifyContent: "center",
     alignItems: "center",
-    minHeight: 48,
-    marginVertical: 16,
+    // minHeight: 48,
+    // marginVertical: 6,
   },
   buttonText: {
     color: "#00240a",
