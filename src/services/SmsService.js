@@ -1,38 +1,39 @@
-import * as SMS from 'expo-sms';
-
-export const sendSMS = async (phoneNumber, message) => {
-  try {
-    await SMS.sendSMSAsync([phoneNumber], message);
-  } catch (error) {
-    console.error('Error sending SMS:', error);
-    throw error;
-  }
-};
-
-
- // Function to send location to a single number
- const sendLocationToNumber = async (phoneNumber) => {
-  try {
-    const { status } = await SMS.sendSMSAsync(
-      [phoneNumber],
-      `Emergency! I need help. My current location is: ${userLocationMessage}`
-    );
-
-    if (status === 'sent') {
-      console.log('SMS sent successfully');
-    } else {
-      console.log('Failed to send SMS');
+export const sendSMS = async (message) => {
+    console.log('Sending SMS');
+    const apiUrl = 'https://e1dypr.api.infobip.com/sms/2/text/advanced';
+    const authorizationToken = 'App ece5a5a8f136c21a74bf2657d89ef5dc-85888b0f-5329-4d8f-9c63-762c92741934';
+  
+    const postData = {
+      messages: [
+        {
+          destinations: [
+            {
+              to: '27721371977',
+            },
+          ],
+          from: 'InfoSMS',
+          text: message,
+        },
+      ],
+    };
+  
+    try {
+      const response = await fetch(apiUrl, {
+        method: 'POST',
+        headers: {
+          Authorization: authorizationToken,
+          'Content-Type': 'application/json',
+          Accept: 'application/json',
+        },
+        body: JSON.stringify(postData),
+      });
+  
+      const responseData = await response.json();
+      console.log('HTTP status code:', response.status);
+      console.log(responseData);
+    } catch (error) {
+      console.error(error);
     }
-  } catch (error) {
-    console.error('Error sending SMS:', error);
-  }
-};
-
-// Function to send location to 5 numbers
-const sendLocationToNumbers = async () => {
-  const emergencyNumbers = ['0721371977', '0724457811', '0722733147'];
-
-  for (const phoneNumber of emergencyNumbers) {
-    await sendLocationToNumber(phoneNumber);
-  }
-};
+  };
+  
+ 
