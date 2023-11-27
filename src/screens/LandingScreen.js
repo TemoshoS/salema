@@ -34,7 +34,8 @@ import { createStackNavigator, CardStyleInterpolators } from '@react-navigation/
 import { Platform } from 'react-native'
 import LoginScreen from './LoginScreen'
 import RegistrationScreen from './RegistrationScreen'
-import { initializeAuthState } from '../services/homeServices'
+import { initializeAuthState } from "../services/homeServices";
+
 
 import { ShakeEventExpo , sendSMS} from '../services/ShakeTrigger';
 import getLocationPermission from '../services/geolocation';
@@ -56,6 +57,8 @@ const LandingScreen = ({ navigation, visible }) => {
   const [phoneError, setPhoneError] = useState(null)
   const [relationshipError, setRelationshipError] = useState(null)
   const [isShakeHandled, setIsShakeHandled] = useState(false);
+  const [statusImageSource, setStatusImageSource] = useState(require("../../assets/Inactive.png"));
+  const [location, setLocation] = useState(null);
 
   const [enablePanDownToClose, setEnablePanDownToClose] = useState(true)
 
@@ -79,62 +82,46 @@ const LandingScreen = ({ navigation, visible }) => {
   })
   const initializeAuth = async () => {
     const user = await initializeAuthState();
-    
-    if (user) {
-      console.log('There is user');
-      setCurrentUser(user);
-      fetchContacts();  
-      
-    } else {
-      console.log('no user');
 
+    if (user) {
+      fetchContacts();
+      setCurrentUser(user);
+      console.log('there is user');
+    } else {
       setContacts([]);
+      console.log('no user')
     }
   };
+
   useEffect(() => {
-
-    
-  
     initializeAuth();
-
 
     const shakeHandler = async () => {
       console.log('Shake detected!');
       const permissionResult = await getLocationPermission();
-  
+
       if (permissionResult) {
         const newLocation = permissionResult.userLocation;
         setLocation(newLocation);
         setShakeStatusModalVisible(true);
         handleShake(true);
         sendSMS("Emergency! I need help. My location: " + `https://www.google.com/maps/?q=${newLocation.latitude},${newLocation.longitude}`);
-      
       }
     };
-  
+
     ShakeEventExpo.addListener(shakeHandler);
 
-  return () => {
-    ShakeEventExpo.removeListener(shakeHandler);
-  };
+    return () => {
+      ShakeEventExpo.removeListener(shakeHandler);
+    };
   }, [isShakeHandled]);
-
-
-  const fetchContacts = async () => {
-    try {
-      if (currentUser) {
-        const data = await getContacts()
-        setContacts(data)
-      }
-    } catch (error) {
-      console.error('Error fetching contacts:', error)
-    }
-  }
-
-  const filteredContacts = contacts.filter(
-    (contact) => contact.userId === currentUser,
-  )
-
+  
+   // Function to get user's contacts
+ const fetchContacts = async () => {
+  await getContacts(currentUser).then((data) => {
+    setContacts(data);
+  });
+};
   const showContactDetails = (contact) => {
     setSelectedContact(contact)
     setUpdatedContactData({
@@ -314,43 +301,46 @@ const showForgotPassModal = () =>{
         setTimeout(() => {
           setIsShakeHandled(false); // Reset shake detection
           setStatusImageSource(require("../../assets/Inactive.png"));
-          
+          setLocationModalVisible(false);
         }, 5000);
       } else {
         setStatusImageSource(require("../../assets/Inactive.png"));
-       
+        setLocationModalVisible(false);
       }
     }
   };
 
+const sendNotification = async () => {
+  try {
+    const { status } = await Notifications.getPermissionsAsync();
 
-  const sendNotification = async () => {
-    try {
-      const { status } = await Notifications.getPermissionsAsync();
-  
-      const notificationId = await Notifications.scheduleNotificationAsync({
-        content: {
-          title: 'Emergency Alert',
-          body: 'This is an emergency alert',
-        },
-        trigger: null,
-      });
-      
-  
-      console.log('Notification scheduled: ', notificationId);
-      
-    } catch (error) {
-      console.error("Error sending notification: ", error);	
-      
-    }
-  
+    const notificationId = await Notifications.scheduleNotificationAsync({
+      content: {
+        title: 'Emergency Alert',
+        body: 'This is an emergency alert',
+      },
+      trigger: null,
+    });
+    
+
+    console.log('Notification scheduled: ', notificationId);
+    
+  } catch (error) {
+    console.error("Error sending notification: ", error);	
+    
   }
-  
+
+}
+
+
 
   return (
     <View style={styles.container}>
       {/* Content */}
       {/* Backhground image */}
+      <TouchableOpacity style={{position:'absolute', top:40, right:0}} onPress={() => navigation.navigate('ProfileScreen')}>
+        <Text>Profile</Text>
+      </TouchableOpacity>
       <Image
         source={require("../../assets/Union.png")}
         style={styles.logoImg}

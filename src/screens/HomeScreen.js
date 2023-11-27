@@ -101,7 +101,10 @@ const HomeScreen = ({ navigation }) => {
   }, [isShakeHandled]);
 
 
- 
+  
+  
+
+
 
   // Function to get user's contacts
  const fetchContacts = async () => {
@@ -309,11 +312,11 @@ const HomeScreen = ({ navigation }) => {
         setTimeout(() => {
           setIsShakeHandled(false); // Reset shake detection
           setStatusImageSource(require("../../assets/Inactive.png"));
-          setLocationModalVisible(false);
+          
         }, 5000);
       } else {
         setStatusImageSource(require("../../assets/Inactive.png"));
-        setLocationModalVisible(false);
+        
       }
     }
   };
@@ -531,7 +534,7 @@ const sendNotification = async () => {
                   setUpdatedContactData({ ...updatedContactData, name: text })
                 }
               />
-              <Text>{'\n'}</Text>
+              <br />
               <InputText
                 style={styles.input}
                 placeholder="Phone Number"
@@ -543,7 +546,7 @@ const sendNotification = async () => {
                   })
                 }
               />
-              <Text>{'\n'}</Text>
+              <br />
               <InputText
                 style={styles.input}
                 placeholder="Relationship"
@@ -556,7 +559,7 @@ const sendNotification = async () => {
                 }
               />
 
-              <Text>{'\n'}</Text>
+              <br />
               {/* list available contacts */}
               <ScrollView>
                 <View style={styles.contactList}>
