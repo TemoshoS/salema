@@ -11,7 +11,7 @@ import ForgotPassModal from "../components/ForgotPassModal";
 import LoginModal from "../components/LoginModal";
 
 
-const LoginScreen = ({onRegister, onLogin, onForgotPass}) => {
+const LoginScreen = ({onRegister, onLogin, onForgotPass,closeModal}) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loginAttempts, setLoginAttempts] = useState(0);
@@ -25,17 +25,22 @@ const LoginScreen = ({onRegister, onLogin, onForgotPass}) => {
   const handleLogin = async () => {
   
     try {
-      await loginUser(email, password);
-      // navigation.navigate('Home');
+     const user = await loginUser(email, password);
+     console.log('use' + user.email);
+      // props.closeModal
+      closeModal()
+      console.log("login method callled");
+      navigation.navigate('LandingPage');
       // Terminate modal
     } catch (error) {
       Alert.alert(error.message);
+      console.log(error);
       setLoginAttempts(loginAttempts + 1);
 
       // Check if login attempts exceed the limit (e.g., 3)
       if (loginAttempts >= 2) {
         // Block the user or perform any other action (e.g., show a message)
-        Alert.alert('Login attempts exceeded. Your account is blocked.');
+        Alert.alert('Login attempts exceeded. Your account is   locked.');
     }
   }
   };
@@ -56,11 +61,11 @@ const handleRegister = () => {
     setShowPassword(!showPassword);
   };
 
-  const closeModal = () => {
-    console.log("closed modal on splash")
-    setLoginModalVisible(false);
-    setForgotPassModalVisible(false)
-  };
+  // const closeModal = () => {
+  //   console.log("closed modal on splash")
+  //   setLoginModalVisible(false);
+  //   setForgotPassModalVisible(false)
+  // };
 
   return (
     <View style={styles.container}>
@@ -91,7 +96,7 @@ const handleRegister = () => {
 
         <View style={styles.buttonGroup}>
           <Button
-            onPress={handleLogin}
+            onPress={() => handleLogin()}
             title="Login"
             altText={"Login"}
             color={"#055a2b"}
