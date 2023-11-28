@@ -266,10 +266,52 @@ const LandingScreen = ({ navigation, visible }) => {
     setModalVisible(false);
   };
 
-  const handleUpdateContact = () => {
-    // Handle logic for updating contact with the value in updatedContact
-    console.log(`Updating contact: ${updatedContact}`);
+  const handleUpdateContact = async () => {
+    try {
+      if (!selectedContact) {
+        console.error("No contact selected for update");
+        return;
+      }
+
+      if (!selectedContact.id) {
+        console.error("Selected contact has no valid ID");
+        return;
+      }
+
+      if (!updatedContactData) {
+        console.error("No updated data provided");
+        return;
+      }
+      if (!updatedContactData.name) {
+        setNameError('Please enter Name');
+        return;
+      } 
+      else{
+        setNameError(null);
+      }
+      if(!updatedContactData.phoneNumber){
+        setPhoneError('Please enter Phone number');
+        return;
+      }
+      {
+        setPhoneError(null);
+      }
+      if(!updatedContactData.relationship){
+        setRelationshipError('Please enter Relationship');
+        return;
+      }else{
+        setRelationshipError(null);
+      }
+
+      await updateContact(selectedContact.id, updatedContactData);
+      fetchContacts();
+      hideUpdateModal();
+      setConfirmationVisible(false);
+    } catch (error) {
+      console.error("Error updating contact: ", error);
+    }
   };
+
   const showSignupModal = () => {
     setLoginModalVisible(false);
     setSignupModalVisible(true);
