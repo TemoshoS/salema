@@ -101,7 +101,7 @@ const LandingScreen = ({ navigation, visible }) => {
         handleShake(true);
         sendSMS(
           "Emergency! I need help. My location: " +
-          `https://www.google.com/maps/?q=${newLocation.latitude},${newLocation.longitude}`
+            `https://www.google.com/maps/?q=${newLocation.latitude},${newLocation.longitude}`
         );
       }
     };
@@ -146,6 +146,7 @@ const LandingScreen = ({ navigation, visible }) => {
 
   const showUpdateModal = () => {
     setUpdateModalVisible(true);
+    hideViewContactModal();
   };
 
   // from home
@@ -162,13 +163,10 @@ const LandingScreen = ({ navigation, visible }) => {
     setAddContactModalVisible(false);
   };
 
-
   const validatePhoneNumber = (phoneNumber) => {
-
     const formattedPhoneNumber = phoneNumber.startsWith("0")
       ? "27" + phoneNumber.slice(1)
       : phoneNumber;
-
 
     const phoneRegex = /^27[0-9]{9}$/;
 
@@ -176,7 +174,6 @@ const LandingScreen = ({ navigation, visible }) => {
 
     setIsPhoneNumberValid(isValid);
   };
-
 
   const handleAddContact = async () => {
     try {
@@ -215,12 +212,13 @@ const LandingScreen = ({ navigation, visible }) => {
         setPhoneError(null);
       }
       if (!isPhoneNumberValid) {
-        setPhoneError("Invalid phone number. Please enter a valid South African number.");
+        setPhoneError(
+          "Invalid phone number. Please enter a valid South African number."
+        );
         return;
       } else {
         setPhoneError(null);
       }
-
 
       // Format phone number: if it starts with "0", add "27" to the beginning
       let formattedPhoneNumber = newContactData.phoneNumber;
@@ -248,7 +246,6 @@ const LandingScreen = ({ navigation, visible }) => {
       console.error("Error adding contact: ", error);
     }
   };
-
 
   const selectContactForUpdate = (contact) => {
     setUpdatedContactData({
@@ -285,9 +282,14 @@ const LandingScreen = ({ navigation, visible }) => {
     setLoginModalVisible(false);
     setForgotPassModalVisible(true);
   };
-  const handleRemoveContact = () => {
-    // Handle logic for removing contact with the value in removedContact
-    console.log(`Removing contact: ${removedContact}`);
+  const handleRemoveContact = async (contactId) => {
+    try {
+      await removeContact(contactId);
+      fetchContacts();
+      hideViewContactModal();
+    } catch (error) {
+      console.error("Error removing contact: ", error);
+    }
   };
 
   // Function to hide the confirmation modal
@@ -318,7 +320,7 @@ const LandingScreen = ({ navigation, visible }) => {
     setSelectedContact(contact);
     setIsViewContactModalVisible(true);
   };
-  
+
   const handleLogin = () => {
     setLoginModalVisible(true);
   };
@@ -382,8 +384,14 @@ const LandingScreen = ({ navigation, visible }) => {
   return (
     <View style={styles.container}>
       {/* Backhground image */}
-      <TouchableOpacity style={{ position: 'absolute', top: 40, right: 0 }} onPress={() => navigation.navigate('ProfileScreen')}>
-        <Image source={require("../../assets/profile.png")} style={styles.profileicon} />
+      <TouchableOpacity
+        style={{ position: "absolute", top: 40, right: 0 }}
+        onPress={() => navigation.navigate("ProfileScreen")}
+      >
+        <Image
+          source={require("../../assets/profile.png")}
+          style={styles.profileicon}
+        />
       </TouchableOpacity>
       <Image
         source={require("../../assets/Union.png")}
@@ -438,22 +446,24 @@ const LandingScreen = ({ navigation, visible }) => {
           <Text style={styles.trustedContact}>Trusted Contact</Text>
 
           <View style={styles.contactCard}>
-          {contacts.length > 0 ? (
-                contacts.map((contact, index) => (
-                  <View key={index}>
-                    <ChipButton
-                      key={index}
-                      title={contact.name}
-                      onPress={() => showViewContactModal(contact)}
-                    />
-                  </View>
-                ))
+            {contacts.length > 0 ? (
+              contacts.map((contact, index) => (
+                <View key={index}>
+                  <ChipButton
+                    key={index}
+                    title={contact.name}
+                    onPress={() => showViewContactModal(contact)}
+                  />
+                </View>
+              ))
             ) : (
-
               <View style={styles.contactList}>
-                <Text style={styles.textContent}>YOUR EMERGENCY CONTACTS WILL APPEAR HERE.</Text>
+                <Text style={styles.textContent}>
+                  YOUR EMERGENCY CONTACTS WILL APPEAR HERE.
+                </Text>
                 <Text style={styles.noUserText}>
-                  You currently do not have any emergency contact. Import contacts or add new contacts
+                  You currently do not have any emergency contact. Import
+                  contacts or add new contacts
                 </Text>
 
                 {/* <TouchableOpacity style={styles.addContactButton} onPress={() => showAddContactModal()}>
@@ -461,9 +471,7 @@ const LandingScreen = ({ navigation, visible }) => {
                     </TouchableOpacity> */}
               </View>
             )}
-            <View>
-
-            </View>
+            <View></View>
           </View>
           <Button
             title={"Add Contact"}
@@ -553,11 +561,6 @@ const LandingScreen = ({ navigation, visible }) => {
             >
               <Text style={styles.buttonText}>REMOVE CONTACT</Text>
             </TouchableOpacity>
-
-            {/* Close Modal Button */}
-            <TouchableOpacity style={styles.closeButton} onPress={closeModal}>
-              <Text style={styles.closeButtonText}>CLOSE</Text>
-            </TouchableOpacity>
           </View>
         </View>
       </Modal>
@@ -581,7 +584,7 @@ const LandingScreen = ({ navigation, visible }) => {
               closeModal={() => hideLoginModal()}
               openRegister={() => showSignupModal()}
               onForgotPass={showForgotPassModal}
-            // style={{width: 10,margin: 10,}}
+              // style={{width: 10,margin: 10,}}
             />
           </View>
         </View>
@@ -614,6 +617,7 @@ const LandingScreen = ({ navigation, visible }) => {
           />
         </View>
       </Modal>
+
       {/* Edit/ Update Contacts Modal */}
       <Modal
         transparent={true}
@@ -621,80 +625,93 @@ const LandingScreen = ({ navigation, visible }) => {
         animationType="slide"
         onRequestClose={hideUpdateModal}
       >
+        <View style={styles.overlay} />
         <View style={styles.modalContainer}>
-          <View style={styles.overlay}></View>
-          <View style={styles.card}>
-            <Text style={styles.title}>Edit Contact</Text>
-            {selectedContact && (
-              <View style={styles.textContent}>
-                <InputText
-                  style={styles.input}
-                  placeholder="Name"
-                  value={updatedContactData.name}
-                  onChangeText={(text) =>
-                    setUpdatedContactData({ ...updatedContactData, name: text })
-                  }
-                />
-                <Text>{"\n"}</Text>
-                <InputText
-                  style={styles.input}
-                  placeholder="Phone Number"
-                  value={updatedContactData.phoneNumber}
-                  onChangeText={(text) =>
-                    setUpdatedContactData({
-                      ...updatedContactData,
-                      phoneNumber: text,
-                    })
-                  }
-                />
-                <Text>{"\n"}</Text>
-                <InputText
-                  style={styles.input}
-                  placeholder="Relationship"
-                  value={updatedContactData.relationship}
-                  onChangeText={(text) =>
-                    setUpdatedContactData({
-                      ...updatedContactData,
-                      relationship: text,
-                    })
-                  }
-                />
-
-                <Text>{"\n"}</Text>
-                {/* list available contacts */}
-                <ScrollView>
-                  <View style={styles.contactList}>
-                    {contacts ? (
-                      contacts.map((contact, index) => (
-                        <TouchableOpacity key={index}>
-                          <ChipButton
-                            key={index}
-                            title={contact.name}
-                            onPress={() => selectContactForUpdate(contact)}
-                            style={{
-                              backgroundColor:
-                                selectedContact?.id === contact.id
-                                  ? "lightgray"
-                                  : "transparent",
-                            }}
-                          />
-                        </TouchableOpacity>
-                      ))
-                    ) : (
-                      <Text>No contacts available</Text>
-                    )}
-                  </View>
-                </ScrollView>
-
-                <View style={styles.buttonGroup}>
-                  <Button
-                    title="Update"
-                    onPress={handleUpdateContact}
-                    altText="Update Edit"
+          <View style={styles.modalCard}>
+            <Text style={styles.trustedContact}>Edit Contact</Text>
+            <View>
+              {selectedContact && (
+                <View>
+                  <InputText
+                    style={styles.input}
+                    placeholder="Name"
+                    value={updatedContactData.name}
+                    onChangeText={(text) =>
+                      setUpdatedContactData({
+                        ...updatedContactData,
+                        name: text,
+                      })
+                    }
                   />
+                  <InputText
+                    style={styles.input}
+                    placeholder="Phone Number"
+                    value={updatedContactData.phoneNumber}
+                    onChangeText={(text) =>
+                      setUpdatedContactData({
+                        ...updatedContactData,
+                        phoneNumber: text,
+                      })
+                    }
+                  />
+                  <InputText
+                    style={styles.input}
+                    placeholder="Relationship"
+                    value={updatedContactData.relationship}
+                    onChangeText={(text) =>
+                      setUpdatedContactData({
+                        ...updatedContactData,
+                        relationship: text,
+                      })
+                    }
+                  />
+                  {/* list available contacts */}
+                  <ScrollView
+                    contentContainerStyle={{
+                      flexGrow: 1,
+                      flexDirection: "row",
+                      alignItems: "center",
+                      justifyContent: "space-between",
+                      // paddingHorizontal: 20,
+                      marginVertical: 10,
+                    }}
+                    horizontal={true}
+                    bounces={true}
+                    showsHorizontalScrollIndicator={false}
+                  >
+                    <View style={styles.chipsGroup}>
+                      {contacts ? (
+                        contacts.map((contact, index) => (
+                          <TouchableOpacity key={index}>
+                            <ChipButton
+                              key={index}
+                              title={contact.name}
+                              onPress={() => selectContactForUpdate(contact)}
+                              style={{
+                                backgroundColor:
+                                  selectedContact?.id === contact.id
+                                    ? "lightgray"
+                                    : "transparent",
+                              }}
+                            />
+                          </TouchableOpacity>
+                        ))
+                      ) : (
+                        <Text>No contacts available</Text>
+                      )}
+                    </View>
+                  </ScrollView>
+
+                  <View style={styles.buttonGroup}>
+                    <Button
+                      title="Update"
+                      onPress={handleUpdateContact}
+                      altText="Update Edit"
+                    />
+                  </View>
                 </View>
-              </View>
-            )}
+              )}
+            </View>
           </View>
         </View>
       </Modal>
@@ -734,7 +751,9 @@ const LandingScreen = ({ navigation, visible }) => {
                 }}
               />
               {!isPhoneNumberValid && (
-                <Text style={styles.errorText}>Please enter a valid phone number</Text>
+                <Text style={styles.errorText}>
+                  Please enter a valid phone number
+                </Text>
               )}
               {phoneError && <Text style={styles.errorText}>{phoneError}</Text>}
             </View>
@@ -752,8 +771,6 @@ const LandingScreen = ({ navigation, visible }) => {
                 <Text style={styles.errorText}>{relationshipError}</Text>
               )}
             </View>
-
-
 
             <View style={styles.buttonGroup}>
               <Button
@@ -774,38 +791,43 @@ const LandingScreen = ({ navigation, visible }) => {
         onRequestClose={hideViewContactModal}
       >
         <View style={styles.bottomSheet2}>
-          <View style={styles.container}>
-            <View style={styles.contactList}>
-            {selectedContact ? (
-            <View style={styles.textContent}>
-              {/* <Text style={styles.title}>Trusted Contacts</Text> */}
-              <Text style={styles.title}>{selectedContact.name}</Text>
-              <Text style={styles.text}>{selectedContact.phoneNumber}</Text>
-              <Text>{"\n"}</Text>
-              <View style={styles.buttonGroup}>
-                <Button2
-                  title="Update Contact"
-                  onPress={showUpdateModal}
-                  altText="Update Contact"
-                  textColor={"#f2f2f2"}
-                />
-                <Button2
-                  title="Remove Contact"
-                  onPress={() => handleRemoveContact(selectedContact.id)}
-                  altText="Remove Contact"
-                  textColor={"#ff2323"}
-                />
+          <View style={styles.contactCard}>
+            <View style={styles.container}>
+              <View style={styles.contactList}>
+                {selectedContact ? (
+                  <View style={styles.textContent}>
+                    {/* <Text style={styles.title}>Trusted Contacts</Text> */}
+                    <Text style={styles.trustedContact}>
+                      {selectedContact.name}
+                    </Text>
+                    <Text style={styles.textContent}>
+                      {selectedContact.phoneNumber}
+                    </Text>
+                    <View>
+                      <Button2
+                        title="Update Contact"
+                        onPress={showUpdateModal}
+                        altText="Update Contact"
+                        textColor={"#f2f2f2"}
+                      />
+                      <Button2
+                        title="Remove Contact"
+                        onPress={() => handleRemoveContact(selectedContact.id)}
+                        altText="Remove Contact"
+                        textColor={"#ff2323"}
+                      />
+                    </View>
+                  </View>
+                ) : (
+                  <Text style={{ color: "#ff2323", textAlign: "center" }}>
+                    No contact selected
+                  </Text>
+                )}
               </View>
+              <Text>
+                <Text>{"\n"}</Text>
+              </Text>
             </View>
-          ) : (
-            <Text style={{ color: "#ff2323", textAlign: "center" }}>
-              No contact selected
-            </Text>
-          )}
-            </View>
-            <Text>
-              <Text>{"\n"}</Text>
-            </Text>
           </View>
         </View>
       </Modal>
@@ -856,7 +878,7 @@ const styles = StyleSheet.create({
     alignSelf: "stretch",
     paddingHorizontal: 20,
     paddingBottom: 20,
-    paddingTop: 30,
+    paddingTop: 0,
     borderRadius: 25,
     gap: 20,
     backgroundColor: "#002E15",
@@ -865,7 +887,7 @@ const styles = StyleSheet.create({
     textAlign: "center",
     bottom: 0,
     position: "absolute",
-    height: "20%",
+    height: "25%",
     width: "100%",
     // for the shadows at the top
     shadowColor: "#000000",
@@ -875,7 +897,7 @@ const styles = StyleSheet.create({
     elevation: 4,
   },
   contactCard: {
-    // gap: 20,
+    gap: 10,
     display: "flex",
     alignSelf: "stretch",
     // flexDirection: "column",
@@ -989,6 +1011,16 @@ const styles = StyleSheet.create({
     color: "#FFFFFF",
     marginBottom: 20,
   },
+  buttonGroup: {
+    width: "100%",
+    flexDirection: "column",
+    // flexWrap: "wrap",
+    alignItems: "left",
+    gap: 8,
+    justifyContent: "flex-end",
+    color: "#f2f2f2",
+    marginTop: 24,
+  },
   updateButton: {
     ...Platform.select({
       ios: {
@@ -1080,11 +1112,8 @@ const styles = StyleSheet.create({
     // backgroundColor: "#062817",
   },
   chipsGroup: {
-
-    display: "flex",
-    alignSelf: "stretch",
+    flex: 1,
     flexDirection: "row",
-
     alignItems: "center",
     columnGap: 4,
     rowGap: 6,
@@ -1196,18 +1225,12 @@ const styles = StyleSheet.create({
     width: 30,
     height: 30,
     marginRight: 10,
-    marginTop: 10
+    marginTop: 10,
   },
   errorText: {
     color: "red",
     marginBottom: 10,
   },
-
-
-
-
-
-
-})
+});
 
 export default LandingScreen;
