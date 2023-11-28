@@ -68,7 +68,7 @@ const ProfileScreen = () => {
   const handleSignOut = async () => {
     try {
       await signOutUser();
-      navigation.navigate('LandingPage');
+      navigation.navigate('Login');
     } catch (error) {
       console.error('Error signing out:', error);
     }
