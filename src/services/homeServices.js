@@ -1,4 +1,4 @@
-import { collection, getDocs,addDoc, updateDoc, deleteDoc, doc } from "firebase/firestore";
+import { collection, getDocs,addDoc,where, updateDoc, deleteDoc,query, doc } from "firebase/firestore";
 import { db } from "./firebaseService";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 
@@ -23,18 +23,22 @@ const initializeAuthState = () => {
 async function getContacts() {
   try {
     const collectionRef = collection(db, "emergency_contacts");
-    const querySnapshot = await getDocs(collectionRef);
-    const contacts = [];
+    const q = query(collectionRef, where("userId", "==", currentUser));
+    console.log(currentUser);
+    const querySnapshot = await getDocs(q);
 
-    querySnapshot.forEach((doc) => {
-      const data = doc.data();
-      contacts.push(data);
-    });
+    const contacts = [];
+      querySnapshot.forEach((doc) => {
+        const data = doc.data();
+        contacts.push(data);
+      });
 
     // Filter contacts based on the current user's ID
-    const filteredContacts = contacts.filter((contact) => contact.userId === currentUser);
+    // const filteredContacts = contacts.filter((contact) => contact.userId === currentUser);
+    //this returns true when the user has no contact because you are using filter method , please use firease filter
+    console.log(contacts);
 
-    return filteredContacts;
+    return contacts;
   } catch (error) {
     console.error('Error fetching data: ', error);
     return []; 

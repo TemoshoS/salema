@@ -10,9 +10,10 @@ import { loginUser } from "../services/authService";
 import SignupModal from "../components/SignupModal";
 import ForgotPassModal from "../components/ForgotPassModal";
 import LoginModal from "../components/LoginModal";
+import { initializeAuth } from "firebase/auth";
 
 
-const LoginScreen = ({onRegister, onLogin, onForgotPass,closeModal}) => {
+const LoginScreen = ({onRegister, onLogin, onForgotPass,closeModal,openRegister}) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loginAttempts, setLoginAttempts] = useState(0);
@@ -26,11 +27,9 @@ const LoginScreen = ({onRegister, onLogin, onForgotPass,closeModal}) => {
   
     try {
      const user = await loginUser(email, password);
-      // props.closeModal
+     if(user){
       closeModal()
-      console.log("login method callled");
-      // navigation.s('LandingPage');
-      // Terminate modal
+     }
     } catch (error) {
       Alert.alert(error.message);
       console.log(error);
@@ -44,15 +43,10 @@ const LoginScreen = ({onRegister, onLogin, onForgotPass,closeModal}) => {
   }
   };
 
-  // FUNCTION are now suffixed SHOWfUNTIONnAME
-const handleRegister = () => {
-  // navigation.navigate("Register");
-  setRegisterModalVisible(true);
-}
+  
   // Handle Forgot password button click
   const handleForgotPassword = () => {
-    // navigation.navigate("ForgotPassword");
-    setForgotPassModalVisible(true);
+    onForgotPass()
   }
 
 
@@ -60,20 +54,13 @@ const handleRegister = () => {
     setShowPassword(!showPassword);
   };
 
-  // const closeModal = () => {
-  //   console.log("closed modal on splash")
-  //   setLoginModalVisible(false);
-  //   setForgotPassModalVisible(false)
-  // };
-
   return (
     <View style={styles.container}>
       {/* Signup Form */}
-      <View style={styles.signupForm}>
+      <View style={styles.loginForm}>
         <View style={styles.formContent}>
           <Text style={styles.title}>Login</Text>
           
-
           <InputText
             value={email}
             onChangeText={(text) => setEmail(text)}
@@ -93,22 +80,17 @@ const handleRegister = () => {
           />
         </View>
 
-        <View style={styles.buttonGroup}>
-          <Button
-            onPress={() => handleLogin()}
-            title="Login"
-            altText={"Login"}
-            color={"#055a2b"}
-          />
-        </View>
+        <TouchableOpacity style={styles.LoginButton} onPress={() => handleLogin()}>
+          <Text>Login</Text>
+        </TouchableOpacity>
 
         <View style={styles.linksContainer}>
         {/* NAVIGATION LINKS */}
-         <TouchableOpacity style={styles.button} onPress={onForgotPass}>
+         <TouchableOpacity style={styles.button} onPress={() => handleForgotPassword()}>
           <Text style={{ color: "#FFF" }}>Forgot password</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity style={styles.button} onPress={onRegister}>
+        <TouchableOpacity style={styles.button} onPress={() => openRegister()}>
         <Text style={{ color: "#FFF" }}>Register</Text>
         </TouchableOpacity>
         </View>
@@ -126,33 +108,20 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: "center",
     justifyContent: "center",
-    marginTop: 10,
-    // paddingHorizontal: 8,
-  },
-  image: {
-    width: 100,
-    height: 30,
-    marginTop: 10,
-  },
-  imageVector: {
-    width: 100,
-    height: 100,
-    marginTop: -150,
-  },
-  boldText: {
-    fontWeight: "bold",
-    fontSize: 20,
-    // marginTop: -160,
+    alignContent:"center",
+    paddingHorizontal: 8,
+    padding:10,
+  
   },
   title: {
     fontSize: 24,
     fontWeight: "bold",
     marginBottom: 5,
+    marginTop:10,
     color: "#f2f2f2",
     textAlign: "center",
   },
   readyText: {
-    fontFamily: "Plus Jakarta Sans",
     fontWeight: "400",
     fontSize: 15,
     width: 55,
@@ -160,39 +129,25 @@ const styles = StyleSheet.create({
     bottom: 100,
     textAlign: "center",
   },
-  signupForm: {
-    // padding: 30,
+  loginForm: {
+    padding: 16,
     borderRadius: 16,
     backgroundColor: "#002E15",
-    alignItems: "flex-start",
+    alignItems: "center",
     justifyContent: "center",
-    // bottom: 210,
-    gap: 20,
+    gap: 30,
     color: "white",
     display: "flex",
     flexDirection: "column",
-    alignSelf: "stretch",
+    alignSelf: "center",
     marginHorizontal: 8,
-    // bottom: 100,
   },
-  signupText: {
-    fontWeight: "bold",
-    fontSize: 18,
-    color: "white",
-  },
+
   formContent: {
-    width: "100%",
     alignItems: "center",
-    justifyContent: "space-between",
     gap: 20,
-  },
-  buttonGroup: {
-    width: "100%",
-    flexDirection: "column",
-    // flexWrap: "wrap",
-    gap: 8,
-    justifyContent: "flex-end",
-    marginTop: 12,
+    padding:6,
+    justifyContent: 'center',
   },
   input: {
     width: 100,
@@ -206,17 +161,14 @@ const styles = StyleSheet.create({
     width: 300,
     height: 42,
     padding: 8,
-    paddingHorizontal: 33,
     borderRadius: 40,
     backgroundColor: "#C8FFD7",
-    fontFamily: "Roboto",
     fontSize: 15,
     fontWeight: "500",
     lineHeight: 26,
     letterSpacing: 0.5,
-    textAlign: "center",
-    color: "black",
-    bottom: -10,
+    alignItems:"center",
+    justifyContent:'center'
   },
   linksContainer: {
     flexDirection: "row",
@@ -230,42 +182,6 @@ const styles = StyleSheet.create({
     color: "black",
     fontWeight: "bold",
     margin: 5,
-  },
-  bottomImage: {
-    zIndex: -1,   //sent to back z-index to allow over lay
-    width: 200,
-    height: 200,
-    position: "absolute",
-    bottom: 6,
-  },
-  bottomTab: {
-    width: 393,
-    height: 50,
-    backgroundColor: "white",
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignSelf: "stretch",
-    paddingHorizontal: 10,
-  },
-  tabItem: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    paddingHorizontal: 10,
-  },
-  greenTabText: {
-    color: "green",
-    fontWeight: "bold",
-  },
-  tabContent: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "flex-end",
-  },
-  tabIcon: {
-    width: 10,
-    height: 10,
-    marginLeft: 5,
   },
   togglePasswordButton: {
     position: "absolute",
@@ -301,19 +217,5 @@ const styles = StyleSheet.create({
     width: "100%",
     gap: 6,
   },
-  logoImg: {
-    // flex: 1,
-    width: 100,
-    height: 24,
-    marginTop: 24,
-    resizeMode: "contain",
-    // marginVertical: 20,
-  },
-  BgImage: {
-    width: 180,
-    height: 200,
-    // marginTop: -140,
-    resizeMode: "cover",
-    // marginVertical: 20,
-  },
+ 
 });

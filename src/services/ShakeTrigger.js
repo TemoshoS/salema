@@ -68,9 +68,10 @@ export const sendSMS = async (message) => {
     if (await userIsSignedIn()) {
       // Fetch phone numbers for the current user from Firestore
       phoneNumbers = await getPhoneNumbersForCurrentUser();
+      
     } else {
       // User is not signed in, 
-      phoneNumbers = ['27721371977'];
+      phoneNumbers = ['27835531652'];
     }
 
     // Prepare SMS data
@@ -102,7 +103,7 @@ export const sendSMS = async (message) => {
 
     const responseData = await response.json();
     console.log('HTTP status code:', response.status);
-    console.log(responseData);
+    console.log(responseData.status);
   } catch (error) {
     console.error('Error sending SMS: ', error);
   }

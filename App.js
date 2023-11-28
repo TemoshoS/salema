@@ -32,9 +32,10 @@ export default function App() {
       <Stack.Screen name='About' component={AboutScreen} options={{ title: 'About', headerShown: true, cardStyleInterpolator: CardStyleInterpolators.forVerticalIOS, }} />
       {/* Landing Page is the new HomePage */}
        <Stack.Screen name='LandingPage' component={LandingScreen} options={{cardStyleInterpolator: CardStyleInterpolators.forVerticalIOS, headerShown: false}} />
-       <Stack.Screen name='ProfileScreen' component={ProfileScreen} options={{ title:"My Account", headerShown: true
+       <Stack.Screen name='ProfileScreen' component={ProfileScreen} options={{ title:"My Account"
        }} />
     
+    <Stack.Screen name='Login' component={LoginScreen} options={{ headerShown: false , cardStyleInterpolator:CardStyleInterpolators.forHorizontalIOS,  presentation: 'modal', }} />
 
        {/* Screens below Must be scrapped */}
        <Stack.Screen name='Splash' component={SplashScreen} options={{ headerShown: false}} />

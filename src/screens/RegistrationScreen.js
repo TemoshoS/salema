@@ -19,7 +19,7 @@ import Button from "../components/Button";
 import { registerUser } from "../services/authService";
 import LoginModal from "../components/LoginModal";
 
-const RegistrationScreen = ({onLogin, onRegister}) => {
+const RegistrationScreen = ({onLogin, onRegister,closeModal}) => {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [phone, setPhoneNumber] = useState('');
@@ -110,8 +110,7 @@ const RegistrationScreen = ({onLogin, onRegister}) => {
       setPhoneNumber('');
       setPassword('');
       setReenterPassword('');
-      // navigation.navigate("Login");
-      // terminate modal
+      closeModal()
     } catch (error) {
       if (error.code === "auth/email-already-in-use") {
         setEmailError("Email is already in use");
@@ -194,6 +193,7 @@ const RegistrationScreen = ({onLogin, onRegister}) => {
                 color="white"
                 style={styles.icon}
               />
+              
             </View>
             {/* WARNING TEXT */}
             {passwordError && (
@@ -223,18 +223,14 @@ const RegistrationScreen = ({onLogin, onRegister}) => {
             )}
           </View>
 
-          <View style={styles.buttonGroup}>
-            <Button
-              onPress={handleRegister}
-              title="Register"
-              altText={"Register"}
-              color={"#C8FFD7"}
-            />
-          </View>
+          
+          <TouchableOpacity onPress={() => handleRegister()} style={styles.registerButton}>
+              <Text>CREATE ACCOUNT</Text>
+          </TouchableOpacity>
 
           <View style={styles.loginNav}>
             <Text style={styles.loginNav}>Already have an account?</Text>
-            <TouchableOpacity onPress={onRegister}>
+            <TouchableOpacity onPress={onLogin}>
               <Text style={styles.loginTxt}>Log in</Text>
             </TouchableOpacity>
           </View>
@@ -246,23 +242,13 @@ const RegistrationScreen = ({onLogin, onRegister}) => {
 
 const styles = StyleSheet.create({
   container: {
-    // flex: 1,
+    flex: 1,
     alignItems: "center",
     justifyContent: "center",
     alignSelf: "center",
-    // marginTop: 25,
-    paddingHorizontal: 8,
+    padding:10
   },
-  image: {
-    width: 100,
-    height: 30,
-    marginTop: 10,
-  },
-  imageVector: {
-    width: 100,
-    height: 100,
-    marginTop: -150,
-  },
+  
   boldText: {
     fontWeight: "bold",
     fontSize: 20,
@@ -285,7 +271,7 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
   signupForm: {
-    // padding: 30,
+    padding: 16,
     borderRadius: 16,
     backgroundColor: "#002E15",
     alignItems: "flex-start",
@@ -295,7 +281,6 @@ const styles = StyleSheet.create({
     color: "white",
     display: "flex",
     flexDirection: "column",
-    alignSelf: "stretch",
     // marginHorizontal: 8,
   },
   signupText: {
@@ -332,21 +317,19 @@ const styles = StyleSheet.create({
     color: "white",
     bottomBorderColor: "white",
   },
-  LoginButton: {
+  registerButton: {
     width: 300,
     height: 42,
     padding: 8,
     paddingHorizontal: 33,
     borderRadius: 40,
     backgroundColor: "#C8FFD7",
-    fontFamily: "Roboto",
     fontSize: 15,
     fontWeight: "500",
     lineHeight: 26,
     letterSpacing: 0.5,
-    textAlign: "center",
-    color: "black",
-    bottom: -10,
+    justifyContent:'center',
+    alignItems:"center"
   },
   linksContainer: {
     flexDirection: "row",
@@ -405,7 +388,6 @@ const styles = StyleSheet.create({
   loginTxt: {
     color: "#C8FFD7",
     textDecorationLine: "underline",
-    textDecorationThickness: 2,
     // marginHorizontal: 12,
   },
   confirmationModal: {

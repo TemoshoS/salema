@@ -37,10 +37,12 @@ import RegistrationScreen from './RegistrationScreen'
 import { initializeAuthState } from "../services/homeServices";
 
 
-import { ShakeEventExpo , sendSMS} from '../services/ShakeTrigger';
+import { ShakeEventExpo, sendSMS } from '../services/ShakeTrigger';
 import getLocationPermission from '../services/geolocation';
 import { Linking } from 'react-native';
 import * as Notifications from 'expo-notifications';
+import ForgotPassModal from '../components/ForgotPassModal'
+import ForgotPassword from './ForgotPassword'
 
 const LandingScreen = ({ navigation, visible }) => {
   const [modalVisible, setModalVisible] = useState(false);
@@ -59,14 +61,9 @@ const LandingScreen = ({ navigation, visible }) => {
   const [isShakeHandled, setIsShakeHandled] = useState(false);
   const [statusImageSource, setStatusImageSource] = useState(require("../../assets/Inactive.png"));
   const [location, setLocation] = useState(null);
- 
-  
-  
- 
 
-  
   const [isShakeDetected, setIsShakeDetected] = useState(false);
- 
+
   const [noSignedInUserErr, setNoSignedInUserErr] = useState(false);
 
   const [locationModalVisible, setLocationModalVisible] = useState(false);
@@ -82,7 +79,7 @@ const LandingScreen = ({ navigation, visible }) => {
   })
   // Modal Management
   const [isUpdateModalVisible, setUpdateModalVisible] = useState(false)
-  const[isViewContactModalVisible, setIsViewContactModalVisible] = useState(false)
+  const [isViewContactModalVisible, setIsViewContactModalVisible] = useState(false)
   const [isLoginModalVisible, setLoginModalVisible] = useState(false);
   const [isSignupModalVisible, setSignupModalVisible] = useState(false);
   const [isForgotPassModalVisible, setForgotPassModalVisible] = useState(false);
@@ -94,51 +91,48 @@ const LandingScreen = ({ navigation, visible }) => {
     relationship: '',
   })
   useEffect(() => {
-
-    initializeAuth();
-
-
+    initializeAuth()
     const shakeHandler = async () => {
       console.log('Shake detected!');
       const permissionResult = await getLocationPermission();
-  
+
       if (permissionResult) {
         const newLocation = permissionResult.userLocation;
         setLocation(newLocation);
         setShakeStatusModalVisible(true);
         handleShake(true);
         sendSMS("Emergency! I need help. My location: " + `https://www.google.com/maps/?q=${newLocation.latitude},${newLocation.longitude}`);
-      
       }
     };
-  
+
     ShakeEventExpo.addListener(shakeHandler);
 
-  return () => {
-    ShakeEventExpo.removeListener(shakeHandler);
-  };
+    return () => {
+      ShakeEventExpo.removeListener(shakeHandler);
+    };
   }, [isShakeHandled]);
 
 
   const initializeAuth = async () => {
     const user = await initializeAuthState();
-    
+
     if (user) {
-      fetchContacts();  
       setCurrentUser(user);
-      console.log("user")
+      fetchContacts();
+      console.log(" there is  user")
     } else {
       setContacts([]);
-      console.log("user")
+      console.log("Not logged in user")
     }
   };
-  
-   // Function to get user's contacts
- const fetchContacts = async () => {
-  await getContacts(currentUser).then((data) => {
-    setContacts(data);
-  });
-};
+
+  // Function to get user's contacts
+  const fetchContacts = async () => {
+    await getContacts(currentUser).then((data) => {
+      console.log('contacts' > data);
+      setContacts(data);
+    });
+  };
   const showContactDetails = (contact) => {
     setSelectedContact(contact)
     setUpdatedContactData({
@@ -245,12 +239,18 @@ const LandingScreen = ({ navigation, visible }) => {
     // Handle logic for updating contact with the value in updatedContact
     console.log(`Updating contact: ${updatedContact}`)
   }
-const showSignupModal = () =>{
-
-}
-const showForgotPassModal = () =>{
-
-}
+  const showSignupModal = () => {
+    setLoginModalVisible(false)
+    setSignupModalVisible(true)
+  }
+  const showLoginModal = () => {
+    setSignupModalVisible(false)
+    setLoginModalVisible(true)
+  }
+  const showForgotPassModal = () => {
+    setLoginModalVisible(false)
+    setForgotPassModalVisible(true)
+  }
   const handleRemoveContact = () => {
     // Handle logic for removing contact with the value in removedContact
     console.log(`Removing contact: ${removedContact}`)
@@ -266,7 +266,6 @@ const showForgotPassModal = () =>{
   }
   // Hide Login Modal
   const hideLoginModal = () => {
-    
     setLoginModalVisible(false)
   }
   // Hide  Signin Modal
@@ -281,7 +280,7 @@ const showForgotPassModal = () =>{
   const hideViewContactModal = () => {
     setIsViewContactModalVisible(false)
   }
-  
+
 
   const handleLogin = () => {
     setLoginModalVisible(true);
@@ -304,50 +303,50 @@ const showForgotPassModal = () =>{
   const handleShake = async (shakeDetected) => {
     if (!isShakeHandled) {
       setIsShakeHandled(true); // Set to true to indicate that shake is handled
-  
+
       if (shakeDetected) {
         // Show location modal
         setLocationModalVisible(true);
-  
+
         sendNotification();
-  
+
         // Set status image to main_icon.png for 5 seconds
         setStatusImageSource(require("../../assets/main_icon.png"));
-  
+
         // Reset shake detection after 5 seconds
         setTimeout(() => {
           setIsShakeHandled(false); // Reset shake detection
           setStatusImageSource(require("../../assets/Inactive.png"));
-          
+
         }, 5000);
       } else {
         setStatusImageSource(require("../../assets/Inactive.png"));
-        
+
       }
     }
   };
 
-const sendNotification = async () => {
-  try {
-    const { status } = await Notifications.getPermissionsAsync();
+  const sendNotification = async () => {
+    try {
+      const { status } = await Notifications.getPermissionsAsync();
 
-    const notificationId = await Notifications.scheduleNotificationAsync({
-      content: {
-        title: 'Emergency Alert',
-        body: 'This is an emergency alert',
-      },
-      trigger: null,
-    });
-    
+      const notificationId = await Notifications.scheduleNotificationAsync({
+        content: {
+          title: 'Emergency Alert',
+          body: 'This is an emergency alert',
+        },
+        trigger: null,
+      });
 
-    console.log('Notification scheduled: ', notificationId);
-    
-  } catch (error) {
-    console.error("Error sending notification: ", error);	
-    
+
+      console.log('Notification scheduled: ', notificationId);
+
+    } catch (error) {
+      console.error("Error sending notification: ", error);
+
+    }
+
   }
-
-}
 
 
 
@@ -356,7 +355,7 @@ const sendNotification = async () => {
     <View style={styles.container}>
       {/* Content */}
       {/* Backhground image */}
-      <TouchableOpacity style={{position:'absolute', top:40, right:0}} onPress={() => navigation.navigate('ProfileScreen')}>
+      <TouchableOpacity style={{ position: 'absolute', top: 40, right: 0 }} onPress={() => navigation.navigate('ProfileScreen')}>
         <Text>Profile</Text>
       </TouchableOpacity>
       <Image
@@ -368,12 +367,12 @@ const sendNotification = async () => {
       {/* Staus image */}
 
       <View style={styles.textContent}>
-      <Image
-        source={statusImageSource}
-        style={styles.BgImage}
-        accessibilityLabel="status signal image"
-        
-      />
+        <Image
+          source={statusImageSource}
+          style={styles.BgImage}
+          accessibilityLabel="status signal image"
+
+        />
 
         <Text style={styles.title}>"Shake to Alert"</Text>
         <Text style={styles.text}>
@@ -388,71 +387,76 @@ const sendNotification = async () => {
         accessibilityLabel="status signalimage"
       />
       {currentUser == null ?
-      // <></>
+        // <></>
         <View style={styles.buttonSection}>
-        <Button
-          style={styles.bgGreen}
-          title={"Signup"}
-          onPress={() => handleSignup()}
-          altText={"register"}
-          color={"#055a2b"}
-        />
-        <Button
-          style={styles.bgGreen}
-          title={"Log in"}
-          onPress={() => handleLogin()}
-         
-          altText={"Login"}
-          color={"#055a2b"}
-        /> 
-      </View>
-      :
-      //  <></>
-      <View style={styles.bottomSheet}>
-        <View>
+          <Button
+            style={styles.bgGreen}
+            title={"Signup"}
+            onPress={() => handleSignup()}
+            altText={"register"}
+            color={"#055a2b"}
+          />
+          <Button
+            style={styles.bgGreen}
+            title={"Log in"}
+            onPress={() => handleLogin()}
+
+            altText={"Login"}
+            color={"#055a2b"}
+          />
+        </View>
+        :
+        //  <></>
+        <View style={styles.bottomCard}>
+          {/* <View> */}
           <Text style={styles.trustedContact}>Trusted Contact</Text>
-          
-          <View style={styles.contactCard}>
-            <View style={styles.contactList}>
-              {contacts.length > 0 ? (
-                contacts.map((contact, index) => (
-                  <View key={index}>
-                    <ChipButton
-                      key={index}
-                      title={contact.name}
-                      // onPress={showViewContactSheet}
-                    />
-                  </View>
-                ))
-              ) : (
-                <View style={styles.container}>
-                  <View style={styles.textContent}>
-                    <Text style={styles.textContent}>
-                      YOUR EMERGENCY CONTACTS WILL APPEAR HERE.
-                    </Text>
-                    <Text style={styles.textContent}>
-                      You currently do not have any emergency contact. Import
-                      contacts or add new contacts.
-                    </Text>
-                  </View>
-                </View>
-              )}
+
+          {/* <View style={styles.contactCard}> */}
+          {/* <View style={styles.contactList}> */}
+          {contacts.length > 0 ? (
+            contacts.map((contact, index) => (
+              <View key={index}>
+                <ChipButton
+                  key={index}
+                  title={contact.name}
+                // onPress={showViewContactSheet}
+                />
+              </View>
+            ))
+          ) : (
+            // <View style={styles.container}>
+            <View style={{ margin: 15, alignItems: 'center' }}>
+              <Text style={[styles.noUserText, { fontWeight: 'bold' }]}>
+                YOUR EMERGENCY CONTACTS WILL APPEAR HERE.
+              </Text>
+              <Text style={styles.noUserText}>
+                You currently do not have any emergency contact. Import
+                contacts or add new contacts.
+              </Text>
+
+              <TouchableOpacity style={styles.addContactButton} onPress={() => handleAdd()}>
+                <Text>Add Contact</Text>
+              </TouchableOpacity>
+              
             </View>
-            <Button
+            // </View>
+          )}
+          {/* </View> */}
+          {/* <Button
               title={"Add Contact"}
               onPress={showAddContactModal}
               altText={"Add Contact"}
-            />
-          </View>
+            /> */}
         </View>
-      </View>       
+        // </View>
+        // </View>       
       }
-       
+
 
       {/* Main Activity contents Modals/screens/sheets | Outside the main content frame */}
 
       {/* view contact bottomsheet */}
-    
+
 
       {/* Secondary Bottom Sheet  */}
       {/* <View style={styles.content}>
@@ -544,15 +548,20 @@ const sendNotification = async () => {
         transparent={true}
         visible={isLoginModalVisible}
         animationType="slide"
-        onRequestClose={hideLoginModal}
+        onRequestClose={() => setLoginModalVisible(true)}
+        style={{
+          justifyContent: 'center',
+          alignItems: 'center', alignSelf: "center",
+        }}
       >
         <View style={styles.modalContainer}>
           <View style={styles.card}>
             <LoginScreen
               modalVisible={isLoginModalVisible}
               closeModal={() => hideLoginModal()}
-              onRegister={showSignupModal()}
+              openRegister={() => showSignupModal()}
               onForgotPass={showForgotPassModal}
+            // style={{width: 10,margin: 10,}}
             />
           </View>
         </View>
@@ -566,10 +575,25 @@ const sendNotification = async () => {
         onRequestClose={hideSignupModal}
       >
         <View style={styles.modalContainer}>
-          <RegistrationScreen />
+          <RegistrationScreen
+            closeModal={() => hideSignupModal()}
+            onLogin={() => showLoginModal()}
+          />
         </View>
       </Modal>
-
+      {/* forgot password Form Modal */}
+      <Modal
+        transparent={true}
+        visible={isForgotPassModalVisible}
+        animationType="slide"
+        onRequestClose={hideForgotPassModal}
+      >
+        <View style={styles.modalContainer}>
+          <ForgotPassword
+            closePasswordResetModal={() => hideForgotPassModal()}
+          />
+        </View>
+      </Modal>
       {/* Edit/ Update Contacts Modal */}
       <Modal
         transparent={true}
@@ -578,80 +602,80 @@ const sendNotification = async () => {
         onRequestClose={hideUpdateModal}
       >
         <View style={styles.modalContainer}>
-        <View style={styles.overlay}></View>
-        <View style={styles.modalCard}>
-          <Text style={styles.title}>Edit Contact</Text>
-          {selectedContact && (
-            <View style={styles.textContent}>
-              <InputText
-                style={styles.input}
-                placeholder="Name"
-                value={updatedContactData.name}
-                onChangeText={(text) =>
-                  setUpdatedContactData({ ...updatedContactData, name: text })
-                }
-              />
-              <Text>{'\n'}</Text>
-              <InputText
-                style={styles.input}
-                placeholder="Phone Number"
-                value={updatedContactData.phoneNumber}
-                onChangeText={(text) =>
-                  setUpdatedContactData({
-                    ...updatedContactData,
-                    phoneNumber: text,
-                  })
-                }
-              />
-              <Text>{'\n'}</Text>
-              <InputText
-                style={styles.input}
-                placeholder="Relationship"
-                value={updatedContactData.relationship}
-                onChangeText={(text) =>
-                  setUpdatedContactData({
-                    ...updatedContactData,
-                    relationship: text,
-                  })
-                }
-              />
-
-              <Text>{'\n'}</Text>
-              {/* list available contacts */}
-              <ScrollView>
-                <View style={styles.contactList}>
-                  {filteredContacts ? (
-                    filteredContacts.map((contact, index) => (
-                      <TouchableOpacity key={index}>
-                        <ChipButton
-                          key={index}
-                          title={contact.name}
-                          onPress={() => selectContactForUpdate(contact)}
-                          style={{
-                            backgroundColor:
-                              selectedContact?.id === contact.id
-                                ? "lightgray"
-                                : "transparent",
-                          }}
-                        />
-                      </TouchableOpacity>
-                    ))
-                  ) : (
-                    <Text>No contacts available</Text>
-                  )}
-                </View>
-              </ScrollView>
-
-              <View style={styles.buttonGroup}>
-                <Button
-                  title="Update"
-                  onPress={handleUpdateContact}
-                  altText="Update Edit"
+          <View style={styles.overlay}></View>
+          <View style={styles.modalCard}>
+            <Text style={styles.title}>Edit Contact</Text>
+            {selectedContact && (
+              <View style={styles.textContent}>
+                <InputText
+                  style={styles.input}
+                  placeholder="Name"
+                  value={updatedContactData.name}
+                  onChangeText={(text) =>
+                    setUpdatedContactData({ ...updatedContactData, name: text })
+                  }
                 />
+                <Text>{'\n'}</Text>
+                <InputText
+                  style={styles.input}
+                  placeholder="Phone Number"
+                  value={updatedContactData.phoneNumber}
+                  onChangeText={(text) =>
+                    setUpdatedContactData({
+                      ...updatedContactData,
+                      phoneNumber: text,
+                    })
+                  }
+                />
+                <Text>{'\n'}</Text>
+                <InputText
+                  style={styles.input}
+                  placeholder="Relationship"
+                  value={updatedContactData.relationship}
+                  onChangeText={(text) =>
+                    setUpdatedContactData({
+                      ...updatedContactData,
+                      relationship: text,
+                    })
+                  }
+                />
+
+                <Text>{'\n'}</Text>
+                {/* list available contacts */}
+                <ScrollView>
+                  <View style={styles.contactList}>
+                    {filteredContacts ? (
+                      filteredContacts.map((contact, index) => (
+                        <TouchableOpacity key={index}>
+                          <ChipButton
+                            key={index}
+                            title={contact.name}
+                            onPress={() => selectContactForUpdate(contact)}
+                            style={{
+                              backgroundColor:
+                                selectedContact?.id === contact.id
+                                  ? "lightgray"
+                                  : "transparent",
+                            }}
+                          />
+                        </TouchableOpacity>
+                      ))
+                    ) : (
+                      <Text>No contacts available</Text>
+                    )}
+                  </View>
+                </ScrollView>
+
+                <View style={styles.buttonGroup}>
+                  <Button
+                    title="Update"
+                    onPress={handleUpdateContact}
+                    altText="Update Edit"
+                  />
+                </View>
               </View>
-            </View>
-          )}
-        </View>
+            )}
+          </View>
         </View>
       </Modal>
 
@@ -661,52 +685,52 @@ const sendNotification = async () => {
         transparent={true}
         visible={isAddContactModalVisible}
         onRequestClose={hideAddContactModal}
-        
+
       >
         <View style={styles.modalContainer}>
-        
-        <View style={styles.modalCard}>
-          <Text style={styles.title}>Add New Contact</Text>
 
-          <InputText
-            // style={styles.input}
-            label={"Name"}
-            placeholder="Name"
-            value={newContactData.name}
-            onChangeText={(text) =>
-              setNewContactData({ ...newContactData, name: text })
-            }
-          />
+          <View style={styles.modalCard}>
+            <Text style={styles.title}>Add New Contact</Text>
 
-          {nameError && <Text style={styles.errorText}>{nameError}</Text>}
-          <InputText
-            label={"Number"}
-            placeholder="Phone Number"
-            value={newContactData.phoneNumber}
-            onChangeText={(text) =>
-              setNewContactData({ ...newContactData, phoneNumber: text })
-            }
-          />
-          {phoneError && <Text style={styles.errorText}>{phoneError}</Text>}
-          <InputText
-            label={"Relationship"}
-            placeholder="Relationship"
-            value={newContactData.relationship}
-            onChangeText={(text) =>
-              setNewContactData({ ...newContactData, relationship: text })
-            }
-          />
-          {relationshipError && (
-            <Text style={styles.errorText}>{relationshipError}</Text>
-          )}
-          <View style={styles.buttonGroup}>
-            <Button
-              title="Add Contact"
-              onPress={handleAddContact}
-              altText="Add Contact"
+            <InputText
+              // style={styles.input}
+              label={"Name"}
+              placeholder="Name"
+              value={newContactData.name}
+              onChangeText={(text) =>
+                setNewContactData({ ...newContactData, name: text })
+              }
             />
+
+            {nameError && <Text style={styles.errorText}>{nameError}</Text>}
+            <InputText
+              label={"Number"}
+              placeholder="Phone Number"
+              value={newContactData.phoneNumber}
+              onChangeText={(text) =>
+                setNewContactData({ ...newContactData, phoneNumber: text })
+              }
+            />
+            {phoneError && <Text style={styles.errorText}>{phoneError}</Text>}
+            <InputText
+              label={"Relationship"}
+              placeholder="Relationship"
+              value={newContactData.relationship}
+              onChangeText={(text) =>
+                setNewContactData({ ...newContactData, relationship: text })
+              }
+            />
+            {relationshipError && (
+              <Text style={styles.errorText}>{relationshipError}</Text>
+            )}
+            <View style={styles.buttonGroup}>
+              <Button
+                title="Add Contact"
+                onPress={handleAddContact}
+                altText="Add Contact"
+              />
+            </View>
           </View>
-        </View>
         </View>
       </Modal>
 
@@ -716,10 +740,10 @@ const sendNotification = async () => {
         transparent={true}
         visible={isAddContactModalVisible}
         onRequestClose={hideAddContactModal}
-        
+
       >
         <View style={styles.modalContainer}>
-        
+
         </View>
       </Modal>
     </View>
@@ -727,20 +751,20 @@ const sendNotification = async () => {
 }
 
 const styles = StyleSheet.create({
- 
+
   content: {
     flex: 1,
     alignItems: 'center',
     justifyContent: 'flex-end',
-    marginBottom: 20, // Adjust as needed
+    padding: 40, // Adjust as needed
   },
   card: {
-    width: '100%', // Fill (393px)
-    height: 211, // Hug (211px)
+    width: '70%', // Fill (393px)
     padding: 30,
     borderRadius: 20,
     gap: 20,
-    backgroundColor: '#125127',
+    flex: 1,
+    margin: 30
   },
   trustedContact: {
     fontFamily: 'Plus Jakarta Sans',
@@ -752,7 +776,6 @@ const styles = StyleSheet.create({
     color: '#FFFFFF', // White text color
   },
   additionalText: {
-    fontFamily: 'Roboto',
     fontSize: 13,
     fontStyle: 'italic',
     fontWeight: '400',
@@ -763,7 +786,6 @@ const styles = StyleSheet.create({
     color: '#FFFFFF', // White text color
   },
   paragraph: {
-    fontFamily: 'Roboto',
     fontSize: 13,
     fontWeight: '700',
     lineHeight: 18,
@@ -794,7 +816,6 @@ const styles = StyleSheet.create({
     marginTop: -10,
   },
   addButtonText: {
-    fontFamily: 'Roboto',
     fontSize: 15,
     fontWeight: '500',
     lineHeight: 26,
@@ -806,7 +827,7 @@ const styles = StyleSheet.create({
   // Modal Styles
   modalContainer: {
     flex: 1,
-    justifyContent: 'flex-end',
+    justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: 'rgba(0, 0, 0, 0.5)',
   },
@@ -876,7 +897,6 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   buttonText: {
-    fontFamily: 'Roboto',
     fontSize: 15,
     fontWeight: '500',
     lineHeight: 26,
@@ -892,7 +912,6 @@ const styles = StyleSheet.create({
     marginTop: 10,
   },
   closeButtonText: {
-    fontFamily: 'Roboto',
     fontSize: 15,
     fontWeight: '500',
     lineHeight: 26,
@@ -900,7 +919,10 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     color: '#000000',
   },
-
+  noUserText: {
+    letterSpacing: 0.16,
+    color: 'white', fontSize: 13, textAlign: 'center'
+  },
   // imported styles from Splash
   container: {
     flex: 1,
@@ -923,6 +945,15 @@ const styles = StyleSheet.create({
     resizeMode: "contain",
     // marginVertical: 20,
   },
+  addContactButton: {
+    borderRadius: 40,
+    backgroundColor: '#C8FFD7',
+    alignItems: 'center',
+    height: 42,
+    width: '100%',
+    justifyContent: 'center',
+    margin: 10
+  },
   BgImage: {
     width: 180,
     height: 200,
@@ -936,10 +967,6 @@ const styles = StyleSheet.create({
     resizeMode: "cover",
     // marging: 16,
     marginVertical: 20,
-  },
-  bottomTab: {
-    bottom: 0,
-    justifyContent: "flex-end",
   },
   textContent: {
     paddingHorizontal: 0,
@@ -974,24 +1001,16 @@ const styles = StyleSheet.create({
   bgGreen: {
     backgroundColor: "green",
   },
-  bottomSheet: {
-    display: "flex",
-    alignSelf: "stretch",
-    paddingHorizontal: 20,
-    paddingBottom: 20,
-    paddingTop: 30,
-    borderRadius: 25,
-    gap: 20,
-    backgroundColor: "#125127",
-    // alignItems: "flex-start",
-    justifyContent: "center",
-    textAlign: "center",
-    // for the shadows at the top
-    shadowColor: "#0000005a",
-    shadowOffset: { width: 0, height: -2 },
-    shadowOpacity: 0.5,
-    shadowRadius: 24,
-    elevation: 4,
+  bottomCard: {
+    position: 'absolute',
+    bottom: 0,
+    backgroundColor: '#125127',
+    height: '30%',
+    width: '100%',
+    // flex:1,
+    borderRadius: 20,
+    flexDirection: 'column',
+    justifyContent: 'flex-end',
   },
   bottomSheet2: {
     zIndex: 1,
