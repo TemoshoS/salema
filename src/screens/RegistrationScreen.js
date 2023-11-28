@@ -18,7 +18,7 @@ import InputText from "../components/InputText";
 import Button from "../components/Button";
 import { registerUser } from "../services/authService";
 import LoginModal from "../components/LoginModal";
-
+import Toast from "react-native-toast-message";
 const RegistrationScreen = ({onLogin, onRegister,closeModal}) => {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
@@ -83,12 +83,24 @@ const RegistrationScreen = ({onLogin, onRegister,closeModal}) => {
         if (!password) setPasswordError("Password is required");
         if (!reenterPassword)
           setReenterPasswordError("Re-enter password is required");
+        Toast.show({
+          type: 'error',
+          text1: 'Registration failed',
+          text2: 'Please fill in the required fields',
+          visibilityTime: 4000,
+        });
         return;
       }
 
       // Check if the password and the confirm password match
       if (password !== reenterPassword) {
         setReenterPasswordError("Passwords do not match");
+        Toast.show({
+          type: 'error',
+          text1: 'Registration Failed',
+          text2: 'Password do not match',
+          visibilityTime: 4000,
+        })
         return;
       }
 
@@ -99,6 +111,13 @@ const RegistrationScreen = ({onLogin, onRegister,closeModal}) => {
         setPasswordError(
           "Password must contain at least 8 characters, 1 number, 1 uppercase letter, 1 lowercase letter, and 1 special character"
         );
+
+        Toast.show({
+          type: 'error',
+          text1: 'Registration failed',
+          text2: 'Password doesnt meet the requirements',
+          visibilityTime: 4000
+        });
         return;
       }
 
@@ -111,11 +130,39 @@ const RegistrationScreen = ({onLogin, onRegister,closeModal}) => {
       setPassword('');
       setReenterPassword('');
       closeModal()
+
+      Toast.show({
+        type: 'success',
+        text1: "Registered Successful",
+        visibilityTime: 4000,
+      });
+
+
     } catch (error) {
       if (error.code === "auth/email-already-in-use") {
         setEmailError("Email is already in use");
+
+        Toast.show({
+          type: 'error',
+          text1: 'Registration Failed',
+          text2: 'Email is already in use',
+          visibilityTime: 4000,
+        });
       } else if (error.code === "auth/invalid-email") {
         setEmailError("Email is invalid");
+        Toast.show({
+          type: 'error',
+          text1: 'Registration Failed',
+          text2: 'Invalid Email',
+          visibilityTime: 4000,
+        });
+      }else{
+        Toast.show({
+          type: 'error',
+          text1: 'Registration Failed',
+          text2: 'An error occurred. Please try again later.',
+          visibilityTime: 4000,
+        });
       }
     }
   };

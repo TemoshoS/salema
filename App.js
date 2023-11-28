@@ -15,6 +15,7 @@ import BottomNav from './src/components/BottomNav';
 import NotificationService from './src/services/ShakeTrigger';
 import { useEffect } from 'react';
 import WelcomeScreen from './src/screens/WelcomeScreen';
+import ToastWrapper from './src/components/ToastWrapper';
 // import PasswordReset from './src/components/PasswordReset';
 
 
@@ -48,6 +49,7 @@ export default function App() {
         <Stack.Screen name='ForgotPassword' component={ForgotPassword} options={{title: 'Reset Password', cardStyleInterpolator: CardStyleInterpolators.forVerticalIOS,}} /> */}
         
        </Stack.Navigator>
+       <ToastWrapper/>
       </NavigationContainer>
      
         

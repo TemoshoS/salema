@@ -1,5 +1,7 @@
 import React, { useState } from "react";
 import {  StyleSheet, Text, View, TouchableOpacity, Alert } from "react-native";
+import Toast from "react-native-toast-message";
+import Spinner from "react-native-loading-spinner-overlay";
 import { useNavigation } from "@react-navigation/native";
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator, CardStyleInterpolators } from '@react-navigation/stack';
@@ -21,14 +23,25 @@ const LoginScreen = ({onRegister, onLogin, onForgotPass,closeModal,openRegister}
   const [isForgotPassModalVisible, setForgotPassModalVisible] = useState(false);
   const [isRegisterModalVisible, setRegisterModalVisible] = useState(false);
   const[isLoginModalVisible, setLoginModalVisible] = useState(false);
+  const [isLoaderVisible, setIsLoaderVisible] = useState(false);
+
+  const navigation = useNavigation();
   // import {onCloseModal} from "../components/LoginModal";
 
   const handleLogin = async () => {
   
     try {
+      setIsLoaderVisible(true)
      const user = await loginUser(email, password);
      if(user){
-      closeModal()
+      closeModal();
+      navigation.navigate('LandingPage');
+      
+      Toast.show({
+        type: 'success',
+        text1: 'Login Successful',
+        visibilityTime: 4000,
+      })
      }
     } catch (error) {
       Alert.alert(error.message);
@@ -82,6 +95,7 @@ const LoginScreen = ({onRegister, onLogin, onForgotPass,closeModal,openRegister}
 
         <TouchableOpacity style={styles.LoginButton} onPress={() => handleLogin()}>
           <Text>Login</Text>
+          {isLoaderVisible && <Spinner size='small' color="#fff" style={styles.spinner}/>}
         </TouchableOpacity>
 
         <View style={styles.linksContainer}>
@@ -217,5 +231,9 @@ const styles = StyleSheet.create({
     width: "100%",
     gap: 6,
   },
+  spinner:{
+    position: "absolute",
+    right: 16,
+  }
  
 });
