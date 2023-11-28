@@ -487,7 +487,7 @@ const sendNotification = async () => {
               {/* <Text style={styles.title}>Trusted Contacts</Text> */}
               <Text style={styles.title}>{selectedContact.name}</Text>
               <Text style={styles.text}>{selectedContact.phoneNumber}</Text>
-              <br></br>
+              <Text>{"\n"}</Text>
               <View style={styles.buttonGroup}>
                 <Button2
                   title="Update Contact"
@@ -534,7 +534,7 @@ const sendNotification = async () => {
                   setUpdatedContactData({ ...updatedContactData, name: text })
                 }
               />
-              <br />
+              <Text>{"\n"}</Text>
               <InputText
                 style={styles.input}
                 placeholder="Phone Number"
@@ -546,7 +546,7 @@ const sendNotification = async () => {
                   })
                 }
               />
-              <br />
+              <Text>{"\n"}</Text>
               <InputText
                 style={styles.input}
                 placeholder="Relationship"
@@ -559,7 +559,7 @@ const sendNotification = async () => {
                 }
               />
 
-              <br />
+              <Text>{"\n"}</Text>
               {/* list available contacts */}
               <ScrollView>
                 <View style={styles.contactList}>

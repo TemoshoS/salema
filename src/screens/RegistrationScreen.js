@@ -17,7 +17,7 @@ import Vector from "../../assets/Vector.png";
 import InputText from "../components/InputText";
 import Button from "../components/Button";
 import { registerUser } from "../services/authService";
-import LoginModal from "../components/LoginModal";
+
 
 const RegistrationScreen = ({onLogin, onRegister,closeModal}) => {
   const [name, setName] = useState('');
@@ -129,10 +129,6 @@ const RegistrationScreen = ({onLogin, onRegister,closeModal}) => {
     setIsConfirmationVisible(false);
   };
 
-  const handleLogin = () => {
-    // navigation.navigate("Login"); we nolonger nav to login
-    setLoginModalVisible(true);
-  };
 
   return (
     <View style={styles.container}>

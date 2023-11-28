@@ -7,25 +7,21 @@ import Button from "../components/Button";
 // input InputText || Component
 import InputText from "../components/InputText";
 import { loginUser } from "../services/authService";
-import SignupModal from "../components/SignupModal";
-import ForgotPassModal from "../components/ForgotPassModal";
-import LoginModal from "../components/LoginModal";
 import { initializeAuth } from "firebase/auth";
+import LoadingIndicator from "../components/LoadingIndicator";
 
 
-const LoginScreen = ({onRegister, onLogin, onForgotPass,closeModal,openRegister}) => {
+const LoginScreen = ({onRegister, onLogin, onForgotPass,closeModal,openRegister,}) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loginAttempts, setLoginAttempts] = useState(0);
   const [showPassword, setShowPassword] = useState(false);
-  const [isForgotPassModalVisible, setForgotPassModalVisible] = useState(false);
-  const [isRegisterModalVisible, setRegisterModalVisible] = useState(false);
-  const[isLoginModalVisible, setLoginModalVisible] = useState(false);
   // import {onCloseModal} from "../components/LoginModal";
-
+  
   const handleLogin = async () => {
   
     try {
+      
      const user = await loginUser(email, password);
      if(user){
       closeModal()
@@ -67,6 +63,7 @@ const LoginScreen = ({onRegister, onLogin, onForgotPass,closeModal,openRegister}
             placeholder="username@123.com"
             placeholderTextColor="#f2f2f2"
             label={"Email"}
+            autoCompleteType="email"
           />
 
           <InputText
@@ -77,6 +74,7 @@ const LoginScreen = ({onRegister, onLogin, onForgotPass,closeModal,openRegister}
             secureTextEntry={true} // Hide the password with stars
             placeholderTextColor="#f2f2f2"
             label={"Password"}
+            
           />
         </View>
 
@@ -110,7 +108,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignContent:"center",
     paddingHorizontal: 8,
-    padding:10,
+    // padding:10,
   
   },
   title: {
