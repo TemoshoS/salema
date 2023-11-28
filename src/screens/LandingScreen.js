@@ -155,11 +155,11 @@ const LandingScreen = ({ navigation, visible }) => {
 
   // from home
   const showAddContactModal = () => {
-    setNewContactData({
-      name: "",
-      phoneNumber: "",
-      relationship: "",
-    });
+    // setNewContactData({
+    //   name: "",
+    //   phoneNumber: "",
+    //   relationship: "",
+    // });
     setAddContactModalVisible(true);
   };
 
@@ -407,9 +407,9 @@ const LandingScreen = ({ navigation, visible }) => {
           <Text style={styles.trustedContact}>Trusted Contact</Text>
           
           <View style={styles.contactCard}>
-            <View style={styles.contactList}>
               {contacts.length > 0 ? (
                 contacts.map((contact, index) => (
+                  <View style={styles.chipsGroup} >
                   <View key={index}>
                     <ChipButton
                       key={index}
@@ -417,24 +417,21 @@ const LandingScreen = ({ navigation, visible }) => {
                       onPress={showViewContactModal}
                     />
                   </View>
+                  </View>
                 ))
               ) : (
 
-                <View style={styles.textContent}>
+                <View  style={styles.contactList}>
                   <Text style={styles.textContent}>YOUR EMERGENCY CONTACTS WILL APPEAR HERE.</Text>
-                  <Text style={styles.noUserText}>You currently do not have any emergency contact.
-Import contacts or add new contacts</Text>
+                  <Text style={styles.noUserText}>
+                  You currently do not have any emergency contact. Import contacts or add new contacts
+                  </Text>
 
                   {/* <TouchableOpacity style={styles.addContactButton} onPress={() => showAddContactModal()}>
                      <Text>Add Contact</Text>
                     </TouchableOpacity> */}
                 </View>
-                
-
-                    
-                
               )}
-            </View>
             <View>
               
             </View>
@@ -740,8 +737,8 @@ Import contacts or add new contacts</Text>
       <Modal
         animationType="slide"
         transparent={true}
-        visible={isAddContactModalVisible}
-        onRequestClose={hideAddContactModal}
+        visible={isViewContactModalVisible}
+        onRequestClose={hideViewContactModal}
       >
         <View style={styles.bottomSheet2}>
           <View style={styles.container}>
@@ -812,6 +809,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.5,
     shadowRadius: 24,
     elevation: 4,
+    flexDirection: "column",
 
     // wrap text contents
     wordWrap: "break-word",
@@ -845,7 +843,7 @@ const styles = StyleSheet.create({
     // gap: 20,
     display: "flex",
     alignSelf: "stretch",
-    flexDirection: "column",
+    // flexDirection: "column",
     justifyContent: "center",
   },
   contactList: {
@@ -1045,6 +1043,16 @@ const styles = StyleSheet.create({
   bottom: {
     bottom: 0,
     // backgroundColor: "#062817",
+  },
+  chipsGroup: {
+   
+    display: "flex",
+    alignSelf: "stretch",
+    flexDirection: "row",
+    
+    alignItems: "center",
+    columnGap: 4,
+    rowGap: 6,
   },
   logoImg: {
     // flex: 1,
