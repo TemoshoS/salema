@@ -45,7 +45,6 @@ import { Linking } from "react-native";
 import * as Notifications from "expo-notifications";
 import ForgotPassModal from "../components/ForgotPassModal";
 import ForgotPassword from "./ForgotPassword";
-import Toast from "react-native-toast-message";
 
 const LandingScreen = ({ navigation, visible }) => {
   const [modalVisible, setModalVisible] = useState(false);
@@ -245,21 +244,8 @@ const LandingScreen = ({ navigation, visible }) => {
       await addContact(contactWithUserId);
       fetchContacts();
       hideAddContactModal();
-
-      Toast.show({
-        type: 'success',
-      text1: 'Contact Added',
-      text2: 'The contact has been added successfully.',
-      visibilityTime: 3000, 
-      })
     } catch (error) {
       console.error("Error adding contact: ", error);
-      Toast.show({
-        type: 'error',
-      text1: 'Error adding emergency contact ',
-      text2: 'Please try again',
-      visibilityTime: 3000, 
-      })
     }
   };
 
@@ -328,11 +314,10 @@ const LandingScreen = ({ navigation, visible }) => {
   const hideViewContactModal = () => {
     setIsViewContactModalVisible(false);
   };
-  const showViewContactModal = (contact) => {
-    setSelectedContact(contact);
+  const showViewContactModal = () => {
     setIsViewContactModalVisible(true);
   };
-  
+
   const handleLogin = () => {
     setLoginModalVisible(true);
   };
@@ -458,7 +443,7 @@ const LandingScreen = ({ navigation, visible }) => {
                     <ChipButton
                       key={index}
                       title={contact.name}
-                      onPress={() => showViewContactModal(contact)}
+                      onPress={() => showContactDetails(contact)}
                     />
                   </View>
                 ))
@@ -678,8 +663,8 @@ const LandingScreen = ({ navigation, visible }) => {
                 {/* list available contacts */}
                 <ScrollView>
                   <View style={styles.contactList}>
-                    {contacts ? (
-                      contacts.map((contact, index) => (
+                    {filteredContacts ? (
+                      filteredContacts.map((contact, index) => (
                         <TouchableOpacity key={index}>
                           <ChipButton
                             key={index}

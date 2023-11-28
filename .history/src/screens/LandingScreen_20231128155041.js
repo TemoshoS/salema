@@ -45,7 +45,6 @@ import { Linking } from "react-native";
 import * as Notifications from "expo-notifications";
 import ForgotPassModal from "../components/ForgotPassModal";
 import ForgotPassword from "./ForgotPassword";
-import Toast from "react-native-toast-message";
 
 const LandingScreen = ({ navigation, visible }) => {
   const [modalVisible, setModalVisible] = useState(false);
@@ -245,21 +244,8 @@ const LandingScreen = ({ navigation, visible }) => {
       await addContact(contactWithUserId);
       fetchContacts();
       hideAddContactModal();
-
-      Toast.show({
-        type: 'success',
-      text1: 'Contact Added',
-      text2: 'The contact has been added successfully.',
-      visibilityTime: 3000, 
-      })
     } catch (error) {
       console.error("Error adding contact: ", error);
-      Toast.show({
-        type: 'error',
-      text1: 'Error adding emergency contact ',
-      text2: 'Please try again',
-      visibilityTime: 3000, 
-      })
     }
   };
 
@@ -680,7 +666,8 @@ const LandingScreen = ({ navigation, visible }) => {
                   <View style={styles.contactList}>
                     {contacts ? (
                       contacts.map((contact, index) => (
-                        <TouchableOpacity key={index}>
+                        <View style={styles.chipsGroup} >
+                  <View key={index}>
                           <ChipButton
                             key={index}
                             title={contact.name}
@@ -692,7 +679,8 @@ const LandingScreen = ({ navigation, visible }) => {
                                   : "transparent",
                             }}
                           />
-                        </TouchableOpacity>
+                          </View>
+                  </View>
                       ))
                     ) : (
                       <Text>No contacts available</Text>
