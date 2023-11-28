@@ -27,6 +27,7 @@ import { ShakeEventExpo , sendSMS} from '../services/ShakeTrigger';
 import getLocationPermission from '../services/geolocation';
 import { Linking } from 'react-native';
 import * as Notifications from 'expo-notifications';
+import Toast from "react-native-toast-message";
 
 
 
@@ -200,8 +201,23 @@ const HomeScreen = ({ navigation }) => {
       await addContact(contactWithUserId);
       fetchContacts();
       hideAddContactModal();
+
+      //Toast
+      Toast.show({
+        type: 'success',
+        position: 'bottom',
+        text1: 'Emergency contact added successfully',
+        visibilityTime: 3000
+      })
     } catch (error) {
       console.error("Error adding contact: ", error);
+      Toast.show({
+        type: 'error',
+        position: 'bottom',
+        text1: 'Error adding Contact',
+        text2: 'Please try again',
+        visibilityTime: 3000
+      })
     }
   };
 
