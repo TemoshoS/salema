@@ -35,7 +35,7 @@ const styles = StyleSheet.create({
     flexDirection: "column",
     justifyContent: "center",
     alignItems: "center",
-    // minHeight: 48,
+    minHeight: 48,
     // marginVertical: 6,
   },
   buttonText: {
