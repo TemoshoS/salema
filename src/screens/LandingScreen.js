@@ -755,30 +755,76 @@ const LandingScreen = ({ navigation, visible }) => {
         <View style={styles.bottomSheet2}>
           <View style={styles.container}>
             <View style={styles.contactList}>
-              {selectedContact ? (
-                <View style={styles.textContent}>
-                  <Text style={styles.textContent}>{selectedContact.name}</Text>
-                  <Text style={styles.text}>{selectedContact.phoneNumber}</Text>
+            {selectedContact && (
+            <View style={styles.textContent}>
+              <InputText
+                style={styles.input}
+                placeholder="Name"
+                value={updatedContactData.name}
+                onChangeText={(text) =>
+                  setUpdatedContactData({ ...updatedContactData, name: text })
+                }
+              />
+              <Text>{"\n"}</Text>
+              <InputText
+                style={styles.input}
+                placeholder="Phone Number"
+                value={updatedContactData.phoneNumber}
+                onChangeText={(text) =>
+                  setUpdatedContactData({
+                    ...updatedContactData,
+                    phoneNumber: text,
+                  })
+                }
+              />
+              <Text>{"\n"}</Text>
+              <InputText
+                style={styles.input}
+                placeholder="Relationship"
+                value={updatedContactData.relationship}
+                onChangeText={(text) =>
+                  setUpdatedContactData({
+                    ...updatedContactData,
+                    relationship: text,
+                  })
+                }
+              />
 
-                  <Text>{"\n"}</Text>
-                  <View style={styles.buttonGroup}>
-                    <Button2
-                      title="Update Contact"
-                      onPress={showUpdateModal}
-                      altText="Update Contact"
-                      textColor={"#f2f2f2"}
-                    />
-                    <Button2
-                      title="Remove Contact"
-                      onPress={() => handleRemoveContact(selectedContact.id)}
-                      altText="Remove Contact"
-                      textColor={"#ff2323"}
-                    />
-                  </View>
+              <Text>{"\n"}</Text>
+              {/* list available contacts */}
+              <ScrollView>
+                <View style={styles.contactList}>
+                  {contacts ? (
+                    contacts.map((contact, index) => (
+                      <TouchableOpacity key={index}>
+                        <ChipButton
+                          key={index}
+                          title={contact.name}
+                          onPress={() => selectContactForUpdate(contact)}
+                          style={{
+                            backgroundColor:
+                              selectedContact?.id === contact.id
+                                ? "lightgray"
+                                : "transparent",
+                          }}
+                        />
+                      </TouchableOpacity>
+                    ))
+                  ) : (
+                    <Text>No contacts available</Text>
+                  )}
                 </View>
-              ) : (
-                <Text style={styles.errorMessage}>No contact selected</Text>
-              )}
+              </ScrollView>
+
+              <View style={styles.buttonGroup}>
+                <Button
+                  title="Update"
+                  onPress={handleUpdateContact}
+                  altText="Update Edit"
+                />
+              </View>
+            </View>
+          )}
             </View>
             <Text>
               <Text>{"\n"}</Text>
@@ -842,7 +888,7 @@ const styles = StyleSheet.create({
     textAlign: "center",
     bottom: 0,
     position: "absolute",
-    height: "25%",
+    height: "20%",
     width: "100%",
     // for the shadows at the top
     shadowColor: "#000000",
