@@ -68,7 +68,7 @@ const ProfileScreen = () => {
   const handleSignOut = async () => {
     try {
       await signOutUser();
-      navigation.navigate('LandingPage');
+      navigation.navigate('Login');
     } catch (error) {
       console.error('Error signing out:', error);
     }
@@ -113,7 +113,7 @@ const ProfileScreen = () => {
             <Text style={styles.legalText}>Legal</Text>
             <Text style={styles.privacyPolicyText}>Privacy Policy</Text>
             <Text style={styles.termsConditionsText}>Terms & Conditions</Text>
-            <TouchableOpacity onPress={handleSignOut}>
+            <TouchableOpacity onPress={ha}>
               <Text style={styles.signOutText}>Sign Out</Text>
             </TouchableOpacity>
           </ScrollView>
