@@ -434,7 +434,7 @@ const LandingScreen = ({ navigation, visible }) => {
                 contacts or add new contacts.
               </Text>
 
-              <TouchableOpacity style={styles.addContactButton} onPress={() => handleAdd()}>
+              <TouchableOpacity style={styles.addContactButton} onPress={() => showAddContactModal()}>
                 <Text>Add Contact</Text>
               </TouchableOpacity>
               
