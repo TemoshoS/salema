@@ -665,7 +665,7 @@ const LandingScreen = ({ navigation, visible }) => {
                 <ScrollView>
                   <View style={styles.contactList}>
                     {contacts ? (
-                      contacts.map((contact, index) => (
+                      filteredContacts.map((contact, index) => (
                         <TouchableOpacity key={index}>
                           <ChipButton
                             key={index}

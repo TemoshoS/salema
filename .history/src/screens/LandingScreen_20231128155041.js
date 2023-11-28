@@ -666,7 +666,8 @@ const LandingScreen = ({ navigation, visible }) => {
                   <View style={styles.contactList}>
                     {contacts ? (
                       contacts.map((contact, index) => (
-                        <TouchableOpacity key={index}>
+                        <View style={styles.chipsGroup} >
+                  <View key={index}>
                           <ChipButton
                             key={index}
                             title={contact.name}
@@ -678,7 +679,8 @@ const LandingScreen = ({ navigation, visible }) => {
                                   : "transparent",
                             }}
                           />
-                        </TouchableOpacity>
+                          </View>
+                  </View>
                       ))
                     ) : (
                       <Text>No contacts available</Text>

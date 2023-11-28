@@ -314,11 +314,10 @@ const LandingScreen = ({ navigation, visible }) => {
   const hideViewContactModal = () => {
     setIsViewContactModalVisible(false);
   };
-  const showViewContactModal = (contact) => {
-    setSelectedContact(contact);
+  const showViewContactModal = () => {
     setIsViewContactModalVisible(true);
   };
-  
+
   const handleLogin = () => {
     setLoginModalVisible(true);
   };
@@ -444,7 +443,7 @@ const LandingScreen = ({ navigation, visible }) => {
                     <ChipButton
                       key={index}
                       title={contact.name}
-                      onPress={() => showViewContactModal(contact)}
+                      onPress={() => showViewContactModal}
                     />
                   </View>
                 ))
@@ -664,8 +663,8 @@ const LandingScreen = ({ navigation, visible }) => {
                 {/* list available contacts */}
                 <ScrollView>
                   <View style={styles.contactList}>
-                    {contacts ? (
-                      contacts.map((contact, index) => (
+                    {filteredContacts ? (
+                      filteredContacts.map((contact, index) => (
                         <TouchableOpacity key={index}>
                           <ChipButton
                             key={index}

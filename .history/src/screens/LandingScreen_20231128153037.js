@@ -141,7 +141,7 @@ const LandingScreen = ({ navigation, visible }) => {
       relationship: contact.relationship,
     });
     // setConfirmationVisible(true)
-    setIsViewContactModalVisible(true);
+    setViewContactModalVisible(true);
   };
 
   const showUpdateModal = () => {
@@ -314,11 +314,10 @@ const LandingScreen = ({ navigation, visible }) => {
   const hideViewContactModal = () => {
     setIsViewContactModalVisible(false);
   };
-  const showViewContactModal = (contact) => {
-    setSelectedContact(contact);
+  const showViewContactModal = () => {
     setIsViewContactModalVisible(true);
   };
-  
+
   const handleLogin = () => {
     setLoginModalVisible(true);
   };
@@ -438,16 +437,18 @@ const LandingScreen = ({ navigation, visible }) => {
           <Text style={styles.trustedContact}>Trusted Contact</Text>
 
           <View style={styles.contactCard}>
-          {contacts.length > 0 ? (
-                contacts.map((contact, index) => (
+            {contacts.length > 0 ? (
+              contacts.map((contact, index) => (
+                <View style={styles.chipsGroup} >
                   <View key={index}>
                     <ChipButton
                       key={index}
                       title={contact.name}
-                      onPress={() => showViewContactModal(contact)}
+                      onPress={showViewContactModal}
                     />
                   </View>
-                ))
+                </View>
+              ))
             ) : (
 
               <View style={styles.contactList}>
@@ -664,8 +665,8 @@ const LandingScreen = ({ navigation, visible }) => {
                 {/* list available contacts */}
                 <ScrollView>
                   <View style={styles.contactList}>
-                    {contacts ? (
-                      contacts.map((contact, index) => (
+                    {filteredContacts ? (
+                      filteredContacts.map((contact, index) => (
                         <TouchableOpacity key={index}>
                           <ChipButton
                             key={index}
