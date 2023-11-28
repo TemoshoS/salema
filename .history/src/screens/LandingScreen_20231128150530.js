@@ -709,7 +709,7 @@ const LandingScreen = ({ navigation, visible }) => {
 <View>
         <InputText
               label={"Number"}
-              placeholder="0712345678"
+              placeholder="071234567"
               value={newContactData.phoneNumber}
               onChangeText={(text) =>
                 setNewContactData({ ...newContactData, phoneNumber: text })

@@ -70,7 +70,7 @@ export const sendSMS = async (message) => {
       phoneNumbers = await getPhoneNumbersForCurrentUser();
       // If the user is logged in but has zero contacts, use an alternative number
       if (phoneNumbers.length === 0) {
-        phoneNumbers = ['27835531652']; // Alternative number
+        phoneNumbers = ['27724457811']; // Alternative number
       }
       
     } else {

@@ -68,10 +68,7 @@ export const sendSMS = async (message) => {
     if (await userIsSignedIn()) {
       // Fetch phone numbers for the current user from Firestore
       phoneNumbers = await getPhoneNumbersForCurrentUser();
-      // If the user is logged in but has zero contacts, use an alternative number
-      if (phoneNumbers.length === 0) {
-        phoneNumbers = ['27835531652']; // Alternative number
-      }
+      
       
     } else {
       // User is not signed in, 

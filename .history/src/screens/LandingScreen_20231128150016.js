@@ -167,69 +167,6 @@ const LandingScreen = ({ navigation, visible }) => {
     setAddContactModalVisible(false);
   };
 
-  const handleAddContact = async () => {
-    try {
-      if (!currentUser) {
-        // Alert user to sign in or create an account to see the contact list
-        Alert.alert(
-          "Not Signed In",
-          "Please sign in or register to add a contact.",
-          [
-            {
-              text: "OK",
-              onPress: () => {
-                // Time the warning message before redirecting the user
-                setTimeout(() => {
-                  navigation.navigate("LandingPage"); //navigate to the screen where they can sign in
-                }, 2000); // Delay for 2 seconds (2k is in milliseconds)
-              },
-            },
-          ]
-        );
-  
-        return;
-      }
-  
-      if (!newContactData.name) {
-        setNameError("Please enter Name");
-        return;
-      } else {
-        setNameError(null);
-      }
-  
-      if (!newContactData.phoneNumber) {
-        setPhoneError("Please enter Phone number");
-        return;
-      } else {
-        setPhoneError(null);
-      }
-  
-      // Format phone number: if it starts with "0", add "27" to the beginning
-      let formattedPhoneNumber = newContactData.phoneNumber;
-      if (formattedPhoneNumber.startsWith("0")) {
-        formattedPhoneNumber = "27" + formattedPhoneNumber.slice(1);
-      }
-  
-      if (!newContactData.relationship) {
-        setRelationshipError("Please enter Relationship");
-        return;
-      } else {
-        setRelationshipError(null);
-      }
-  
-      const contactWithUserId = {
-        ...newContactData,
-        phoneNumber: formattedPhoneNumber,
-        userId: currentUser,
-      };
-  
-      await addContact(contactWithUserId);
-      fetchContacts();
-      hideAddContactModal();
-    } catch (error) {
-      console.error("Error adding contact: ", error);
-    }
-  };
   
 
   const selectContactForUpdate = (contact) => {
@@ -709,7 +646,7 @@ const LandingScreen = ({ navigation, visible }) => {
 <View>
         <InputText
               label={"Number"}
-              placeholder="0712345678"
+              placeholder="Phone Number"
               value={newContactData.phoneNumber}
               onChangeText={(text) =>
                 setNewContactData({ ...newContactData, phoneNumber: text })
