@@ -356,7 +356,7 @@ const LandingScreen = ({ navigation, visible }) => {
       {/* Content */}
       {/* Backhground image */}
       <TouchableOpacity style={{ position: 'absolute', top: 40, right: 0 }} onPress={() => navigation.navigate('ProfileScreen')}>
-        <Text>Profile</Text>
+        <Image source={require("../../assets/profile.png")} style={styles.profileicon}/>
       </TouchableOpacity>
       <Image
         source={require("../../assets/Union.png")}
@@ -1035,6 +1035,12 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.5,
     shadowRadius: 24,
     elevation: 4,
+  },
+  profileicon: {
+    width: 30,
+    height: 30,
+    marginRight: 10,
+    marginTop: 10
   },
 
 
