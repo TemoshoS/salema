@@ -164,20 +164,20 @@ const LandingScreen = ({ navigation, visible }) => {
 
 
   const validatePhoneNumber = (phoneNumber) => {
-
+    
     const formattedPhoneNumber = phoneNumber.startsWith("0")
       ? "27" + phoneNumber.slice(1)
       : phoneNumber;
-
+  
 
     const phoneRegex = /^27[0-9]{9}$/;
-
+  
     const isValid = phoneRegex.test(formattedPhoneNumber);
-
+  
     setIsPhoneNumberValid(isValid);
   };
-
-
+  
+  
   const handleAddContact = async () => {
     try {
       if (!currentUser) {
@@ -217,10 +217,10 @@ const LandingScreen = ({ navigation, visible }) => {
       if (!isPhoneNumberValid) {
         setPhoneError("Invalid phone number. Please enter a valid South African number.");
         return;
-      } else {
-        setPhoneError(null);
+      }else{
+        setPhoneError
       }
-
+  
 
       // Format phone number: if it starts with "0", add "27" to the beginning
       let formattedPhoneNumber = newContactData.phoneNumber;
@@ -729,14 +729,10 @@ const LandingScreen = ({ navigation, visible }) => {
                 label={"Number"}
                 placeholder="0712345678"
                 value={newContactData.phoneNumber}
-                onChangeText={(text) => {
-                  setNewContactData({ ...newContactData, phoneNumber: text });
-                  validatePhoneNumber(text);
-                }}
+                onChangeText={(text) =>
+                  setNewContactData({ ...newContactData, phoneNumber: text })
+                }
               />
-              {!isPhoneNumberValid && (
-                <Text style={styles.errorText}>Please enter a valid phone number</Text>
-              )}
               {phoneError && <Text style={styles.errorText}>{phoneError}</Text>}
             </View>
 
