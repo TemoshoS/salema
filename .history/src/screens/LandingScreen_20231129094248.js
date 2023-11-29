@@ -253,7 +253,7 @@ const LandingScreen = ({ navigation, visible }) => {
       phoneNumber: contact.phoneNumber,
       relationship: contact.relationship,
     });
-    setSelectedContact(contact);
+    
     setIsEditing(true);
   };
 
