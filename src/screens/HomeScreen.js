@@ -257,21 +257,10 @@ const HomeScreen = ({ navigation }) => {
       hideUpdateModal();
       setConfirmationVisible(false);
 
-      Toast.show({
-        type:'success',
-        position: 'bottom',
-        text1: 'Contact updated successful',
-        visibilityTime: 3000,
-      });
+   
     } catch (error) {
       console.error("Error updating contact: ", error);
-      Toast.show({
-        type:'error',
-        position: 'bottom',
-        text1: 'Contact was not updated',
-        text2: 'Please try again ',
-        visibilityTime: 3000,
-      });
+  
     }
   };
 

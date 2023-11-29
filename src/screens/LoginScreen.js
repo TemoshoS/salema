@@ -35,6 +35,7 @@ const LoginScreen = ({onRegister, onLogin, onForgotPass,closeModal,openRegister,
       
       Toast.show({
         type: 'success',
+        position: 'bottom',
         text1: 'Login Successful',
         visibilityTime: 4000,
       })

@@ -17,6 +17,7 @@ import Vector from "../../assets/Vector.png";
 import InputText from "../components/InputText";
 import Button from "../components/Button";
 import { registerUser } from "../services/authService";
+import Toast from "react-native-toast-message";
 
 
 const RegistrationScreen = ({onLogin, onRegister,closeModal}) => {
@@ -83,11 +84,13 @@ const RegistrationScreen = ({onLogin, onRegister,closeModal}) => {
         if (!password) setPasswordError("Password is required");
         if (!reenterPassword)
           setReenterPasswordError("Re-enter password is required");
-        Toast.show({
+       
+          Toast.show({
           type: 'error',
+          position: 'bottom',
           text1: 'Registration failed',
           text2: 'Please fill in the required fields',
-          visibilityTime: 4000,
+          visibilityTime: 3000,
         });
         return;
       }
@@ -95,11 +98,13 @@ const RegistrationScreen = ({onLogin, onRegister,closeModal}) => {
       // Check if the password and the confirm password match
       if (password !== reenterPassword) {
         setReenterPasswordError("Passwords do not match");
+        
         Toast.show({
           type: 'error',
+          position: 'bottom',
           text1: 'Registration Failed',
           text2: 'Password do not match',
-          visibilityTime: 4000,
+          visibilityTime: 3000,
         })
         return;
       }
@@ -114,9 +119,10 @@ const RegistrationScreen = ({onLogin, onRegister,closeModal}) => {
 
         Toast.show({
           type: 'error',
+          position: 'bottom',
           text1: 'Registration failed',
           text2: 'Password doesnt meet the requirements',
-          visibilityTime: 4000
+          visibilityTime: 3000
         });
         return;
       }
@@ -133,8 +139,9 @@ const RegistrationScreen = ({onLogin, onRegister,closeModal}) => {
 
       Toast.show({
         type: 'success',
+        position: 'bottom',
         text1: "Registered Successful",
-        visibilityTime: 4000,
+        visibilityTime: 3000,
       });
 
 
@@ -146,22 +153,24 @@ const RegistrationScreen = ({onLogin, onRegister,closeModal}) => {
           type: 'error',
           text1: 'Registration Failed',
           text2: 'Email is already in use',
-          visibilityTime: 4000,
+          visibilityTime: 3000,
         });
       } else if (error.code === "auth/invalid-email") {
         setEmailError("Email is invalid");
         Toast.show({
           type: 'error',
+          position: 'bottom',
           text1: 'Registration Failed',
           text2: 'Invalid Email',
-          visibilityTime: 4000,
+          visibilityTime: 3000,
         });
       }else{
         Toast.show({
           type: 'error',
+          position: 'bottom',
           text1: 'Registration Failed',
           text2: 'An error occurred. Please try again later.',
-          visibilityTime: 4000,
+          visibilityTime: 3000,
         });
       }
     }

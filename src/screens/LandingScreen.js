@@ -279,7 +279,7 @@ const LandingScreen = ({ navigation, visible }) => {
   const closeModal = () => {
     setModalVisible(false);
   };
-
+/////////////
   const handleUpdateContact = async () => {
     try {
       if (!selectedContact) {
@@ -321,8 +321,22 @@ const LandingScreen = ({ navigation, visible }) => {
       fetchContacts();
       hideUpdateModal();
       setConfirmationVisible(false);
+
+      Toast.show({
+        type: 'success',
+        position: 'bottom',
+        text1: 'Sucessfully updated the emergency contact',
+        visibilityTime: 3000
+      });
     } catch (error) {
       console.error("Error updating contact: ", error);
+
+      Toast.show({
+        type: 'error',
+        position: 'bottom',
+        text1: 'Sucessfully updated the emergency contact',
+        visibilityTime: 3000
+      });
     }
   };
 
@@ -343,8 +357,23 @@ const LandingScreen = ({ navigation, visible }) => {
       await removeContact(contactId);
       fetchContacts();
       hideViewContactModal();
+
+      Toast.show({
+        type: 'success',
+        position: 'bottom',
+        text1: 'Contact removed successfully',
+        visibilityTime: 3000,
+      });
     } catch (error) {
       console.error("Error removing contact: ", error);
+      Toast.show({
+        type: 'error',
+        position: 'bottom',
+        text1: 'Error removing the contact',
+        text2: 'Please try again',
+        backgroundColor: 'red',
+        visibilityTime: 3000,
+      });
     }
   };
 
