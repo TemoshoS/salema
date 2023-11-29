@@ -45,6 +45,7 @@ import { Linking } from "react-native";
 import * as Notifications from "expo-notifications";
 import ForgotPassModal from "../components/ForgotPassModal";
 import ForgotPassword from "./ForgotPassword";
+import Toast from "react-native-toast-message";
 
 const LandingScreen = ({ navigation, visible }) => {
   const [modalVisible, setModalVisible] = useState(false);
@@ -242,8 +243,19 @@ const LandingScreen = ({ navigation, visible }) => {
       await addContact(contactWithUserId);
       fetchContacts();
       hideAddContactModal();
+      Toast.show({
+        type: 'success',
+        text1: 'Emergency contact added successfully',
+        visibilityTime: 3000
+      });
+
     } catch (error) {
       console.error("Error adding contact: ", error);
+      Toast.show({
+        type: 'error',
+        text1: 'Emergency contact added successfully',
+        visibilityTime: 3000
+      });
     }
   };
 
@@ -307,8 +319,19 @@ const LandingScreen = ({ navigation, visible }) => {
       fetchContacts();
       hideUpdateModal();
       setConfirmationVisible(false);
+      Toast.show({
+        type: 'success',
+        text1: 'Emergency contact updated successfully',
+        visibilityTime: 3000
+      });
     } catch (error) {
       console.error("Error updating contact: ", error);
+      Toast.show({
+        type: 'error',
+        text1: 'Error updating contact',
+        text2: 'Please try again',
+        visibilityTime: 3000
+      });
     }
   };
 
@@ -329,8 +352,19 @@ const LandingScreen = ({ navigation, visible }) => {
       await removeContact(contactId);
       fetchContacts();
       hideViewContactModal();
+      Toast.show({
+        type: 'success',
+        text1: 'Emergency contact removed successfully',
+        visibilityTime: 3000,
+      });
     } catch (error) {
       console.error("Error removing contact: ", error);
+      Toast.show({
+        type: 'error',
+        text1: 'Error removing the emergency contact',
+        text2: 'Pleast try again',
+        visibilityTime: 3000,
+      });
     }
   };
 

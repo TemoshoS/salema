@@ -5,6 +5,7 @@ import { Button, Text, Card, Input } from 'react-native-elements';
 import { getAuth } from 'firebase/auth';
 import { getFirestore, doc, getDoc, setDoc } from 'firebase/firestore';
 import { signOutUser } from '../services/authService';
+import Toast from 'react-native-toast-message';
 
 const ProfileScreen = () => {
   const navigation = useNavigation();
@@ -69,8 +70,19 @@ const ProfileScreen = () => {
     try {
       await signOutUser();
       navigation.navigate('LandingPage');
+      Toast.show({
+        type: 'success',
+        text1: 'Signed out sucessfully',
+        visibilityTime: 3000
+      })
     } catch (error) {
       console.error('Error signing out:', error);
+      Toast.show({
+        type: 'error',
+        text1: 'You havent logged in yet',
+        text2: 'Please Login to use sign out',
+        visibilityTime: 3000
+      })
     }
   };
 

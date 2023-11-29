@@ -35,7 +35,6 @@ const LoginScreen = ({onRegister, onLogin, onForgotPass,closeModal,openRegister,
       
       Toast.show({
         type: 'success',
-        position: 'bottom',
         text1: 'Login Successful',
         visibilityTime: 4000,
       })
@@ -94,7 +93,7 @@ const LoginScreen = ({onRegister, onLogin, onForgotPass,closeModal,openRegister,
 
         <TouchableOpacity style={styles.LoginButton} onPress={() => handleLogin()}>
           <Text>Login</Text>
-          {isLoaderVisible && <Spinner size='small' color="#fff" style={styles.spinner}/>}
+        
         </TouchableOpacity>
 
         <View style={styles.linksContainer}>
