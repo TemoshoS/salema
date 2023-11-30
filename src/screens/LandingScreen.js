@@ -11,7 +11,12 @@ import {
   ScrollView,
   TextInput,
   Alert,
+  ActivityIndicator,
 } from "react-native";
+import {
+  BottomSheetModal,
+  BottomSheetModalProvider,
+} from "@gorhom/bottom-sheet";
 import ChipButton from "../components/ChipButton";
 import {
   getContacts,
@@ -20,6 +25,10 @@ import {
   removeContact,
 } from "../services/homeServices";
 import { getAuth, onAuthStateChanged } from "@firebase/auth";
+import ReactNativeAsyncStorage from '@react-native-async-storage/async-storage';
+
+import { GestureHandlerRootView } from "react-native-gesture-handler";
+import { RootSiblingParent } from 'react-native-root-siblings';
 
 import ShakeTrigger from "../services/ShakeTrigger";
 import TextField from "../components/TextField";
@@ -45,13 +54,17 @@ import { Linking } from "react-native";
 import * as Notifications from "expo-notifications";
 import ForgotPassModal from "../components/ForgotPassModal";
 import ForgotPassword from "./ForgotPassword";
+import authService from "../services/authService";
 
 const LandingScreen = ({ navigation, visible }) => {
+  const { registerUser, loginUser, resetPassword, signOutUser, checkUserLoggedIn, user } = authService()
+
   const [modalVisible, setModalVisible] = useState(false);
   const [updatedContact, setUpdatedContact] = useState("");
   const [removedContact, setRemovedContact] = useState("");
   // from home scrip[t]
-  const [currentUser, setCurrentUser] = useState(null);
+  const [loadContacts, setLoadingContact] = useState(false)
+  const [currentUser, setCurrentUser] = useState(user);
   const [contacts, setContacts] = useState([]);
   const [isConfirmationVisible, setConfirmationVisible] = useState(false);
   const [selectedContact, setSelectedContact] = useState(null);
@@ -88,7 +101,15 @@ const LandingScreen = ({ navigation, visible }) => {
     phoneNumber: "",
     relationship: "",
   });
+  const bottomSheetModalRef = useRef(null);
+  const snapPoints = ["15%", "25%"];
+  const [isOpenContact, setOpenContact] = useState(false);
+  const [modalData, setModalData] = useState(null);
+
+
+  const [loading, setLoading] = useState(false)
   useEffect(() => {
+
     initializeAuth();
     const shakeHandler = async () => {
       console.log("Shake detected!");
@@ -101,7 +122,7 @@ const LandingScreen = ({ navigation, visible }) => {
         handleShake(true);
         sendSMS(
           "Emergency! I need help. My location: " +
-            `https://www.google.com/maps/?q=${newLocation.latitude},${newLocation.longitude}`
+          `https://www.google.com/maps/?q=${newLocation.latitude},${newLocation.longitude}`
         );
       }
     };
@@ -113,26 +134,50 @@ const LandingScreen = ({ navigation, visible }) => {
     };
   }, [isShakeHandled]);
 
-  const initializeAuth = async () => {
-    const user = await initializeAuthState();
+  useEffect(() => {
+    // This effect will run when currentUser is updated
+    fetchContacts();
+  }, [currentUser]);
 
-    if (user) {
-      setCurrentUser(user);
-      fetchContacts();
-      console.log(" there is  user");
-    } else {
-      setContacts([]);
-      console.log("Not logged in user");
+  const initializeAuth = async () => {
+
+    try {
+      const user = await checkUserLoggedIn();
+
+      if (user != null) {
+        setCurrentUser(user);
+        console.log("There is a user", user);
+      } else {
+        setContacts([]);
+        console.log("Not logged in user");
+      }
+    } catch (error) {
+      console.error("Error during authentication initialization:", error);
+    } finally {
+      setLoading(false);
     }
+
   };
 
   // Function to get user's contacts
   const fetchContacts = async () => {
-    await getContacts(currentUser).then((data) => {
-      console.log("contacts" > data);
+
+    try {
+      setLoadingContact(true);
+      console.log('fetching contact');
+      console.log(currentUser);
+      const data = await getContacts(currentUser);
+
+      console.log("contacts", data);
       setContacts(data);
-    });
+    } catch (error) {
+      console.error("Error fetching contacts:", error);
+    } finally {
+      setLoadingContact(false); // Set loading state back to false after fetching
+    }
+
   };
+
   const showContactDetails = (contact) => {
     setSelectedContact(contact);
     setUpdatedContactData({
@@ -149,6 +194,15 @@ const LandingScreen = ({ navigation, visible }) => {
     hideViewContactModal();
   };
 
+  function handleViewContact(contact) {
+
+    bottomSheetModalRef.current?.present();
+    setModalData(contact);
+
+    setTimeout(() => {
+      setOpenContact(true);
+    }, 100);
+  }
   // from home
   const showAddContactModal = () => {
     // setNewContactData({
@@ -236,11 +290,15 @@ const LandingScreen = ({ navigation, visible }) => {
       const contactWithUserId = {
         ...newContactData,
         phoneNumber: formattedPhoneNumber,
-        userId: currentUser,
+        userId: currentUser.uid,
       };
 
-      await addContact(contactWithUserId);
-      fetchContacts();
+      await addContact(contactWithUserId).then(() => {
+        setLoading(false)
+      });
+      fetchContacts().then(() => {
+
+      });
       hideAddContactModal();
     } catch (error) {
       console.error("Error adding contact: ", error);
@@ -285,21 +343,21 @@ const LandingScreen = ({ navigation, visible }) => {
       if (!updatedContactData.name) {
         setNameError('Please enter Name');
         return;
-      } 
-      else{
+      }
+      else {
         setNameError(null);
       }
-      if(!updatedContactData.phoneNumber){
+      if (!updatedContactData.phoneNumber) {
         setPhoneError('Please enter Phone number');
         return;
       }
       {
         setPhoneError(null);
       }
-      if(!updatedContactData.relationship){
+      if (!updatedContactData.relationship) {
         setRelationshipError('Please enter Relationship');
         return;
-      }else{
+      } else {
         setRelationshipError(null);
       }
 
@@ -344,7 +402,10 @@ const LandingScreen = ({ navigation, visible }) => {
   };
   // Hide Login Modal
   const hideLoginModal = () => {
-    setLoginModalVisible(false);
+    // setCurrentUser(user)
+    initializeAuth().then(() => {
+      setLoginModalVisible(false);
+    })
   };
   // Hide  Signin Modal
   const hideSignupModal = () => {
@@ -429,111 +490,121 @@ const LandingScreen = ({ navigation, visible }) => {
   };
 
   return (
-    <View style={styles.container}>
-      {/* Backhground image */}
-      <TouchableOpacity
-        style={{ position: "absolute", top: 40, right: 0 }}
-        onPress={() => navigation.navigate("ProfileScreen")}
-      >
-        <Image
-          source={require("../../assets/profile.png")}
-          style={styles.profileicon}
-        />
-      </TouchableOpacity>
-      <Image
-        source={require("../../assets/Union.png")}
-        style={styles.logoImg}
-        accessibilityLabel="logo"
-      />
-      <Text>Your safety is just a shake away</Text>
-      {/* Staus image */}
+    <RootSiblingParent>
+      <GestureHandlerRootView style={{ flex: 1 }}>
+        <BottomSheetModalProvider>
+          <View style={styles.container}>
+            {/* Backhground image */}
+            <TouchableOpacity
+              style={{ position: "absolute", top: 40, right: 0 }}
+              onPress={() => navigation.navigate("ProfileScreen")}
+            >
+              <Image
+                source={require("../../assets/profile.png")}
+                style={styles.profileicon}
+              />
+            </TouchableOpacity>
+            <Image
+              source={require("../../assets/Union.png")}
+              style={styles.logoImg}
+              accessibilityLabel="logo"
+            />
+            <Text>Your safety is just a shake away</Text>
+            {/* Staus image */}
 
-      <View style={styles.textContent}>
-        <Image
-          source={statusImageSource}
-          style={styles.BgImage}
-          accessibilityLabel="status signal image"
-        />
+            <View style={styles.textContent}>
+              <Image
+                source={statusImageSource}
+                style={styles.BgImage}
+                accessibilityLabel="status signal image"
+              />
 
-        <Text style={styles.title}>"Shake to Alert"</Text>
-        <Text style={styles.text}>
-          In an emergency, every second counts, just give your phone a quick
-          shake to send out an alert to your chosen contacts
-        </Text>
-      </View>
+              <Text style={styles.title}>"Shake to Alert"</Text>
+              <Text style={styles.text}>
+                In an emergency, every second counts, just give your phone a quick
+                shake to send out an alert to your chosen contacts
+              </Text>
+            </View>
 
-      <Image
-        source={require("../../assets/undraw.png")}
-        style={styles.BgImage}
-        accessibilityLabel="status signalimage"
-      />
+            <Image
+              source={require("../../assets/undraw.png")}
+              style={styles.BgImage}
+              accessibilityLabel="status signalimage"
+            />
 
-      {/* Bottom Sheet if user logged in or not */}
-      {currentUser == null ? (
-        // <></>
-        <View style={styles.buttonSection}>
-          <Button
-            style={styles.bgGreen}
-            title={"Signup"}
-            onPress={() => handleSignup()}
-            altText={"register"}
-            color={"#055a2b"}
-          />
-          <Button
-            style={styles.bgGreen}
-            title={"Log in"}
-            onPress={() => handleLogin()}
-            altText={"Login"}
-            color={"#055a2b"}
-          />
-        </View>
-      ) : (
-        //  User Is not null && Prompt to add contacts else display avaiable contacts
-        <View style={styles.bottomSheet}>
-          <Text style={styles.trustedContact}>Trusted Contact</Text>
-
-          <View style={styles.contactCard}>
-            {contacts.length > 0 ? (
-              contacts.map((contact, index) => (
-                <View key={index}>
-                  <ChipButton
-                    key={index}
-                    title={contact.name}
-                    onPress={() => showViewContactModal(contact)}
-                  />
-                </View>
-              ))
+            {/* Bottom Sheet if user logged in or not */}
+            {currentUser == null ? (
+              // <></>
+              <View style={styles.buttonSection}>
+                <Button
+                  style={styles.bgGreen}
+                  title={"Signup"}
+                  onPress={() => handleSignup()}
+                  altText={"register"}
+                  color={"#055a2b"}
+                />
+                <Button
+                  style={styles.bgGreen}
+                  title={"Log in"}
+                  onPress={() => handleLogin()}
+                  altText={"Login"}
+                  color={"#055a2b"}
+                />
+              </View>
             ) : (
-              <View style={styles.contactList}>
-                <Text style={styles.textContent}>
-                  YOUR EMERGENCY CONTACTS WILL APPEAR HERE.
-                </Text>
-                <Text style={styles.noUserText}>
-                  You currently do not have any emergency contact. Import
-                  contacts or add new contacts
-                </Text>
+              //  User Is not null && Prompt to add contacts else display avaiable contacts
 
-                {/* <TouchableOpacity style={styles.addContactButton} onPress={() => showAddContactModal()}>
-                     <Text>Add Contact</Text>
-                    </TouchableOpacity> */}
+              <View style={styles.bottomSheet}>
+                <Text style={styles.title}>Trusted Contact</Text>
+                <View style={{ flexDirection: 'row', flexWrap: 'wrap' }}>
+
+                  {contacts.length > 0 ? (
+                    contacts.map((contact, index) => (
+
+                      <View style={styles.contacts}>
+                        <TouchableOpacity style={styles.chip} onPress={() => handleViewContact(contact)} >
+                          <Text style={styles.name} >{contact.name}</Text>
+                        </TouchableOpacity>
+                      </View>
+                    ))
+                  ) : (
+                    <>
+                      {loadContacts ?
+                        (
+                          <>
+                            <ActivityIndicator size="large" color="#0000ff" />
+                          </>
+                        )
+                        : (<>
+                          <View style={{ margin: 15, alignItems: 'center' }}>
+                            <Text style={[styles.noUserText, { fontWeight: 'bold' }]}>
+                              YOUR EMERGENCY CONTACTS WILL APPEAR HERE.
+                            </Text>
+                            <Text style={styles.noUserText}>
+                              You currently do not have any emergency contact. Import
+                              contacts or add new contacts
+                            </Text>
+                          </View>
+                        </>)}
+                    </>
+
+                  )}
+                </View>
+
+                <TouchableOpacity style={styles.addContactButton} onPress={() => showAddContactModal()}>
+                  <Text>Add Contact</Text>
+                </TouchableOpacity>
+
+
               </View>
             )}
-            <View></View>
-          </View>
-          <Button
-            title={"Add Contact"}
-            onPress={showAddContactModal}
-            altText={"Add Contact"}
-          />
-        </View>
-      )}
 
-      {/* Main Activity contents Modals/screens/sheets | Outside the main content frame */}
+            {/* Main Activity contents Modals/screens/sheets | Outside the main content frame */}
 
-      {/* view contact bottomsheet */}
+            {/* view contact bottomsheet */}
 
-      {/* Secondary Bottom Sheet  */}
-      {/* <View style={styles.content}>
+            {/* Secondary Bottom Sheet  */}
+            {/* <View style={styles.content}>
       <View style={styles.modalCard}>
           {selectedContact ? (
             <View style={styles.textContent}>
@@ -566,319 +637,339 @@ const LandingScreen = ({ navigation, visible }) => {
         </View>
       </View> */}
 
-      {/* Update Contact Modal */}
-      <Modal
-        transparent={true}
-        visible={modalVisible}
-        animationType="slide"
-        onRequestClose={closeModal}
-      >
-        <View style={styles.modalContainer}>
-          <View>
-            {/* Modal Content */}
-            <Text style={styles.modalText}>Update or Remove Contact</Text>
-
-            {/* Input for Updating Contact */}
-            <TextInput
-              style={styles.input}
-              placeholder="Enter updated contact"
-              placeholderTextColor="#FFFFFF"
-              onChangeText={(text) => setUpdatedContact(text)}
-            />
-
-            {/* Input for Removing Contact */}
-            <TextInput
-              style={styles.input}
-              placeholder="Enter contact to remove"
-              placeholderTextColor="#FFFFFF"
-              onChangeText={(text) => setRemovedContact(text)}
-            />
-
-            {/* Update and Remove Contact Buttons */}
-            <TouchableOpacity
-              style={styles.updateButton}
-              onPress={handleUpdateContact}
+            {/* Update Contact Modal */}
+            <Modal
+              transparent={true}
+              visible={modalVisible}
+              animationType="slide"
+              onRequestClose={closeModal}
             >
-              <Text style={styles.buttonText}>UPDATE CONTACT</Text>
-            </TouchableOpacity>
-
-            <TouchableOpacity
-              style={styles.removeButton}
-              onPress={handleRemoveContact}
-            >
-              <Text style={styles.buttonText}>REMOVE CONTACT</Text>
-            </TouchableOpacity>
-          </View>
-        </View>
-      </Modal>
-
-      {/* Login Form Modal */}
-      <Modal
-        transparent={true}
-        visible={isLoginModalVisible}
-        animationType="slide"
-        onRequestClose={() => setLoginModalVisible(true)}
-        style={{
-          justifyContent: "center",
-          alignItems: "center",
-          alignSelf: "center",
-        }}
-      >
-        <View style={styles.modalContainer}>
-          <View style={styles.card}>
-            <LoginScreen
-              modalVisible={isLoginModalVisible}
-              closeModal={() => hideLoginModal()}
-              openRegister={() => showSignupModal()}
-              onForgotPass={showForgotPassModal}
-              // style={{width: 10,margin: 10,}}
-            />
-          </View>
-        </View>
-      </Modal>
-
-      {/* Registration Form Modal */}
-      <Modal
-        transparent={true}
-        visible={isSignupModalVisible}
-        animationType="slide"
-        onRequestClose={hideSignupModal}
-      >
-        <View style={styles.modalContainer}>
-          <RegistrationScreen
-            closeModal={() => hideSignupModal()}
-            onLogin={() => showLoginModal()}
-          />
-        </View>
-      </Modal>
-      {/* forgot password Form Modal */}
-      <Modal
-        transparent={true}
-        visible={isForgotPassModalVisible}
-        animationType="slide"
-        onRequestClose={hideForgotPassModal}
-      >
-        <View style={styles.modalContainer}>
-          <ForgotPassword
-            closePasswordResetModal={() => hideForgotPassModal()}
-          />
-        </View>
-      </Modal>
-
-      {/* Edit/ Update Contacts Modal */}
-      <Modal
-        transparent={true}
-        visible={isUpdateModalVisible}
-        animationType="slide"
-        onRequestClose={hideUpdateModal}
-      >
-        <View style={styles.overlay} />
-        <View style={styles.modalContainer}>
-          <View style={styles.modalCard}>
-            <Text style={styles.trustedContact}>Edit Contact</Text>
-            <View>
-              {selectedContact && (
+              <View style={styles.modalContainer}>
                 <View>
-                  <InputText
-                    style={styles.input}
-                    placeholder="Name"
-                    value={updatedContactData.name}
-                    onChangeText={(text) =>
-                      setUpdatedContactData({
-                        ...updatedContactData,
-                        name: text,
-                      })
-                    }
-                  />
-                  <InputText
-                    style={styles.input}
-                    placeholder="Phone Number"
-                    value={updatedContactData.phoneNumber}
-                    onChangeText={(text) =>
-                      setUpdatedContactData({
-                        ...updatedContactData,
-                        phoneNumber: text,
-                      })
-                    }
-                  />
-                  <InputText
-                    style={styles.input}
-                    placeholder="Relationship"
-                    value={updatedContactData.relationship}
-                    onChangeText={(text) =>
-                      setUpdatedContactData({
-                        ...updatedContactData,
-                        relationship: text,
-                      })
-                    }
-                  />
-                  {/* list available contacts */}
-                  <ScrollView
-                    contentContainerStyle={{
-                      flexGrow: 1,
-                      flexDirection: "row",
-                      alignItems: "center",
-                      justifyContent: "space-between",
-                      // paddingHorizontal: 20,
-                      marginVertical: 10,
-                    }}
-                    horizontal={true}
-                    bounces={true}
-                    showsHorizontalScrollIndicator={false}
-                  >
-                    <View style={styles.chipsGroup}>
-                      {contacts ? (
-                        contacts.map((contact, index) => (
-                          <TouchableOpacity key={index}>
-                            <ChipButton
-                              key={index}
-                              title={contact.name}
-                              onPress={() => selectContactForUpdate(contact)}
-                              style={{
-                                backgroundColor:
-                                  selectedContact?.id === contact.id
-                                    ? "lightgray"
-                                    : "transparent",
-                              }}
-                            />
-                          </TouchableOpacity>
-                        ))
-                      ) : (
-                        <Text>No contacts available</Text>
-                      )}
-                    </View>
-                  </ScrollView>
+                  {/* Modal Content */}
+                  <Text style={styles.modalText}>Update or Remove Contact</Text>
 
-                  <View style={styles.buttonGroup}>
-                    <Button
-                      title="Update"
-                      onPress={handleUpdateContact}
-                      altText="Update Edit"
-                    />
+                  {/* Input for Updating Contact */}
+                  <TextInput
+                    style={styles.input}
+                    placeholder="Enter updated contact"
+                    placeholderTextColor="#FFFFFF"
+                    onChangeText={(text) => setUpdatedContact(text)}
+                  />
+
+                  {/* Input for Removing Contact */}
+                  <TextInput
+                    style={styles.input}
+                    placeholder="Enter contact to remove"
+                    placeholderTextColor="#FFFFFF"
+                    onChangeText={(text) => setRemovedContact(text)}
+                  />
+
+                  {/* Update and Remove Contact Buttons */}
+                  <TouchableOpacity
+                    style={styles.updateButton}
+                    onPress={handleUpdateContact}
+                  >
+                    <Text style={styles.buttonText}>UPDATE CONTACT</Text>
+                  </TouchableOpacity>
+
+                  <TouchableOpacity
+                    style={styles.removeButton}
+                    onPress={handleRemoveContact}
+                  >
+                    <Text style={styles.buttonText}>REMOVE CONTACT</Text>
+                  </TouchableOpacity>
+                </View>
+              </View>
+            </Modal>
+
+            {/* Login Form Modal */}
+            <Modal
+              transparent={true}
+              visible={isLoginModalVisible}
+              animationType="slide"
+              onRequestClose={() => setLoginModalVisible(true)}
+           
+            >
+              <View style={styles.modalContainer}>
+                {/* <View style={styles.card}> */}
+                  <LoginScreen
+                    modalVisible={isLoginModalVisible}
+                    closeModal={() => hideLoginModal()}
+                    openRegister={() => showSignupModal()}
+                    onForgotPass={showForgotPassModal}
+                  // style={{width: 10,margin: 10,}}
+                  />
+                </View>
+              {/* </View> */}
+            </Modal>
+
+            {/* Registration Form Modal */}
+            <Modal
+              transparent={true}
+              visible={isSignupModalVisible}
+              animationType="slide"
+              onRequestClose={hideSignupModal}
+            >
+              <View style={styles.modalContainer}>
+                <RegistrationScreen
+                  closeModal={() => hideSignupModal()}
+                  onLogin={() => showLoginModal()}
+                />
+              </View>
+            </Modal>
+            {/* forgot password Form Modal */}
+            <Modal
+              transparent={true}
+              visible={isForgotPassModalVisible}
+              animationType="slide"
+              onRequestClose={hideForgotPassModal}
+            >
+              <View style={styles.modalContainer}>
+                <ForgotPassword
+                  closePasswordResetModal={() => hideForgotPassModal()}
+                />
+              </View>
+            </Modal>
+
+            {/* Edit/ Update Contacts Modal */}
+            <Modal
+              transparent={true}
+              visible={isUpdateModalVisible}
+              animationType="slide"
+              onRequestClose={hideUpdateModal}
+            >
+              <View style={styles.overlay} />
+              <View style={styles.modalContainer}>
+                <View style={styles.modalCard}>
+                  <Text style={styles.trustedContact}>Edit Contact</Text>
+                  <View>
+                    {modalData && (
+                      <View>
+                        <InputText
+                          style={styles.input}
+                          placeholder="Name"
+                          value={modalData.name}
+                          onChangeText={(text) =>
+                            setUpdatedContactData({
+                              ...updatedContactData,
+                              name: text,
+                            })
+                          }
+                        />
+                        <InputText
+                          style={styles.input}
+                          placeholder="Phone Number"
+                          value={modalData.phoneNumber}
+                          onChangeText={(text) =>
+                            setUpdatedContactData({
+                              ...updatedContactData,
+                              phoneNumber: text,
+                            })
+                          }
+                        />
+                        <InputText
+                          style={styles.input}
+                          placeholder="Relationship"
+                          value={modalData.relationship}
+                          onChangeText={(text) =>
+                            setUpdatedContactData({
+                              ...updatedContactData,
+                              relationship: text,
+                            })
+                          }
+                        />
+                        {/* list available contacts */}
+                        <ScrollView
+                          contentContainerStyle={{
+                            flexGrow: 1,
+                            flexDirection: "row",
+                            alignItems: "center",
+                            justifyContent: "space-between",
+                            // paddingHorizontal: 20,
+                            marginVertical: 10,
+                          }}
+                          horizontal={true}
+                          bounces={true}
+                          showsHorizontalScrollIndicator={false}
+                        >
+                          <View style={styles.chipsGroup}>
+                            {contacts ? (
+                              contacts.map((contact, index) => (
+                                <TouchableOpacity key={index}>
+                                  <ChipButton
+                                    key={index}
+                                    title={contact.name}
+                                    onPress={() => selectContactForUpdate(contact)}
+                                    style={{
+                                      backgroundColor:
+                                        selectedContact?.id === contact.id
+                                          ? "lightgray"
+                                          : "transparent",
+                                    }}
+                                  />
+                                </TouchableOpacity>
+                              ))
+                            ) : (
+                              <Text>No contacts available</Text>
+                            )}
+                          </View>
+                        </ScrollView>
+
+                        <View style={styles.buttonGroup}>
+                          <Button
+                            title="Update"
+                            onPress={handleUpdateContact}
+                            altText="Update Edit"
+                          />
+                        </View>
+                      </View>
+                    )}
                   </View>
                 </View>
-              )}
-            </View>
-          </View>
-        </View>
-      </Modal>
-
-      {/* Add Contact Modal */}
-      <Modal
-        animationType="slide"
-        transparent={true}
-        visible={isAddContactModalVisible}
-        onRequestClose={hideAddContactModal}
-      >
-        <View style={styles.overlay} />
-        <View style={styles.modalContainer}>
-          <View style={styles.modalCard}>
-            <Text style={styles.trustedContact}>Add New Contact</Text>
-            <View>
-              <InputText
-                // style={styles.input}
-                label={"Name"}
-                placeholder="Name"
-                value={newContactData.name}
-                onChangeText={(text) =>
-                  setNewContactData({ ...newContactData, name: text })
-                }
-              />
-
-              {nameError && <Text style={styles.errorText}>{nameError}</Text>}
-            </View>
-            <View>
-              <InputText
-                label={"Number"}
-                placeholder="0712345678"
-                value={newContactData.phoneNumber}
-                onChangeText={(text) => {
-                  setNewContactData({ ...newContactData, phoneNumber: text });
-                  validatePhoneNumber(text);
-                }}
-              />
-              {!isPhoneNumberValid && (
-                <Text style={styles.errorText}>
-                  Please enter a valid phone number
-                </Text>
-              )}
-              {phoneError && <Text style={styles.errorText}>{phoneError}</Text>}
-            </View>
-
-            <View>
-              <InputText
-                label={"Relationship"}
-                placeholder="Relationship"
-                value={newContactData.relationship}
-                onChangeText={(text) =>
-                  setNewContactData({ ...newContactData, relationship: text })
-                }
-              />
-              {relationshipError && (
-                <Text style={styles.errorText}>{relationshipError}</Text>
-              )}
-            </View>
-
-            <View style={styles.buttonGroup}>
-              <Button
-                title="Add Contact"
-                onPress={handleAddContact}
-                altText="Add Contact"
-              />
-            </View>
-          </View>
-        </View>
-      </Modal>
-
-      {/* View Contacts Pseudo Bottom Sheet */}
-      <Modal
-        animationType="slide"
-        transparent={true}
-        visible={isViewContactModalVisible}
-        onRequestClose={hideViewContactModal}
-      >
-        <View style={styles.bottomSheet2}>
-          <View style={styles.contactCard}>
-            <View style={styles.container}>
-              <View style={styles.contactList}>
-                {selectedContact ? (
-                  <View style={styles.textContent}>
-                    {/* <Text style={styles.title}>Trusted Contacts</Text> */}
-                    <Text style={styles.trustedContact}>
-                      {selectedContact.name}
-                    </Text>
-                    <Text style={styles.textContent}>
-                      {selectedContact.phoneNumber}
-                    </Text>
-                    <View>
-                      <Button2
-                        title="Update Contact"
-                        onPress={showUpdateModal}
-                        altText="Update Contact"
-                        textColor={"#f2f2f2"}
-                      />
-                      <Button2
-                        title="Remove Contact"
-                        onPress={() => handleRemoveContact(selectedContact.id)}
-                        altText="Remove Contact"
-                        textColor={"#ff2323"}
-                      />
-                    </View>
-                  </View>
-                ) : (
-                  <Text style={{ color: "#ff2323", textAlign: "center" }}>
-                    No contact selected
-                  </Text>
-                )}
               </View>
-              <Text>
-                <Text>{"\n"}</Text>
-              </Text>
-            </View>
+            </Modal>
+
+            {/* Add Contact Modal */}
+            <Modal
+              animationType="slide"
+              transparent={true}
+              visible={isAddContactModalVisible}
+              onRequestClose={hideAddContactModal}
+            >
+              <View style={styles.overlay} />
+              <View style={styles.modalContainer}>
+                <View style={styles.modalCard}>
+                  <Text style={styles.trustedContact}>Add New Contact</Text>
+                  <View>
+                    <InputText
+                      // style={styles.input}
+                      label={"Name"}
+                      placeholder="Name"
+                      value={newContactData.name}
+                      onChangeText={(text) =>
+                        setNewContactData({ ...newContactData, name: text })
+                      }
+                    />
+
+                    {nameError && <Text style={styles.errorText}>{nameError}</Text>}
+                  </View>
+                  <View>
+                    <InputText
+                      label={"Number"}
+                      placeholder="0712345678"
+                      value={newContactData.phoneNumber}
+                      onChangeText={(text) => {
+                        setNewContactData({ ...newContactData, phoneNumber: text });
+                        validatePhoneNumber(text);
+                      }}
+                    />
+                    {!isPhoneNumberValid && (
+                      <Text style={styles.errorText}>
+                        Please enter a valid phone number
+                      </Text>
+                    )}
+                    {phoneError && <Text style={styles.errorText}>{phoneError}</Text>}
+                  </View>
+
+                  <View>
+                    <InputText
+                      label={"Relationship"}
+                      placeholder="Relationship"
+                      value={newContactData.relationship}
+                      onChangeText={(text) =>
+                        setNewContactData({ ...newContactData, relationship: text })
+                      }
+                    />
+                    {relationshipError && (
+                      <Text style={styles.errorText}>{relationshipError}</Text>
+                    )}
+                  </View>
+
+                  <TouchableOpacity style={styles.addContactButton} onPress={() => handleAddContact()}>
+                    <Text>Add Contact</Text>
+                  </TouchableOpacity>
+                </View>
+              </View>
+            </Modal>
+
+            {/* View Contacts Pseudo Bottom Sheet */}
+            <BottomSheetModal
+              ref={bottomSheetModalRef}
+              index={1}
+              snapPoints={snapPoints}
+              backgroundStyle={{ borderRadius: 50, backgroundColor: '#002E15' }}
+              onDismiss={() => setOpenContact(false)}
+            >
+              <View style={styles.contentContainer}>
+
+                {modalData && (
+                  <View >  
+
+                    <Text style={{ color: 'white' }}>{modalData.name}</Text>
+                    <Text style={{ color: 'white' }}>{modalData.phoneNumber}</Text>
+                      <TouchableOpacity  onPress={showUpdateModal} ><Text style={{ color: 'white' }}>Update contact</Text></TouchableOpacity>
+                <TouchableOpacity onPress={() => handleRemoveContact(modalData.id)}><Text style={{ color: 'red' }}>Remove Contact</Text></TouchableOpacity>
+                  </View>
+                )}
+
+
+              
+              </View>
+            </BottomSheetModal>
+            <Modal
+              animationType="slide"
+              transparent={true}
+              visible={isViewContactModalVisible}
+              onRequestClose={hideViewContactModal}
+            >
+              <View style={styles.bottomSheet2}>
+                <View style={styles.contactCard}>
+                  <View style={styles.container}>
+                    <View style={styles.contactList}>
+                      {selectedContact ? (
+                        <View style={styles.textContent}>
+                          {/* <Text style={styles.title}>Trusted Contacts</Text> */}
+                          <Text style={styles.trustedContact}>
+                            {selectedContact.name}
+                          </Text>
+                          <Text style={styles.textContent}>
+                            {selectedContact.phoneNumber}
+                          </Text>
+                          <View>
+                            <Button2
+                              title="Update Contact"
+                              onPress={showUpdateModal}
+                              altText="Update Contact"
+                              textColor={"#f2f2f2"}
+                            />
+                            <Button2
+                              title="Remove Contact"
+                              onPress={() => handleRemoveContact(selectedContact.id)}
+                              altText="Remove Contact"
+                              textColor={"#ff2323"}
+                            />
+                          </View>
+                        </View>
+                      ) : (
+                        <Text style={{ color: "#ff2323", textAlign: "center" }}>
+                          No contact selected
+                        </Text>
+                      )}
+                    </View>
+                    <Text>
+                      <Text>{"\n"}</Text>
+                    </Text>
+                  </View>
+                </View>
+              </View>
+            </Modal>
+
           </View>
-        </View>
-      </Modal>
-    </View>
+
+        </BottomSheetModalProvider>
+      </GestureHandlerRootView>
+    </RootSiblingParent>
   );
 };
 
@@ -895,29 +986,14 @@ const styles = StyleSheet.create({
   //   padding: 40, // Adjust as needed
   // },
   bottomSheet: {
-    width: "100%",
-    display: "flex",
-    alignSelf: "stretch",
-    paddingHorizontal: 20,
-    paddingBottom: 20,
-    paddingTop: 30,
-    borderRadius: 25,
-    gap: 20,
-    backgroundColor: "#125127",
-    // alignItems: "flex-start",
-    justifyContent: "center",
-    textAlign: "center",
-    // for the shadows at the top
-    shadowColor: "#0000005a",
-    shadowOffset: { width: 0, height: -2 },
-    shadowOpacity: 0.5,
-    shadowRadius: 24,
-    elevation: 4,
-    flexDirection: "column",
-
-    // wrap text contents
-    wordWrap: "break-word",
-    flexWrap: "wrap",
+    position: 'absolute',
+    bottom: 0,
+    backgroundColor: '#125127',
+    width: '95%',
+    borderRadius: 20,
+    flexDirection: 'column',
+    justifyContent: 'flex-end',
+    margin: 5
   },
   bottomSheet2: {
     zIndex: 1,
@@ -970,7 +1046,6 @@ const styles = StyleSheet.create({
     margin: 30,
   },
   trustedContact: {
-    fontFamily: "Plus Jakarta Sans",
     fontSize: 20,
     fontWeight: "700",
     lineHeight: 25,
@@ -1135,14 +1210,10 @@ const styles = StyleSheet.create({
   },
   noUserText: {
     letterSpacing: 0.16,
-    color: "white",
-    // fontSize: 13,
-    textAlign: "center",
-    justifyContent: "center",
-    alignContent: "center",
-    width: "100%",
-    wordWrap: "break-word",
-    flexWrap: "wrap",
+    letterSpacing: 0.16,
+    color: 'white',
+    fontSize: 13,
+    textAlign: 'center'
   },
   // imported styles from Splash
   container: {
@@ -1178,13 +1249,13 @@ const styles = StyleSheet.create({
     backgroundColor: "#C8FFD7",
     alignItems: "center",
     height: 42,
-    width: "100%",
     justifyContent: "center",
     margin: 10,
+
   },
   BgImage: {
-    width: 180,
-    height: 200,
+    width: 100,
+    height: 100,
     // marginTop: -140,
     resizeMode: "cover",
     // marginVertical: 20,
@@ -1198,20 +1269,21 @@ const styles = StyleSheet.create({
   },
   textContent: {
     paddingHorizontal: 0,
-    wordWrap: "break-word",
     alignItems: "center",
     justifyContent: "center",
     textAlign: "left",
     gap: 20,
     color: "#f2f2f2",
-    wordWrap: "break-word",
     flexWrap: "wrap",
   },
   title: {
-    fontSize: 24,
-    fontWeight: "bold",
-    marginBottom: 5,
-    // color: "#f2f2f2",
+    fontWeight: "700",
+    letterSpacing: 0.5,
+    fontSize: 20,
+    color: 'white',
+    alignSelf: 'center',
+    marginBottom: 10,
+    marginTop: 30
   },
   text: {
     // fontSize: 14,
@@ -1278,6 +1350,23 @@ const styles = StyleSheet.create({
     color: "red",
     marginBottom: 10,
   },
+  contacts: {
+    // display: 'flex',
+    // flexDirection: 'row',
+    margin: 5,
+    // flexWrap: 'wrap'
+  },
+  chip: {
+    borderColor: 'white',
+    borderWidth: 1,
+    borderRadius: 50,
+    padding: 5,
+
+  },
+  name: {
+    color: 'white',
+    fontSize: 13
+  }
 });
 
 export default LandingScreen;

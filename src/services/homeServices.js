@@ -20,11 +20,11 @@ const initializeAuthState = () => {
   });
 };
 
-async function getContacts() {
+async function getContacts(user) {
+  console.log(user + 'from homwe ser');
   try {
     const collectionRef = collection(db, "emergency_contacts");
-    const q = query(collectionRef, where("userId", "==", currentUser));
-    console.log(currentUser);
+    const q = query(collectionRef, where("userId", "==", user.uid));
     const querySnapshot = await getDocs(q);
 
     const contacts = [];
@@ -33,9 +33,6 @@ async function getContacts() {
         contacts.push(data);
       });
 
-    // Filter contacts based on the current user's ID
-    // const filteredContacts = contacts.filter((contact) => contact.userId === currentUser);
-    //this returns true when the user has no contact because you are using filter method , please use firease filter
     console.log(contacts);
 
     return contacts;
@@ -51,9 +48,10 @@ async function addContact(newContact) {
     const docRef = await addDoc(collectionRef, newContact);
 
     const documentId = docRef.id;
-    await updateDoc(docRef, { id: documentId });
-
     console.log('Contact added successfully with ID:', documentId);
+
+   return await updateDoc(docRef, { id: documentId });
+
   } catch (error) {
     console.error('Error adding contact: ', error);
   }

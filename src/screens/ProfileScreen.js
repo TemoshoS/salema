@@ -4,7 +4,7 @@ import { useNavigation } from '@react-navigation/native';
 import { Button, Text, Card, Input } from 'react-native-elements';
 import { getAuth } from 'firebase/auth';
 import { getFirestore, doc, getDoc, setDoc } from 'firebase/firestore';
-import { signOutUser } from '../services/authService';
+import authService from '../services/authService';
 
 const ProfileScreen = () => {
   const navigation = useNavigation();
@@ -12,29 +12,33 @@ const ProfileScreen = () => {
   const [userDetails, setUserDetails] = useState(null);
   const [isDirty, setIsDirty] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const {registerUser, loginUser, resetPassword, signOutUser,checkUserLoggedIn,user} = authService()
+
   useEffect(() => {
-    const fetchUserDetails = async () => {
-      try {
-        const user = auth.currentUser;
-        if (user) {
-          const firestoreInstance = getFirestore();
-          const userDoc = await getDoc(doc(firestoreInstance, 'users', user.uid));
-          const userData = userDoc.data();
-          setUserDetails({
-            name: user.displayName,
-            email: user.email,
-            phone: userData?.PhoneNumber || '',
-            emergencyMessage: userData?.emergencyMessage || '',
-          });
-        } else {
-          setUserDetails(null);
-        }
-      } catch (error) {
-        console.error('Error fetching user details:', error);
-      }
-    };
-    fetchUserDetails();
-  }, [auth]);
+    console.log(user);
+    // const fetchUserDetails = async () => {
+    //   try {
+    //     // const user = auth.currentUser;
+    //     console.log(user);
+    //     if (user) {
+    //       const firestoreInstance = getFirestore();
+    //       const userDoc = await getDoc(doc(firestoreInstance, 'users', user.uid));
+    //       const userData = userDoc.data();
+    //       setUserDetails({
+    //         name: user.displayName,
+    //         email: user.email,
+    //         phone: userData?.PhoneNumber || '',
+    //         emergencyMessage: userData?.emergencyMessage || '',
+    //       });
+    //     } else {
+    //       setUserDetails(null);
+    //     }
+    //   } catch (error) {
+    //     console.error('Error fetching user details:', error);
+    //   }
+    // };
+    // fetchUserDetails();
+  }, []);
   const handleUpdateProfile = async () => {
     try {
       setIsLoading(true);
@@ -155,7 +159,6 @@ const ProfileScreen = () => {
     borderRadius: 10,
   },
   cardText: {
-    fontFamily: 'Plus Jakarta Sans',
     fontSize: 20,
     fontWeight: '700',
     lineHeight: 25,
@@ -168,7 +171,6 @@ const ProfileScreen = () => {
     marginBottom: 20,
   },
   input: {
-    fontFamily: 'Roboto',
     fontSize: 12,
     fontWeight: '400',
     lineHeight: 12,
@@ -189,7 +191,6 @@ const ProfileScreen = () => {
     marginBottom: 10,
   },
   legalText: {
-    fontFamily: 'Plus Jakarta Sans',
     fontSize: 20,
     fontWeight: '700',
     lineHeight: 25,

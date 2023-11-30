@@ -3,6 +3,7 @@ import {
   StyleSheet,
   Text,
   View,
+  ActivityIndicator
 } from "react-native";
 import { Ionicons } from '@expo/vector-icons'; 
 import InputText from "../components/InputText";
@@ -11,6 +12,7 @@ import { TouchableOpacity } from "react-native-gesture-handler";
 
 const ForgotPassword = ({onPress, closePasswordResetModal}) => {
   const [email, setEmail] = useState('');
+  const [loading, setLoading] = useState(false);
 
 
 const handleForgotPassword = async () => { 
@@ -32,13 +34,16 @@ const closeModal = () =>{
 
   return (
     <View style={styles.container}>
-      
-      {/* Reset Password Form Section */}
-      <View style={styles.resetForm}>
-        <TouchableOpacity style={styles.closeIcon} onPress={() => closeModal()}>
-        <Ionicons name="ios-close" size={24} color="black" />
+         <TouchableOpacity style={styles.closeIcon} onPress={() => closeModal()}>
+        <Ionicons name="ios-close" size={24} color="white" />
           </TouchableOpacity>
+         {loading ? (
+            <ActivityIndicator size="large" color="#0000ff" />
+          ) : ( 
+      <View style={styles.resetForm}>
+     
         <View style={styles.formContent}>
+       
           <Text style={styles.title}>Reset Password</Text>
 
           <InputText
@@ -57,7 +62,7 @@ const closeModal = () =>{
           </Text>
         </TouchableOpacity>
       </View> 
-      
+          )}
 
     </View>
   );
@@ -68,10 +73,11 @@ export default ForgotPassword;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    alignItems: "center",
+    // alignItems: "center",
     justifyContent: "center",
     // marginTop: 25,
     // paddingHorizontal: 8,
+    
   },
   
   title: {
@@ -137,7 +143,10 @@ const styles = StyleSheet.create({
     justifyContent:'center'
   },
   closeIcon:{
-    backgroundColor:'white'
+    alignContent:'flex-end',
+    alignSelf:'flex-end',
+    justifyContent:"flex-end",
+    margin:8,
   },
   linksContainer: {
     flexDirection: "row",

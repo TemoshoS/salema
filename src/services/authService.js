@@ -7,11 +7,20 @@ import {
   signInWithEmailAndPassword,
   sendPasswordResetEmail,
   onAuthStateChanged,
+  getReactNativePersistence
 } from "firebase/auth";
+// import { getAuth, signInWithEmailAndPassword } from '@react-native-firebase/auth';
+
+import ReactNativeAsyncStorage from '@react-native-async-storage/async-storage';
+import { useState, useEffect } from "react";
 
 
+const authService = ()  => {
+  
+const [user, setUser] = useState();
+const [isLoading, setIsLoading] = useState(false);
 
-const registerUser = async (email, password, displayName) => {
+  const registerUser = async (email, password, displayName) => {
   try {
     const userCredential = await createUserWithEmailAndPassword(
       auth,
@@ -30,17 +39,38 @@ const registerUser = async (email, password, displayName) => {
     throw error;
   }
 };
+const loadUserState = async () =>{
+  // return new Promise((resolve, reject) => {
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if (user) {
+        // console.log(user);
+        currentUser = user.uid;
+        setUser(user)
+        resolve(currentUser);
+      } else {
+        currentUser = null;
+        resolve(null);
+      }
+    });
+  // });
 
+}
 const loginUser = async (email, password) => {
+  
+  setIsLoading(true)
     try {
         const userCredential = await signInWithEmailAndPassword(
         getAuth(),
         email,
         password
         );
-    
+          // console.log(userCredential.user);
+          setUser(userCredential.user)
+          // console.log(user);
+          setIsLoading(false)
         return userCredential.user;
     } catch (error) {
+        console.log(error);
         throw error;
     }
     };
@@ -64,29 +94,47 @@ const signOutUser = async () => {
       throw error;
     }
   };
-
+   useEffect(() => {
+        // fetchData();
+        checkUserLoggedIn()
+        // console.log(user );
+    }, []);
 
 //check if user is logged in
-const checkUserLoggedIn = (callback) => {
-    
+// const checkUserLoggedIn =  async (callback) => {
+//     try {
+//       const user = await auth.currentUser;
+//       // console.log('init:', user);
+  
+//       if (user) {
+//         setUser(user);
+//       }
+  
+//       return user;
+//     } catch (error) {
+//       console.error('Error checking user login:', error);
+//       return null;
+//     }
+// }
 
-    const auth = getAuth();
-    onAuthStateChanged(auth, (user) => {
-      if (user) {
-        
-        const uid = user.uid;
-       
-      } else {
- 
-       
-      }
+const checkUserLoggedIn = async () => {
+  try {
+    const user = await auth.currentUser;
+    // console.log('init:', user);
 
-      
-    });
-    return unsubscribe;
-}
+    if (user) {
+      setUser(user);
+      return user;
+    }
 
+    return null;
+  } catch (error) {
+    console.error('Error checking user login:', error);
+    return null;
+  }
+};
 
-
-export { registerUser, loginUser, resetPassword, signOutUser,checkUserLoggedIn}
+ return { registerUser, loadUserState,loginUser, resetPassword, signOutUser,checkUserLoggedIn,user}
+};
+export default authService;
 

@@ -6,8 +6,10 @@ import {
   TextInput,
   View,
   TouchableOpacity,
+  ActivityIndicator,
   Modal,
 } from "react-native";
+import { Ionicons } from '@expo/vector-icons';
 import { auth } from "../services/firebaseService";
 import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
 import { Feather } from "@expo/vector-icons";
@@ -67,6 +69,7 @@ const RegistrationScreen = ({onLogin, onRegister,closeModal}) => {
 
   const handleRegister = async () => {
     try {
+      setLoading(true)
       // Reset previous validation errors and user exists message
       setNameError(null);
       setEmailError(null);
@@ -104,13 +107,17 @@ const RegistrationScreen = ({onLogin, onRegister,closeModal}) => {
 
       // Create a user using Firebase Authentication
       const user = await registerUser(email, password, name, phone);
+      if (user) {
+        console.log(user.email + 'register page');
+        closeModal()
+      }
+      setLoading(false);
 
       setName('');
       setEmail('');
       setPhoneNumber('');
       setPassword('');
       setReenterPassword('');
-      closeModal()
     } catch (error) {
       if (error.code === "auth/email-already-in-use") {
         setEmailError("Email is already in use");
@@ -133,7 +140,9 @@ const RegistrationScreen = ({onLogin, onRegister,closeModal}) => {
   return (
     <View style={styles.container}>
       {/* Signup Form */}
-
+ <TouchableOpacity style={styles.closeIcon} onPress={() => closeModal()}>
+        <Ionicons name="ios-close" size={24} color="white" />
+      </TouchableOpacity>
       <View style={styles.signupForm}>
         <View style={styles.formContent}>
           <Text style={styles.title}>Signup</Text>
@@ -453,6 +462,13 @@ const styles = StyleSheet.create({
     right: 0,
     position: "absolute",
   },
+  closeIcon: {
+    alignContent:'flex-end',
+    alignSelf:'flex-end',
+    justifyContent:"flex-end",
+    margin:8,
+  },
+
 });
 
 export default RegistrationScreen;
