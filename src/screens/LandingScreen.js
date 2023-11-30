@@ -495,15 +495,6 @@ const LandingScreen = ({ navigation, visible }) => {
         <BottomSheetModalProvider>
           <View style={styles.container}>
             {/* Backhground image */}
-            <TouchableOpacity
-              style={{ position: "absolute", top: 40, right: 0 }}
-              onPress={() => navigation.navigate("ProfileScreen")}
-            >
-              <Image
-                source={require("../../assets/profile.png")}
-                style={styles.profileicon}
-              />
-            </TouchableOpacity>
             <Image
               source={require("../../assets/Union.png")}
               style={styles.logoImg}
