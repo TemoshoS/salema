@@ -15,29 +15,31 @@ const ProfileScreen = () => {
   const {registerUser, loginUser, resetPassword, signOutUser,checkUserLoggedIn,user} = authService()
 
   useEffect(() => {
-    console.log(user);
-    // const fetchUserDetails = async () => {
-    //   try {
-    //     // const user = auth.currentUser;
-    //     console.log(user);
-    //     if (user) {
-    //       const firestoreInstance = getFirestore();
-    //       const userDoc = await getDoc(doc(firestoreInstance, 'users', user.uid));
-    //       const userData = userDoc.data();
-    //       setUserDetails({
-    //         name: user.displayName,
-    //         email: user.email,
-    //         phone: userData?.PhoneNumber || '',
-    //         emergencyMessage: userData?.emergencyMessage || '',
-    //       });
-    //     } else {
-    //       setUserDetails(null);
-    //     }
-    //   } catch (error) {
-    //     console.error('Error fetching user details:', error);
-    //   }
-    // };
-    // fetchUserDetails();
+  // initializeAuth()    
+    const fetchUserDetails = async () => {
+      try {
+        // const user = auth.currentUser;
+        const user = await checkUserLoggedIn();
+
+        console.log(user);
+        if (user) {
+          const firestoreInstance = getFirestore();
+          const userDoc = await getDoc(doc(firestoreInstance, 'users', user.uid));
+          const userData = userDoc.data();
+          setUserDetails({
+            name: user.displayName,
+            email: user.email,
+            phone: userData?.PhoneNumber || '',
+            emergencyMessage: userData?.emergencyMessage || '',
+          });
+        } else {
+          setUserDetails(null);
+        }
+      } catch (error) {
+        console.error('Error fetching user details:', error);
+      }
+    };
+    fetchUserDetails();
   }, []);
   const handleUpdateProfile = async () => {
     try {
@@ -77,7 +79,25 @@ const ProfileScreen = () => {
       console.error('Error signing out:', error);
     }
   };
+  const initializeAuth = async () => {
 
+    try {
+      const user = await checkUserLoggedIn();
+
+      if (user != null) {
+        setCurrentUser(user);
+        console.log("There is a user", user);
+      } else {
+        setContacts([]);
+        console.log("Not logged in user");
+      }
+    } catch (error) {
+      console.error("Error during authentication initialization:", error);
+    } finally {
+      setLoading(false);
+    }
+
+  };
   return (
     <View style={styles.container}>
       <View style={styles.cardContainer}>

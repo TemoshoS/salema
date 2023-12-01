@@ -24,19 +24,18 @@ import {
   updateContact,
   removeContact,
 } from "../services/homeServices";
-import { getAuth, onAuthStateChanged } from "@firebase/auth";
-import ReactNativeAsyncStorage from '@react-native-async-storage/async-storage';
+import ActiveIcon from '../../assets/activeIcon.svg';
+import ActivatingIcon from '../../assets/activatingIcon.svg';
+import InactiveIcon from '../../assets/inactiveIcon.svg';
+import { Ionicons } from '@expo/vector-icons'; 
 
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { RootSiblingParent } from 'react-native-root-siblings';
 
-import ShakeTrigger from "../services/ShakeTrigger";
-import TextField from "../components/TextField";
+
 import Button from "../components/Button";
 import Button2 from "../components/Button2";
-import ShakeFeedback from "../components/ShakeFeedback";
 import InputText from "../components/InputText";
-import { NavigationContainer } from "@react-navigation/native";
 import {
   createStackNavigator,
   CardStyleInterpolators,
@@ -75,7 +74,7 @@ const LandingScreen = ({ navigation, visible }) => {
   const [relationshipError, setRelationshipError] = useState(null);
   const [isShakeHandled, setIsShakeHandled] = useState(false);
   const [statusImageSource, setStatusImageSource] = useState(
-    require("../../assets/Inactive.png")
+    require("../../assets/inactiveIcon.png")
   );
   const [location, setLocation] = useState(null);
   const [isShakeDetected, setIsShakeDetected] = useState(false);
@@ -111,20 +110,24 @@ const LandingScreen = ({ navigation, visible }) => {
   useEffect(() => {
 
     initializeAuth();
+    // fetchContacts()
     const shakeHandler = async () => {
       console.log("Shake detected!");
-      const permissionResult = await getLocationPermission();
+      console.log(contacts);
+    
+          const permissionResult = await getLocationPermission();
 
-      if (permissionResult) {
-        const newLocation = permissionResult.userLocation;
-        setLocation(newLocation);
-        setShakeStatusModalVisible(true);
-        handleShake(true);
-        sendSMS(
-          "Emergency! I need help. My location: " +
-          `https://www.google.com/maps/?q=${newLocation.latitude},${newLocation.longitude}`
-        );
-      }
+          if (permissionResult) {
+            const newLocation = permissionResult.userLocation;
+            setLocation(newLocation);
+              setShakeStatusModalVisible(true);
+              handleShake(true);
+              sendSMS(
+                "Hi it's " + currentUser.displayName + " Emergency! I need help. My location: " +
+                `https://www.google.com/maps/?q=${newLocation.latitude},${newLocation.longitude}`
+              );
+            }
+    
     };
 
     ShakeEventExpo.addListener(shakeHandler);
@@ -384,9 +387,11 @@ const LandingScreen = ({ navigation, visible }) => {
   };
   const handleRemoveContact = async (contactId) => {
     try {
-      await removeContact(contactId);
-      fetchContacts();
-      hideViewContactModal();
+      await removeContact(contactId).then(() =>{
+        fetchContacts();
+        hideViewContactModal();
+      })
+      
     } catch (error) {
       console.error("Error removing contact: ", error);
     }
@@ -452,21 +457,22 @@ const LandingScreen = ({ navigation, visible }) => {
       setIsShakeHandled(true); // Set to true to indicate that shake is handled
 
       if (shakeDetected) {
+        // Set status image to main_icon.png for 5 seconds
+        setStatusImageSource(require("../../assets/activatingIcon.png"));
+
         // Show location modal
         setLocationModalVisible(true);
 
         sendNotification();
 
-        // Set status image to main_icon.png for 5 seconds
-        setStatusImageSource(require("../../assets/main_icon.png"));
-
+        
         // Reset shake detection after 5 seconds
         setTimeout(() => {
           setIsShakeHandled(false); // Reset shake detection
-          setStatusImageSource(require("../../assets/Inactive.png"));
-        }, 5000);
+          setStatusImageSource(require("../../assets/activeIcon.png"));
+        }, 500);
       } else {
-        setStatusImageSource(require("../../assets/Inactive.png"));
+        setStatusImageSource(require("../../assets/inactiveIcon.png"));
       }
     }
   };
@@ -477,8 +483,8 @@ const LandingScreen = ({ navigation, visible }) => {
 
       const notificationId = await Notifications.scheduleNotificationAsync({
         content: {
-          title: "Emergency Alert",
-          body: "This is an emergency alert",
+          title: "Salema",
+          body: "Alert has been sent to your contactss",
         },
         trigger: null,
       });
@@ -496,11 +502,11 @@ const LandingScreen = ({ navigation, visible }) => {
           <View style={styles.container}>
             {/* Backhground image */}
             <Image
-              source={require("../../assets/Union.png")}
+              source={require("../../assets/iconSalema.png")}
               style={styles.logoImg}
               accessibilityLabel="logo"
             />
-            <Text>Your safety is just a shake away</Text>
+            <Text style={{color:"gray",fontSize:16}}>Your safety just a shake away</Text>
             {/* Staus image */}
 
             <View style={styles.textContent}>
@@ -546,7 +552,7 @@ const LandingScreen = ({ navigation, visible }) => {
               //  User Is not null && Prompt to add contacts else display avaiable contacts
 
               <View style={styles.bottomSheet}>
-                <Text style={styles.title}>Trusted Contact</Text>
+                <Text style={[styles.title,{color:'white',marginTop:16}]}>Trusted Contacts</Text>
                 <View style={{ flexDirection: 'row', flexWrap: 'wrap' }}>
 
                   {contacts.length > 0 ? (
@@ -830,6 +836,9 @@ const LandingScreen = ({ navigation, visible }) => {
             >
               <View style={styles.overlay} />
               <View style={styles.modalContainer}>
+              <TouchableOpacity style={styles.closeIcon} onPress={() => setAddContactModalVisible(false)}>
+        <Ionicons name="ios-close" size={24} color="white" />
+      </TouchableOpacity>
                 <View style={styles.modalCard}>
                   <Text style={styles.trustedContact}>Add New Contact</Text>
                   <View>
@@ -1209,7 +1218,7 @@ const styles = StyleSheet.create({
   // imported styles from Splash
   container: {
     flex: 1,
-    // backgroundColor: "#fff",
+    backgroundColor: "#ffffff",
     alignItems: "center",
     justifyContent: "space-between",
     width: "100%",
@@ -1229,10 +1238,10 @@ const styles = StyleSheet.create({
   },
   logoImg: {
     // flex: 1,
-    width: 100,
-    height: 24,
-    marginTop: 24,
-    resizeMode: "contain",
+    width: 82,
+    height: 26,
+    // marginTop: 24,
+    // resizeMode: "contain",
     // marginVertical: 20,
   },
   addContactButton: {
@@ -1245,8 +1254,8 @@ const styles = StyleSheet.create({
 
   },
   BgImage: {
-    width: 100,
-    height: 100,
+    width: 150,
+    height: 150,
     // marginTop: -140,
     resizeMode: "cover",
     // marginVertical: 20,
@@ -1271,17 +1280,19 @@ const styles = StyleSheet.create({
     fontWeight: "700",
     letterSpacing: 0.5,
     fontSize: 20,
-    color: 'white',
+    color: 'black',
     alignSelf: 'center',
-    marginBottom: 10,
-    marginTop: 30
+    marginBottom: 16,
+    // marginTop:
+
   },
   text: {
     // fontSize: 14,
     fontWeight: "normal",
-    marginVertical: 5,
+    // marginVertical: 5,
     textAlign: "center",
     paddingHorizontal: 12,
+    color:'gray'
   },
   buttonSection: {
     width: "100%",
@@ -1351,13 +1362,19 @@ const styles = StyleSheet.create({
     borderColor: 'white',
     borderWidth: 1,
     borderRadius: 50,
-    padding: 5,
+    padding: 10,
 
   },
   name: {
     color: 'white',
     fontSize: 13
-  }
+  },
+  closeIcon: {
+    alignContent:'flex-end',
+    alignSelf:'flex-end',
+    justifyContent:"flex-end",
+    margin:8,
+  },
 });
 
 export default LandingScreen;

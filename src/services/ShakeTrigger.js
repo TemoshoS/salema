@@ -80,7 +80,7 @@ export const sendSMS = async (message) => {
 
     // Prepare SMS data
     const apiUrl = 'https://e1dypr.api.infobip.com/sms/2/text/advanced';
-    const authorizationToken = 'App ece5a5a8f136c21a74bf2657d89ef5dc-85888b0f-5329-4d8f-9c63-762c92741934';
+    const authorizationToken = 'App 1c6ca95c9dd24a428d5d7cc6c7f55645-bddd9eb3-dce0-4192-8fc9-e87627cc12d0';
 
     const postData = {
       messages: phoneNumbers.map((phoneNumber) => ({

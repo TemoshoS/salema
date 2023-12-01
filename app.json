@@ -1,13 +1,13 @@
 {
   "expo": {
-    "name": "salema",
+    "name": "Salema",
     "slug": "salema",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/icon.png",        
+    "icon": "./assets/iconSalema.png",        
     "userInterfaceStyle": "light",
     "splash": {
-      "image": "./assets/Union.png",      
+      "image": "./assets/iconSalema.png",      
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
@@ -19,7 +19,7 @@
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/adaptive-icon.png",    
+        "foregroundImage": "./assets/iconSalema.png",    
         "backgroundColor": "#ffffff"
       }
     },

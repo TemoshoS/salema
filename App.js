@@ -35,7 +35,7 @@ export default function App() {
         cardStyleInterpolator: CardStyleInterpolators.forVerticalIOS,  
         headerShadowVisible: false,
           headerTitle:"",
-          headerStyle: { backgroundColor: 'transparent' },
+          headerStyle: { backgroundColor: '#ffffff' },
         headerRight :() =>(
           <TouchableOpacity
           style={styles.avatar}
@@ -73,10 +73,16 @@ export default function App() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#fff",
+    backgroundColor: "#ffffff",
     alignItems: "center",
     justifyContent: "center",
     // paddingHorizontal: 8,
   },
+  avatar:{
+    width: 40,
+    height: 40,
+    justifyContent: "center",
+    alignItems: "center",
+}
 });
 
