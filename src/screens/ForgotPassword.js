@@ -9,6 +9,7 @@ import { Ionicons } from '@expo/vector-icons';
 import InputText from "../components/InputText";
 import { resetPassword } from "../services/authService";
 import { TouchableOpacity } from "react-native-gesture-handler";
+import Toast from "react-native-toast-message";
 
 const ForgotPassword = ({onPress, closePasswordResetModal}) => {
   const [email, setEmail] = useState('');
@@ -20,10 +21,24 @@ const handleForgotPassword = async () => {
   try {
     await resetPassword(email).then(() =>{
       closePasswordResetModal()
+
+      Toast.show({
+        type: 'success',
+        text1: 'Check your email for passowrd reset',
+        position: 'bottom',
+        visibilityTime: 3000
+      });
+      
     });
     // closeModal();
   } catch (error) {
     console.log("error, password reset failed");
+    Toast.show({
+      type: 'error',
+      text1: 'Email does not exist , Please enter valid email ',
+      position: 'bottom',
+      visibilityTime: 3000
+    });
   }
 }
 

@@ -21,6 +21,7 @@ import Button from "../components/Button";
 import Button2 from "../components/Button2";
 import InputText from "../components/InputText";
 import { initializeAuthState } from "../services/homeServices";
+import Toast from "react-native-toast-message";
 
 
 import { ShakeEventExpo , sendSMS} from '../services/ShakeTrigger';
@@ -255,8 +256,11 @@ const HomeScreen = ({ navigation }) => {
       fetchContacts();
       hideUpdateModal();
       setConfirmationVisible(false);
+
+   
     } catch (error) {
       console.error("Error updating contact: ", error);
+  
     }
   };
 
@@ -276,8 +280,22 @@ const HomeScreen = ({ navigation }) => {
       await removeContact(contactId);
       fetchContacts();
       hideConfirmation();
+      Toast.show({
+        type:'success',
+        position: 'bottom',
+        text1: 'Contact removed successful',
+        visibilityTime: 3000,
+      });
+
     } catch (error) {
       console.error("Error removing contact: ", error);
+      Toast.show({
+        type:'error',
+        position: 'bottom',
+        text1: 'Contact was not removed',
+        text2: 'Please try again ',
+        visibilityTime: 3000,
+      });
     }
   };
 
