@@ -419,6 +419,7 @@ const LandingScreen = ({ navigation, visible }) => {
   // Hide  Forgot/Reset Password  Modal
   const hideForgotPassModal = () => {
     setForgotPassModalVisible(false);
+  
   };
   // Hide  Contact Modal
   const hideViewContactModal = () => {

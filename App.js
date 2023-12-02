@@ -64,7 +64,7 @@ export default function App() {
        <Stack.Screen name='Splash' component={SplashScreen} options={{ headerShown: false}} />
        <Stack.Screen name='Home' component={HomeScreen} options={{ headerShown: false}} />
        </Stack.Navigator>
-       <ToastWrapper/>
+       {/* <ToastWrapper/> */}
       </NavigationContainer>
      
         

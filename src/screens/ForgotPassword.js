@@ -5,79 +5,79 @@ import {
   View,
   ActivityIndicator
 } from "react-native";
-import { Ionicons } from '@expo/vector-icons'; 
+import { Ionicons } from '@expo/vector-icons';
 import InputText from "../components/InputText";
 import { resetPassword } from "../services/authService";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import Toast from "react-native-toast-message";
 
-const ForgotPassword = ({onPress, closePasswordResetModal}) => {
+const ForgotPassword = ({ onPress, closePasswordResetModal }) => {
   const [email, setEmail] = useState('');
   const [loading, setLoading] = useState(false);
 
 
-const handleForgotPassword = async () => { 
+  const handleForgotPassword = async () => {
 
-  try {
-    await resetPassword(email).then(() =>{
-      closePasswordResetModal()
+    try {
+      await resetPassword(email).then(() => {
+        closePasswordResetModal()
 
+        Toast.show({
+          type: 'success',
+          text1: 'Check your email for passowrd reset',
+          position: 'bottom',
+          visibilityTime: 3000
+        });
+
+      });
+      // closeModal();
+    } catch (error) {
+      console.log("error, password reset failed");
       Toast.show({
-        type: 'success',
-        text1: 'Check your email for passowrd reset',
+        type: 'error',
+        text1: 'Email does not exist , Please enter valid email ',
         position: 'bottom',
         visibilityTime: 3000
       });
-      
-    });
-    // closeModal();
-  } catch (error) {
-    console.log("error, password reset failed");
-    Toast.show({
-      type: 'error',
-      text1: 'Email does not exist , Please enter valid email ',
-      position: 'bottom',
-      visibilityTime: 3000
-    });
+    }
   }
-}
 
-const closeModal = () =>{
-  closePasswordResetModal()
- 
-}
+  const closeModal = () => {
+    closePasswordResetModal()
+
+  }
 
   return (
     <View style={styles.container}>
-         <TouchableOpacity style={styles.closeIcon} onPress={() => closeModal()}>
+      <TouchableOpacity style={styles.closeIcon} onPress={() => closeModal()}>
         <Ionicons name="ios-close" size={24} color="white" />
+      </TouchableOpacity>
+      {loading ? (
+        <ActivityIndicator size="large" color="#0000ff" />
+      ) : (
+        <View style={styles.resetForm}>
+
+          <View style={styles.formContent}>
+
+            <Text style={styles.title}>Reset Password</Text>
+
+            <InputText
+              value={email}
+              onChangeText={(text) => setEmail(text)}
+              placeholder="existingEmail@123.com"
+              placeholderTextColor="#f2f2f2"
+              label={"Email"}
+            />
+          </View>
+
+
+          <TouchableOpacity onPress={() => handleForgotPassword()} style={styles.resetButton}>
+            <Text>
+              Reset Password
+            </Text>
           </TouchableOpacity>
-         {loading ? (
-            <ActivityIndicator size="large" color="#0000ff" />
-          ) : ( 
-      <View style={styles.resetForm}>
-     
-        <View style={styles.formContent}>
-       
-          <Text style={styles.title}>Reset Password</Text>
-
-          <InputText
-            value={email}
-            onChangeText={(text) => setEmail(text)}
-            placeholder="existingEmail@123.com"
-            placeholderTextColor="#f2f2f2"
-            label={"Email"}
-          />
         </View>
-
-        
-        <TouchableOpacity onPress={() => handleForgotPassword()} style={styles.resetButton}>
-          <Text>
-            Reset Password
-          </Text>
-        </TouchableOpacity>
-      </View> 
-          )}
+      )}
 
     </View>
   );
@@ -92,9 +92,9 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     // marginTop: 25,
     // paddingHorizontal: 8,
-    
+
   },
-  
+
   title: {
     fontSize: 24,
     fontWeight: "bold",
@@ -154,14 +154,14 @@ const styles = StyleSheet.create({
     fontWeight: "500",
     lineHeight: 26,
     letterSpacing: 0.5,
-    alignItems:"center",
-    justifyContent:'center'
+    alignItems: "center",
+    justifyContent: 'center'
   },
-  closeIcon:{
-    alignContent:'flex-end',
-    alignSelf:'flex-end',
-    justifyContent:"flex-end",
-    margin:8,
+  closeIcon: {
+    alignContent: 'flex-end',
+    alignSelf: 'flex-end',
+    justifyContent: "flex-end",
+    margin: 8,
   },
   linksContainer: {
     flexDirection: "row",
@@ -210,6 +210,6 @@ const styles = StyleSheet.create({
     width: "100%",
     gap: 6,
   },
-  
- 
+
+
 });
