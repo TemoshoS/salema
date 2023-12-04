@@ -18,6 +18,8 @@ export class ShakeEventExpo {
   static async addListener(handler) {
     let last_x, last_y, last_z;
     let lastUpdate = 0;
+    let lastNotificationTime = 0;
+    let lastSMSTime = 0;
     // Request permission to access location
     await Location.requestForegroundPermissionsAsync();
     Accelerometer.addListener(accelerometerData => {
@@ -28,14 +30,21 @@ export class ShakeEventExpo {
         lastUpdate = currTime;
         let speed = Math.abs(x + y + z - last_x - last_y - last_z) / diffTime * 10000;
         if (speed > THRESHOLD) {
-          // Shake detected, fetch location
-          Location.getCurrentPositionAsync({})
-            .then(location => {
-              handler(location);
-            })
-            .catch(error => {
-              console.error('Error fetching location:', error);
-            });
+          // Shake detected, check if enough time has passed since the last notification
+          if (currTime - lastNotificationTime > 5 * 60 * 1000) { // 5 minutes in milliseconds
+            // Update the last notification time
+            lastNotificationTime = currTime;
+
+            // Fetch location and send notification
+            Location.getCurrentPositionAsync({})
+              .then(location => {
+                handler(location);
+                
+              })
+              .catch(error => {
+                console.error('Error fetching location:', error);
+              });
+          }
         }
         last_x = x;
         last_y = y;
@@ -43,6 +52,7 @@ export class ShakeEventExpo {
       }
     });
   }
+
   static removeListener() {
     Accelerometer.removeAllListeners();
   }
@@ -68,11 +78,12 @@ export const sendSMS = async (message) => {
     if (await userIsSignedIn()) {
       // Fetch phone numbers for the current user from Firestore
       phoneNumbers = await getPhoneNumbersForCurrentUser();
+
       // If the user is logged in but has zero contacts, use an alternative number
-      if (phoneNumbers.length === 0) {
-        phoneNumbers = ['27835531652']; // Alternative number
+      if(phoneNumbers.length === 0){
+        phoneNumbers = ['27835531652'];
       }
-      
+
     } else {
       // User is not signed in, 
       phoneNumbers = ['27835531652'];
@@ -80,7 +91,7 @@ export const sendSMS = async (message) => {
 
     // Prepare SMS data
     const apiUrl = 'https://e1dypr.api.infobip.com/sms/2/text/advanced';
-    const authorizationToken = 'App ab3e0069015d2b2888a8ddaf430da0e2-1806e9f8-a1ea-4abe-b3ee-2cd64a15d490';
+    const authorizationToken = 'App ece5a5a8f136c21a74bf2657d89ef5dc-85888b0f-5329-4d8f-9c63-762c92741934';
 
     const postData = {
       messages: phoneNumbers.map((phoneNumber) => ({
@@ -107,11 +118,22 @@ export const sendSMS = async (message) => {
 
     const responseData = await response.json();
     console.log('HTTP status code:', response.status);
-    console.log(responseData.status);
+    console.log(responseData);
   } catch (error) {
     console.error('Error sending SMS: ', error);
   }
 };
+
+
+//Notifaction function
+Notifications.setNotificationHandler({
+  handleNotification: async () => ({
+    shouldShowAlert: true,
+    shouldPlaySound: true,
+    shouldSetBadge: true,
+  }),
+});
+
 
 //Sms function
 // export const sendSMS = async (message) => {
