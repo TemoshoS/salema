@@ -8,6 +8,7 @@ import Button from "../components/Button";
 import InputText from "../components/InputText";
 import authService from "../services/authService";
 import { Ionicons } from '@expo/vector-icons';
+import Toast from 'react-native-toast-message';
 
 
 const LoginScreen = ({ onRegister, onLogin, onForgotPass, closeModal, openRegister, }) => {
@@ -28,11 +29,25 @@ const LoginScreen = ({ onRegister, onLogin, onForgotPass, closeModal, openRegist
       }
       setLoading(false);
 
+        Toast.show({
+        type: 'success',
+        text1: 'Login Successful',
+        visibilityTime: 3000, 
+      });
+
     } catch (error) {
       Alert.alert(error.message);
       console.log(error);
       setLoginAttempts(loginAttempts + 1);
       setLoading(false)
+      
+      Toast.show({
+        type: 'error',
+        text1: 'Inccorect email or password',
+        text2: 'Please try again ',
+        visibilityTime: 3000,
+      })
+    
 
       // Check if login attempts exceed the limit (e.g., 3)
       if (loginAttempts >= 2) {

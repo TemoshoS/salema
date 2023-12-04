@@ -13,7 +13,7 @@ import WelcomeScreen from './src/screens/WelcomeScreen';
 import HeaderProfileButton from './src/components/headerProfileButton';
 import Button from './src/components/Button';
 // import PasswordReset from './src/components/PasswordReset';
-
+import Toast from 'react-native-toast-message';
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -64,7 +64,7 @@ export default function App() {
        <Stack.Screen name='Splash' component={SplashScreen} options={{ headerShown: false}} />
        <Stack.Screen name='Home' component={HomeScreen} options={{ headerShown: false}} />
        </Stack.Navigator>
-       {/* <ToastWrapper/> */}
+       <Toast ref={(ref) => Toast.setRef(ref)} />
       </NavigationContainer>
      
         

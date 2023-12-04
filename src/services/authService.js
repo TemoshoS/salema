@@ -13,6 +13,7 @@ import {
 
 import ReactNativeAsyncStorage from '@react-native-async-storage/async-storage';
 import { useState, useEffect } from "react";
+import Toast from "react-native-toast-message";
 
 
 const authService = ()  => {
@@ -67,7 +68,10 @@ const loginUser = async (email, password) => {
           // console.log(userCredential.user);
           setUser(userCredential.user)
           // console.log(user);
+        
           setIsLoading(false)
+          
+    
         return userCredential.user;
     } catch (error) {
         console.log(error);

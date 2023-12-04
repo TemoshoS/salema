@@ -5,6 +5,7 @@ import { Button, Text, Card, Input } from 'react-native-elements';
 import { getAuth } from 'firebase/auth';
 import { getFirestore, doc, getDoc, setDoc } from 'firebase/firestore';
 import authService from '../services/authService';
+import Toast from 'react-native-toast-message';
 
 const ProfileScreen = () => {
   const navigation = useNavigation();
@@ -60,6 +61,11 @@ const ProfileScreen = () => {
         name: user.displayName,
       });
       setIsDirty(false);
+      Toast.show({
+        type: 'success',
+        text1: 'Profile Updated',
+        visibilityTime: 3000,
+      });
     } catch (error) {
       console.error('Error updating user details:', error);
     } finally {
@@ -69,14 +75,31 @@ const ProfileScreen = () => {
   const handleInputChange = (field, text) => {
     setUserDetails({ ...userDetails, [field]: text });
     setIsDirty(true);
+    Toast.show({
+      type: 'error',
+      text1: 'Error Updating Profile',
+      text2: 'An error occurred. Please try again later.',
+      visibilityTime: 3000,
+    });
   };
 
   const handleSignOut = async () => {
     try {
       await signOutUser();
       navigation.navigate('LandingPage');
+      Toast.show({
+        type: 'success',
+        text1: 'Signed Out Successfully',
+        visibilityTime: 3000,
+      });
     } catch (error) {
       console.error('Error signing out:', error);
+      Toast.show({
+        type: 'error',
+        text1: 'Error Signing Out',
+        text2: 'An error occurred. Please try again later.',
+        visibilityTime: 3000,
+      });
     }
   };
   const initializeAuth = async () => {

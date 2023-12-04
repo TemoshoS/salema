@@ -54,6 +54,7 @@ import * as Notifications from "expo-notifications";
 import ForgotPassModal from "../components/ForgotPassModal";
 import ForgotPassword from "./ForgotPassword";
 import authService from "../services/authService";
+import Toast from 'react-native-toast-message';
 
 const LandingScreen = ({ navigation, visible }) => {
   const { registerUser, loginUser, resetPassword, signOutUser, checkUserLoggedIn, user } = authService()
@@ -299,6 +300,14 @@ const LandingScreen = ({ navigation, visible }) => {
       await addContact(contactWithUserId).then(() => {
         setLoading(false)
       });
+
+      Toast.show({
+        type: 'success',
+        text1: 'Contact Added',
+        visibilityTime: 3000,
+      });
+    
+      
       fetchContacts().then(() => {
 
       });
@@ -368,6 +377,11 @@ const LandingScreen = ({ navigation, visible }) => {
       fetchContacts();
       hideUpdateModal();
       setConfirmationVisible(false);
+      Toast.show({
+        type:'success',
+        text1: 'Succesfully update updated the emergency contact',
+        visibilityTime: 3000
+      })
     } catch (error) {
       console.error("Error updating contact: ", error);
     }
@@ -390,10 +404,21 @@ const LandingScreen = ({ navigation, visible }) => {
       await removeContact(contactId).then(() =>{
         fetchContacts();
         hideViewContactModal();
+        Toast.show({
+          type: 'success',
+          text1: 'Emergency contact removed successful',
+          visibilityTime: 3000,
+        });
       })
       
     } catch (error) {
       console.error("Error removing contact: ", error);
+      Toast.show({
+        type: 'error',
+        text1: 'Emergecny contact not removed',
+        text2: 'Please try again',
+        visibilityTime: 3000,
+      });
     }
   };
 
