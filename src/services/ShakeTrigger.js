@@ -19,7 +19,7 @@ export class ShakeEventExpo {
     let last_x, last_y, last_z;
     let lastUpdate = 0;
     let lastNotificationTime = 0;
-    let lastSMSTime = 0;
+    
     // Request permission to access location
     await Location.requestForegroundPermissionsAsync();
     Accelerometer.addListener(accelerometerData => {
