@@ -27,7 +27,7 @@ import {
 import ActiveIcon from '../../assets/activeIcon.svg';
 import ActivatingIcon from '../../assets/activatingIcon.svg';
 import InactiveIcon from '../../assets/inactiveIcon.svg';
-import { Ionicons } from '@expo/vector-icons'; 
+import { Ionicons } from '@expo/vector-icons';
 
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { RootSiblingParent } from 'react-native-root-siblings';
@@ -102,7 +102,7 @@ const LandingScreen = ({ navigation, visible }) => {
     relationship: "",
   });
   const bottomSheetModalRef = useRef(null);
-  const snapPoints = ["15%", "25%"];
+  const snapPoints = ["20%", "35%"];
   const [isOpenContact, setOpenContact] = useState(false);
   const [modalData, setModalData] = useState(null);
 
@@ -115,20 +115,20 @@ const LandingScreen = ({ navigation, visible }) => {
     const shakeHandler = async () => {
       console.log("Shake detected!");
       console.log(contacts);
-    
-          const permissionResult = await getLocationPermission();
 
-          if (permissionResult) {
-            const newLocation = permissionResult.userLocation;
-            setLocation(newLocation);
-              setShakeStatusModalVisible(true);
-              handleShake(true);
-              sendSMS(
-                "Hi it's " + currentUser.displayName + " Emergency! I need help. My location: " +
-                `https://www.google.com/maps/?q=${newLocation.latitude},${newLocation.longitude}`
-              );
-            }
-    
+      const permissionResult = await getLocationPermission();
+
+      if (permissionResult) {
+        const newLocation = permissionResult.userLocation;
+        setLocation(newLocation);
+        setShakeStatusModalVisible(true);
+        handleShake(true);
+        sendSMS(
+          "Hi it's " + currentUser.displayName + " Emergency! I need help. My location: " +
+          `https://www.google.com/maps/?q=${newLocation.latitude},${newLocation.longitude}`
+        );
+      }
+
     };
 
     ShakeEventExpo.addListener(shakeHandler);
@@ -194,6 +194,7 @@ const LandingScreen = ({ navigation, visible }) => {
   };
 
   const showUpdateModal = () => {
+    bottomSheetModalRef.current?.close();
     setUpdateModalVisible(true);
     hideViewContactModal();
   };
@@ -202,6 +203,7 @@ const LandingScreen = ({ navigation, visible }) => {
 
     bottomSheetModalRef.current?.present();
     setModalData(contact);
+
 
     setTimeout(() => {
       setOpenContact(true);
@@ -306,8 +308,8 @@ const LandingScreen = ({ navigation, visible }) => {
         text1: 'Contact Added',
         visibilityTime: 3000,
       });
-    
-      
+
+
       fetchContacts().then(() => {
 
       });
@@ -338,47 +340,47 @@ const LandingScreen = ({ navigation, visible }) => {
 
   const handleUpdateContact = async () => {
     try {
-      if (!selectedContact) {
-        console.error("No contact selected for update");
-        return;
-      }
+      // if (!selectedContact) {
+      //   console.error("No contact selected for update");
+      //   return;
+      // }
+      console.log(modalData.id);
 
-      if (!selectedContact.id) {
+      if (!modalData.id) {
         console.error("Selected contact has no valid ID");
         return;
       }
 
-      if (!updatedContactData) {
+      if (!modalData) {
         console.error("No updated data provided");
         return;
       }
-      if (!updatedContactData.name) {
+      if (!modalData.name) {
         setNameError('Please enter Name');
         return;
       }
       else {
         setNameError(null);
       }
-      if (!updatedContactData.phoneNumber) {
+      if (!modalData.phoneNumber) {
         setPhoneError('Please enter Phone number');
         return;
       }
       {
         setPhoneError(null);
       }
-      if (!updatedContactData.relationship) {
+      if (!modalData.relationship) {
         setRelationshipError('Please enter Relationship');
         return;
       } else {
         setRelationshipError(null);
       }
-
-      await updateContact(selectedContact.id, updatedContactData);
+      await updateContact(modalData.id, modalData);
       fetchContacts();
       hideUpdateModal();
       setConfirmationVisible(false);
       Toast.show({
-        type:'success',
+        type: 'success',
         text1: 'Succesfully update updated the emergency contact',
         visibilityTime: 3000
       })
@@ -401,7 +403,7 @@ const LandingScreen = ({ navigation, visible }) => {
   };
   const handleRemoveContact = async (contactId) => {
     try {
-      await removeContact(contactId).then(() =>{
+      await removeContact(contactId).then(() => {
         fetchContacts();
         hideViewContactModal();
         Toast.show({
@@ -410,7 +412,7 @@ const LandingScreen = ({ navigation, visible }) => {
           visibilityTime: 3000,
         });
       })
-      
+
     } catch (error) {
       console.error("Error removing contact: ", error);
       Toast.show({
@@ -444,7 +446,7 @@ const LandingScreen = ({ navigation, visible }) => {
   // Hide  Forgot/Reset Password  Modal
   const hideForgotPassModal = () => {
     setForgotPassModalVisible(false);
-  
+
   };
   // Hide  Contact Modal
   const hideViewContactModal = () => {
@@ -491,7 +493,7 @@ const LandingScreen = ({ navigation, visible }) => {
 
         sendNotification();
 
-        
+
         // Reset shake detection after 5 seconds
         setTimeout(() => {
           setIsShakeHandled(false); // Reset shake detection
@@ -510,7 +512,7 @@ const LandingScreen = ({ navigation, visible }) => {
       const notificationId = await Notifications.scheduleNotificationAsync({
         content: {
           title: "Salema",
-          body: "Alert has been sent to your contactss",
+          body: "Alert has been sent to your contacts",
         },
         trigger: null,
       });
@@ -532,22 +534,22 @@ const LandingScreen = ({ navigation, visible }) => {
               style={styles.logoImg}
               accessibilityLabel="logo"
             />
-            <Text style={{color:"gray",fontSize:16}}>Your safety just a shake away</Text>
+            <Text style={{ color: "gray", fontSize: 16 }}>Your safety just a shake away</Text>
             {/* Staus image */}
 
-            <View style={styles.textContent}>
-              <Image
-                source={statusImageSource}
-                style={styles.BgImage}
-                accessibilityLabel="status signal image"
-              />
+            {/* <View style={styles.textContent}> */}
+            <Image
+              source={statusImageSource}
+              style={styles.BgImage}
+              accessibilityLabel="status signal image"
+            />
 
-              <Text style={styles.title}>"Shake to Alert"</Text>
-              <Text style={styles.text}>
-                In an emergency, every second counts, just give your phone a quick
-                shake to send out an alert to your chosen contacts
-              </Text>
-            </View>
+            <Text style={styles.title}>"Shake to Alert"</Text>
+            <Text style={styles.text}>
+              In an emergency, every second counts, just give your phone a quick
+              shake to send out an alert to your chosen contacts
+            </Text>
+            {/* </View> */}
 
             <Image
               source={require("../../assets/undraw.png")}
@@ -578,7 +580,7 @@ const LandingScreen = ({ navigation, visible }) => {
               //  User Is not null && Prompt to add contacts else display avaiable contacts
 
               <View style={styles.bottomSheet}>
-                <Text style={[styles.title,{color:'white',marginTop:16}]}>Trusted Contacts</Text>
+                <Text style={[styles.title, { color: 'white', marginTop: 16 }]}>Trusted Contacts</Text>
                 <View style={{ flexDirection: 'row', flexWrap: 'wrap' }}>
 
                   {contacts.length > 0 ? (
@@ -594,9 +596,9 @@ const LandingScreen = ({ navigation, visible }) => {
                     <>
                       {loadContacts ?
                         (
-                          <>
-                            <ActivityIndicator size="large" color="#0000ff" />
-                          </>
+                          <View>
+                            <ActivityIndicator size="large" color="#00000" />
+                          </View>
                         )
                         : (<>
                           <View style={{ margin: 15, alignItems: 'center' }}>
@@ -693,7 +695,7 @@ const LandingScreen = ({ navigation, visible }) => {
                     style={styles.updateButton}
                     onPress={handleUpdateContact}
                   >
-                    <Text style={styles.buttonText}>UPDATE CONTACT</Text>
+                    <Text style={styles.buttonText}>UPDATE jCONTACT</Text>
                   </TouchableOpacity>
 
                   <TouchableOpacity
@@ -712,18 +714,18 @@ const LandingScreen = ({ navigation, visible }) => {
               visible={isLoginModalVisible}
               animationType="slide"
               onRequestClose={() => setLoginModalVisible(true)}
-           
+
             >
               <View style={styles.modalContainer}>
                 {/* <View style={styles.card}> */}
-                  <LoginScreen
-                    modalVisible={isLoginModalVisible}
-                    closeModal={() => hideLoginModal()}
-                    openRegister={() => showSignupModal()}
-                    onForgotPass={showForgotPassModal}
-                  // style={{width: 10,margin: 10,}}
-                  />
-                </View>
+                <LoginScreen
+                  modalVisible={isLoginModalVisible}
+                  closeModal={() => hideLoginModal()}
+                  openRegister={() => showSignupModal()}
+                  onForgotPass={showForgotPassModal}
+                // style={{width: 10,margin: 10,}}
+                />
+              </View>
               {/* </View> */}
             </Modal>
 
@@ -764,6 +766,9 @@ const LandingScreen = ({ navigation, visible }) => {
             >
               <View style={styles.overlay} />
               <View style={styles.modalContainer}>
+              <TouchableOpacity style={styles.closeIcon} onPress={() => setUpdateModalVisible(false)}>
+                  <Ionicons name="ios-close" size={24} color="white" />
+                </TouchableOpacity>
                 <View style={styles.modalCard}>
                   <Text style={styles.trustedContact}>Edit Contact</Text>
                   <View>
@@ -773,20 +778,20 @@ const LandingScreen = ({ navigation, visible }) => {
                           style={styles.input}
                           placeholder="Name"
                           value={modalData.name}
-                          onChangeText={(text) =>
-                            setUpdatedContactData({
-                              ...updatedContactData,
+                          onChangeText={(text) => {
+                            setModalData({
+                              ...modalData,
                               name: text,
                             })
-                          }
+                          }}
                         />
                         <InputText
                           style={styles.input}
                           placeholder="Phone Number"
                           value={modalData.phoneNumber}
                           onChangeText={(text) =>
-                            setUpdatedContactData({
-                              ...updatedContactData,
+                            setModalData({
+                              ...modalData,
                               phoneNumber: text,
                             })
                           }
@@ -796,8 +801,8 @@ const LandingScreen = ({ navigation, visible }) => {
                           placeholder="Relationship"
                           value={modalData.relationship}
                           onChangeText={(text) =>
-                            setUpdatedContactData({
-                              ...updatedContactData,
+                            setModalData({
+                              ...modalData,
                               relationship: text,
                             })
                           }
@@ -839,13 +844,10 @@ const LandingScreen = ({ navigation, visible }) => {
                           </View>
                         </ScrollView>
 
-                        <View style={styles.buttonGroup}>
-                          <Button
-                            title="Update"
-                            onPress={handleUpdateContact}
-                            altText="Update Edit"
-                          />
-                        </View>
+
+                          <TouchableOpacity style={styles.addContactButton} onPress={() => handleUpdateContact()}>
+                            <Text>Update</Text>
+                          </TouchableOpacity>
                       </View>
                     )}
                   </View>
@@ -862,9 +864,9 @@ const LandingScreen = ({ navigation, visible }) => {
             >
               <View style={styles.overlay} />
               <View style={styles.modalContainer}>
-              <TouchableOpacity style={styles.closeIcon} onPress={() => setAddContactModalVisible(false)}>
-        <Ionicons name="ios-close" size={24} color="white" />
-      </TouchableOpacity>
+                <TouchableOpacity style={styles.closeIcon} onPress={() => setAddContactModalVisible(false)}>
+                  <Ionicons name="ios-close" size={24} color="white" />
+                </TouchableOpacity>
                 <View style={styles.modalCard}>
                   <Text style={styles.trustedContact}>Add New Contact</Text>
                   <View>
@@ -930,17 +932,18 @@ const LandingScreen = ({ navigation, visible }) => {
               <View style={styles.contentContainer}>
 
                 {modalData && (
-                  <View >  
+                  <View style={{ margin: 20 }}>
+                    <View style={{ alignContent: 'center', alignItems: 'center', marginBottom: 6 }}>
+                      <Text style={{ color: 'white', fontSize: 20, fontWeight: '700' }}>{modalData.name}</Text>
+                      <Text style={{ color: 'white' }}>{modalData.phoneNumber}</Text>
+                    </View>
 
-                    <Text style={{ color: 'white' }}>{modalData.name}</Text>
-                    <Text style={{ color: 'white' }}>{modalData.phoneNumber}</Text>
-                      <TouchableOpacity  onPress={showUpdateModal} ><Text style={{ color: 'white' }}>Update contact</Text></TouchableOpacity>
-                <TouchableOpacity onPress={() => handleRemoveContact(modalData.id)}><Text style={{ color: 'red' }}>Remove Contact</Text></TouchableOpacity>
+                    <TouchableOpacity style={{ marginVertical: 6, borderBottomColor: '#6A8776', padding: 10, borderBottomWidth: 1 }} onPress={showUpdateModal} ><Text style={{ color: 'white' }}>Update contact</Text></TouchableOpacity>
+
+                    <TouchableOpacity style={{ marginVertical: 6, borderBottomColor: '#6A8776', padding: 10, borderBottomWidth: 1 }} onPress={() => handleRemoveContact(modalData.id)}><Text style={{ color: 'red' }}>Remove Contact</Text></TouchableOpacity>
                   </View>
                 )}
 
-
-              
               </View>
             </BottomSheetModal>
             <Modal
@@ -1019,7 +1022,8 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     flexDirection: 'column',
     justifyContent: 'flex-end',
-    margin: 5
+    margin: 5,
+    // height:'40%'
   },
   bottomSheet2: {
     zIndex: 1,
@@ -1263,12 +1267,9 @@ const styles = StyleSheet.create({
     rowGap: 6,
   },
   logoImg: {
-    // flex: 1,
     width: 82,
-    height: 26,
-    // marginTop: 24,
-    // resizeMode: "contain",
-    // marginVertical: 20,
+    height: 24,
+    resizeMode: 'cover'
   },
   addContactButton: {
     borderRadius: 40,
@@ -1282,7 +1283,6 @@ const styles = StyleSheet.create({
   BgImage: {
     width: 150,
     height: 150,
-    // marginTop: -140,
     resizeMode: "cover",
     // marginVertical: 20,
   },
@@ -1294,7 +1294,7 @@ const styles = StyleSheet.create({
     marginVertical: 20,
   },
   textContent: {
-    paddingHorizontal: 0,
+    // paddingHorizontal: 0,
     alignItems: "center",
     justifyContent: "center",
     textAlign: "left",
@@ -1318,7 +1318,7 @@ const styles = StyleSheet.create({
     // marginVertical: 5,
     textAlign: "center",
     paddingHorizontal: 12,
-    color:'gray'
+    color: 'gray'
   },
   buttonSection: {
     width: "100%",
@@ -1396,10 +1396,10 @@ const styles = StyleSheet.create({
     fontSize: 13
   },
   closeIcon: {
-    alignContent:'flex-end',
-    alignSelf:'flex-end',
-    justifyContent:"flex-end",
-    margin:8,
+    alignContent: 'flex-end',
+    alignSelf: 'flex-end',
+    justifyContent: "flex-end",
+    margin: 8,
   },
 });
 
