@@ -696,7 +696,7 @@ const LandingScreen = ({ navigation, visible }) => {
                     style={styles.updateButton}
                     onPress={handleUpdateContact}
                   >
-                    <Text style={styles.buttonText}>UPDATE jCONTACT</Text>
+                    <Text style={styles.buttonText}>UPDATE CONTACT</Text>
                   </TouchableOpacity>
 
                   <TouchableOpacity

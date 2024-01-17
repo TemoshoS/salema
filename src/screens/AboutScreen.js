@@ -9,7 +9,7 @@ import {
   ScrollView,
 } from "react-native";
 
-import AppBar from "../components/Appbar";
+// import AppBar from "../components/Appbar";
 
 const AboutScreen = () => {
   // Function to open the Facebook page in the browser

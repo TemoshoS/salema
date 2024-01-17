@@ -23,7 +23,7 @@ export default function App() {
     
     return (
       <NavigationContainer>
-         <Stack.Navigator initialRouteName='LandingPage'>
+         <Stack.Navigator initialRouteName='ProfileScreen'>
       {/* Welcome is the new Splash SCreen */}
       <Stack.Screen name='Welcome' component={WelcomeScreen} options={{ headerShown: false}} />
       <Stack.Screen name='About' component={AboutScreen} options={{ title: 'About', headerShown: true, cardStyleInterpolator: CardStyleInterpolators.forVerticalIOS, }} />
