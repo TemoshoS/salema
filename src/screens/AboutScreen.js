@@ -53,7 +53,7 @@ const AboutScreen = () => {
           </Text>
           <Image
             style={styles.imageCardBGImage}
-            source={require("../../assets/undraw_alert.svg")}
+            source={require("../../assets/undraw_alert.png")}
           />
         </View>
         <View style={styles.socialIcons}>
@@ -191,6 +191,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     gap: 20,
+    padding: 12,
   },
   smallIcon: {
     width: 20,
@@ -238,22 +239,21 @@ const styles = StyleSheet.create({
     bottom: 0,
   },
   imageCardBGText: {
-    zIndex: 0,
+    zIndex: -1,
     bottom: 30,
     position: "absolute",
-    fontSize: "12vw", // Adjust the font size as needed
+    fontSize: 58,
     textAlign: "right",
     alignContent: "center",
     fontWeight: "700",
-
-    strokeWidth: 1.5,
+    fontFamily: "plus jakarta sans",
     strokeColor: "#0000004c",
     color: "transparent", // Transparent text color
     textShadowColor: "#4848485c", // Black outline color
     textShadowOffset: { width: 1, height: 1 }, // Outline offset
     textShadowRadius: 2, // Outline thickness
     backgroundColor: "transparent",
-    
+    margin: 0,
     letterSpacing: 1.5,
   },
   
