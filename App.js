@@ -23,7 +23,7 @@ export default function App() {
     
     return (
       <NavigationContainer>
-         <Stack.Navigator initialRouteName='ProfileScreen'>
+         <Stack.Navigator initialRouteName='LandingPage'>
       {/* Welcome is the new Splash SCreen */}
       <Stack.Screen name='Welcome' component={WelcomeScreen} options={{ headerShown: false}} />
       <Stack.Screen name='About' component={AboutScreen} options={{ title: 'About', headerShown: true, cardStyleInterpolator: CardStyleInterpolators.forVerticalIOS, }} />
@@ -64,6 +64,7 @@ export default function App() {
        <Stack.Screen name='Splash' component={SplashScreen} options={{ headerShown: false}} />
        <Stack.Screen name='Home' component={HomeScreen} options={{ headerShown: false}} />
        </Stack.Navigator>
+       {/* <Toast ref={(ref) => Toast.setRef(ref)} /> */}
        <Toast ref={(ref) => Toast.setRef(ref)} />
       </NavigationContainer>
      

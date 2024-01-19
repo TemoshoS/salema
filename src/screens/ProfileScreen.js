@@ -274,7 +274,6 @@ const styles = StyleSheet.create({
     color: "white",
   },
   changePasswordText: {
-    fontFamily: "Roboto",
     fontSize: 16,
     fontWeight: "400",
     lineHeight: 12,

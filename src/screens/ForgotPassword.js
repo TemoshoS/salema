@@ -149,7 +149,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: 33,
     borderRadius: 40,
     backgroundColor: "#C8FFD7",
-    fontFamily: "Roboto",
     fontSize: 15,
     fontWeight: "500",
     lineHeight: 26,

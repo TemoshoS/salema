@@ -212,11 +212,11 @@ const LandingScreen = ({ navigation, visible }) => {
   }
   // from home
   const showAddContactModal = () => {
-    // setNewContactData({
-    //   name: "",
-    //   phoneNumber: "",
-    //   relationship: "",
-    // });
+    setNewContactData({
+      name: "",
+      phoneNumber: "",
+      relationship: "",
+    });
     setAddContactModalVisible(true);
   };
 
@@ -406,7 +406,7 @@ const LandingScreen = ({ navigation, visible }) => {
     try {
       await removeContact(contactId).then(() => {
         fetchContacts();
-        hideViewContactModal();
+        bottomSheetModalRef.current?.close();
         Toast.show({
           type: 'success',
           text1: 'Emergency contact removed successful',

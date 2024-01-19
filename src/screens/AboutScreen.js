@@ -31,7 +31,7 @@ const AboutScreen = () => {
   };
 
   return (
-    <ScrollView stickyHeaderIndices={[0]}>
+    <ScrollView >
       <View style={styles.container}>
         {/* Topp App bar component */}
         {/* <AppBar navigation={navigation} showProfileIcon={false} screenName="About Us" /> */}
@@ -129,8 +129,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     alignItems: "center",
-    // justifyContent: "flex-start",
-    // paddingTop: 35,
     gap: 8,
     marginHorizontal: 10,
   },
@@ -154,10 +152,6 @@ const styles = StyleSheet.create({
     alignSelf: "stretch",
   },
   text: {
-    // fontFamily: "Roboto",
-    // fontWeight: "bold",
-    // fontSize: 25,
-    // letterSpacing: 0.4,
     color: "#000000",
     textAlign: "left",
     textTransform: "capitalize",
@@ -247,7 +241,6 @@ const styles = StyleSheet.create({
     alignContent: "center",
     fontWeight: "700",
     fontFamily: "plus jakarta sans",
-    strokeColor: "#0000004c",
     color: "transparent", // Transparent text color
     textShadowColor: "#4848485c", // Black outline color
     textShadowOffset: { width: 1, height: 1 }, // Outline offset
