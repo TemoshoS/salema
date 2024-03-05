@@ -70,9 +70,6 @@ async function addContact(newContact) {
   }
 }
 
-
-
-
 async function updateContact(contactId, updatedContact) {
     try {
         const contactRef = doc(db, "emergency_contacts", contactId);
@@ -94,7 +91,6 @@ async function removeContact(contactId) {
         console.error('Error removing contact: ', error);
     }
 }
-
 
 // function for getting phoneNumbers
 async function getPhoneNumbersForCurrentUser() {

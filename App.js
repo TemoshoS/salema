@@ -27,7 +27,6 @@ export default function App() {
       {/* Welcome is the new Splash SCreen */}
       <Stack.Screen name='Welcome' component={WelcomeScreen} options={{ headerShown: false}} />
       <Stack.Screen name='About' component={AboutScreen} options={{ title: 'About', headerShown: true, cardStyleInterpolator: CardStyleInterpolators.forVerticalIOS, }} />
-      {/* Landing Page is the new HomePage */}
        <Stack.Screen 
        name='LandingPage' 
        component={LandingScreen} 
@@ -48,11 +47,7 @@ export default function App() {
         </TouchableOpacity>
         )
        })}
-      //  options={{cardStyleInterpolator: CardStyleInterpolators.forVerticalIOS, 
-      //  headerShadowVisible: false,
-      //   headerTitle:"",
-      //   headerStyle: { backgroundColor: 'transparent' },
-      // }} 
+     
        />
        
        <Stack.Screen name='ProfileScreen' component={ProfileScreen} options={{ title:"My Account"
@@ -78,7 +73,6 @@ const styles = StyleSheet.create({
     backgroundColor: "#ffffff",
     alignItems: "center",
     justifyContent: "center",
-    // paddingHorizontal: 8,
   },
   avatar:{
     width: 40,
