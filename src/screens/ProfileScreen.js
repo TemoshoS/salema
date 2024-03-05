@@ -158,6 +158,8 @@ const ProfileScreen = () => {
         <Card containerStyle={styles.card}>
           <ScrollView>
             <Text style={styles.cardText}>Basic</Text>
+
+            <Text style={styles.title}>Name</Text>
             <Input
               placeholder="Name"
               containerStyle={styles.inputContainer}
@@ -165,6 +167,8 @@ const ProfileScreen = () => {
               value={userDetails?.name || ""}
               onChangeText={(text) => handleInputChange("name", text)}
             />
+
+            <Text style={styles.title}>Email</Text>
             <Input
               placeholder="Email"
               containerStyle={styles.inputContainer}
@@ -172,10 +176,13 @@ const ProfileScreen = () => {
               value={userDetails?.email || ""}
               editable={false}
             />
+
+             <Text style={styles.title}>Custom Emergency Message </Text>
             <Input
               placeholder="Emergency Message"
               containerStyle={styles.inputContainer}
               inputStyle={styles.input}
+              label={"Email"}
               value={userDetails?.emergencyMessage || ""}
               onChangeText={(text) =>
                 handleInputChange("emergencyMessage", text)
@@ -317,5 +324,6 @@ const styles = StyleSheet.create({
     backgroundColor: "#5BA64F",
     margin: 10,
   },
+  
 });
 export default ProfileScreen;

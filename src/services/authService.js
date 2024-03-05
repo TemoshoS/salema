@@ -104,23 +104,6 @@ const signOutUser = async () => {
         // console.log(user );
     }, []);
 
-//check if user is logged in
-// const checkUserLoggedIn =  async (callback) => {
-//     try {
-//       const user = await auth.currentUser;
-//       // console.log('init:', user);
-  
-//       if (user) {
-//         setUser(user);
-//       }
-  
-//       return user;
-//     } catch (error) {
-//       console.error('Error checking user login:', error);
-//       return null;
-//     }
-// }
-
 const checkUserLoggedIn = async () => {
   try {
     const user = await auth.currentUser;

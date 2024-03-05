@@ -625,44 +625,7 @@ const LandingScreen = ({ navigation, visible }) => {
               </View>
             )}
 
-            {/* Main Activity contents Modals/screens/sheets | Outside the main content frame */}
-
-            {/* view contact bottomsheet */}
-
-            {/* Secondary Bottom Sheet  */}
-            {/* <View style={styles.content}>
-      <View style={styles.modalCard}>
-          {selectedContact ? (
-            <View style={styles.textContent}>
-              <Text style={styles.title}>Trusted Contacts</Text>
-              <Text style={styles.title}>{selectedContact.name}</Text>
-              <Text style={styles.text}>{selectedContact.phoneNumber}</Text>
-              <View style={styles.buttonGroup}>
-                <Button2
-                  title="Update Contact"
-                  onPress={showUpdateModal}
-                  altText="Update Contact"
-                  textColor={"#f2f2f2"}
-                />
-                <Button2
-                  title="Remove Contact"
-                  onPress={() => handleRemoveContact(selectedContact.id)}
-                  altText="Remove Contact"
-                  textColor={"#ff2323"}
-                />
-              </View>
-            </View>
-          ) : (
-            <Text style={{ color: "#ff2323", textAlign: "left" }}>
-              No contact selected
-            </Text>
-          )}
-          <TouchableOpacity onPress={hideConfirmation}>
-            <Text style={styles.confirmTxt}>Close</Text>
-          </TouchableOpacity>
-        </View>
-      </View> */}
-
+            
             {/* Update Contact Modal */}
             <Modal
               transparent={true}

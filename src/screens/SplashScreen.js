@@ -45,9 +45,7 @@ const SplashScreen = () => {
 
   return (
     <View style={styles.container}>
-    {/* <LoginModal isVisible={isLoginModalVisible} onClose={closeModal} />
-      <SignupModal isVisible={isRegisterModalVisible} onClose={closeModal} /> */}
-      
+  
       <Image
         source={require("../../assets/Union.png")}
         style={styles.logoImg}
