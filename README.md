@@ -58,8 +58,6 @@ This is an example of how to list things you need to use the software and how to
 
 ### Installation
 
-_Below is an example of how you can instruct your audience on installing and setting up your app. This template doesn't rely on any external dependencies or services._
-
 1. Get a SMS API Key at [https://example.com](https://example.com)
 2. Installing
    ```sh
