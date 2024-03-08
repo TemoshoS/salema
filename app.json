@@ -4,10 +4,10 @@
     "slug": "salema",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/iconSalema.png",        
+    "icon": "./assets/iconSalema.png",
     "userInterfaceStyle": "light",
     "splash": {
-      "image": "./assets/iconSalema.png",      
+      "image": "./assets/iconSalema.png",
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
@@ -19,12 +19,18 @@
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/iconSalema.png",    
+        "foregroundImage": "./assets/iconSalema.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "package": "com.nokwanda.salema"
     },
     "web": {
-      "favicon": "./assets/splash.png"   
+      "favicon": "./assets/splash.png"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "5b066349-d0b8-4ca8-aee5-97b7f7b83323"
+      }
     }
   }
 }
