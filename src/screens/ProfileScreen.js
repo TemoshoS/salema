@@ -197,9 +197,9 @@ const ProfileScreen = () => {
               />
             )}
 
-            <TouchableOpacity onPress={() => navigation.navigate("")}>
+            {/* <TouchableOpacity onPress={() => navigation.navigate("")}>
               <Text style={styles.changePasswordText}>Change Password</Text>
-            </TouchableOpacity>
+            </TouchableOpacity> */}
 
             <TouchableOpacity onPress={handleAboutScreen}>
               <Text style={styles.changePasswordText}>About</Text>

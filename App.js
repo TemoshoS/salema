@@ -14,6 +14,7 @@ import HeaderProfileButton from './src/components/headerProfileButton';
 import Button from './src/components/Button';
 // import PasswordReset from './src/components/PasswordReset';
 import Toast from 'react-native-toast-message';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -22,6 +23,8 @@ const Tab = createBottomTabNavigator();
 export default function App() {
     
     return (
+         <GestureHandlerRootView style={{ flex: 1 }}>
+
       <NavigationContainer>
          <Stack.Navigator initialRouteName='LandingPage'>
       {/* Welcome is the new Splash SCreen */}
@@ -63,7 +66,8 @@ export default function App() {
        <Toast ref={(ref) => Toast.setRef(ref)} />
       </NavigationContainer>
      
-        
+      </GestureHandlerRootView>
+
     );
   
 }
