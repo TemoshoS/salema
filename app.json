@@ -8,28 +8,38 @@
     "userInterfaceStyle": "light",
     "splash": {
       "image": "./assets/iconSalema.png",
-      "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
+      "resizeMode": "contain"
     },
     "assetBundlePatterns": [
       "**/*"
     ],
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "runtimeVersion": {
+        "policy": "appVersion"
+      }
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/iconSalema.png",
-        "backgroundColor": "#ffffff"
+        "foregroundImage": "./assets/iconSalema.png"
+       
+        
       },
-      "package": "com.nokwanda.salema"
+      "package": "com.salema",
+      "runtimeVersion": "1.0.0",
+      "notification": {
+        "icon": "./assets/iconSalema.png"
+      }
     },
     "web": {
       "favicon": "./assets/splash.png"
     },
+    "updates": {
+      "url": "https://u.expo.dev/99d4a2b7-6728-4f70-8aa7-3a97bc03e7a9"
+    },
     "extra": {
       "eas": {
-        "projectId": "5b066349-d0b8-4ca8-aee5-97b7f7b83323"
+        "projectId": "99d4a2b7-6728-4f70-8aa7-3a97bc03e7a9"
       }
     }
   }

@@ -1,0 +1,30 @@
+import axios from 'axios';
+
+const sendSms = async (to, from, body) => {
+    try {
+        const formData = new URLSearchParams();
+        formData.append('To', to);
+        formData.append('From', from);
+        formData.append('Body', body);
+
+        const response = await axios.post(
+            'https://api.twilio.com/2010-04-01/Accounts/AC6b343086f68fd3d6f29a2ce22e231a6a/Messages.json',
+            formData,
+            {
+                auth: {
+                    username: 'AC6b343086f68fd3d6f29a2ce22e231a6a',
+                    password: '80b37efc9fc79b1d61bc28385f515203'
+                },
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                }
+            }
+        );
+        return response.data;
+    } catch (error) {
+        console.error(`Error sending SMS to ${to}:`, error.response ? error.response.data : error.message);
+        throw error;
+    }
+};
+
+export default sendSms;

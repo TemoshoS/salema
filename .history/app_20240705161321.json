@@ -1,0 +1,43 @@
+{
+  "expo": {
+    "name": "Salema",
+    "slug": "salema",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/iconSalema.png",
+    "userInterfaceStyle": "light",
+    "splash": {
+      "image": "./assets/iconSalema.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#ffffff"
+    },
+    "assetBundlePatterns": [
+      "**/*"
+    ],
+    "ios": {
+      "supportsTablet": true,
+      "runtimeVersion": {
+        "policy": "appVersion"
+      }
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/iconSalema.png",
+        "backgroundColor": "#ffffff"
+      },
+      "package": "com.salema",
+      "runtimeVersion": "1.0."
+    },
+    "web": {
+      "favicon": "./assets/splash.png"
+    },
+    "updates": {
+      "url": "https://u.expo.dev/99d4a2b7-6728-4f70-8aa7-3a97bc03e7a9"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "99d4a2b7-6728-4f70-8aa7-3a97bc03e7a9"
+      }
+    }
+  }
+}

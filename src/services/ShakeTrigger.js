@@ -3,15 +3,16 @@ import * as Location from 'expo-location';
 import { Platform } from 'react-native';
 import * as Notifications from 'expo-notifications';
 import Constants from 'expo-constants';
-import { getPhoneNumbersForCurrentUser } from './homeServices';
+import { getPhoneNumbersForCurrentUser} from './homeServices';
+import sendSms from './sendSms';
+import { useState, useEffect, useRef } from 'react';
 import { auth } from "./firebaseService";
 
-import {
-  onAuthStateChanged,
-} from "firebase/auth";
 
 
 
+
+// Threshold for shake detection
 const THRESHOLD = 150;
 
 export class ShakeEventExpo {
@@ -36,14 +37,18 @@ export class ShakeEventExpo {
             lastNotificationTime = currTime;
 
             // Fetch location and send notification
-            Location.getCurrentPositionAsync({})
-              .then(location => {
+            (async () => {
+              try {
+                const location = await Location.getCurrentPositionAsync({});
+                const user = auth.currentUser;
+                const userName = user.displayName; // Assuming displayName exists
+    
                 handler(location);
-                
-              })
-              .catch(error => {
-                console.error('Error fetching location:', error);
-              });
+                await sendShakeDetectedSms(location, userName);
+              } catch (error) {
+                console.error('Error fetching location or sending SMS:', error);
+              }
+            })();
           }
         }
         last_x = x;
@@ -58,75 +63,30 @@ export class ShakeEventExpo {
   }
 }
 
-//Sms function
-export const sendSMS = async (message) => {
-  console.log('Sending SMS');
-
+// Function to send SMS on shake detection
+const sendShakeDetectedSms = async (location, userName) => {
   try {
-    let phoneNumbers;
+    const message = `Hi, it's ${userName}. I'm in danger and need help. My location: https://www.google.com/maps?q=${location.coords.latitude},${location.coords.longitude}`;
+    const from = '';
 
-    // Check if the user is signed in
-    const userIsSignedIn = () => {
-      return new Promise((resolve) => {
-        const unsubscribe = onAuthStateChanged(auth, (user) => {
-          resolve(!!user);
-          unsubscribe();
-        });
-      });
-    };
-
-    if (await userIsSignedIn()) {
-      console.log('User is signed in:', await userIsSignedIn());
-      
-      phoneNumbers = await getPhoneNumbersForCurrentUser();
-      
-      if (phoneNumbers.length === 0) {
-        phoneNumbers = ['27692488952'];
+    const numbers = await getPhoneNumbersForCurrentUser();
+    const promises = numbers.map(async (to) => {
+      try {
+        return await sendSms(to, from, message);
+      } catch (error) {
+        console.error(`Failed to send SMS to ${to}:`, error);
+        throw error;
       }
-    } else {
-      
-      phoneNumbers = ['27721371977'];
-    }
-
-    
-    const apiUrl = 'https://e1dypr.api.infobip.com/sms/2/text/advanced';
-    const authorizationToken = 'App c4f7718ea781812e2952fab60beff92b-50c625be-a489-42f4-b1d0-222677744c45';
-
-    const postData = {
-      messages: phoneNumbers.map((phoneNumber) => ({
-        destinations: [
-          {
-            to: phoneNumber,
-          },
-        ],
-        from: 'InfoSMS',
-        text: message,
-      })),
-    };
-
-    // Send SMS messages
-    const response = await fetch(apiUrl, {
-      method: 'POST',
-      headers: {
-        Authorization: authorizationToken,
-        'Content-Type': 'application/json',
-        Accept: 'application/json',
-      },
-      body: JSON.stringify(postData),
     });
-
-    const responseData = await response.json();
-    console.log('HTTP status code:', response.status);
-    console.log(responseData);
+    const responses = await Promise.all(promises);
+    console.log('Messages sent:', responses.map((res) => res.sid));
   } catch (error) {
-    console.error('Error sending SMS: ', error);
+    console.error('Error sending SMS:', error);
   }
 };
 
 
-
-
-//Notifaction function
+// Notification handler
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
     shouldShowAlert: true,
@@ -134,62 +94,6 @@ Notifications.setNotificationHandler({
     shouldSetBadge: true,
   }),
 });
-
-
-//Sms function
-// export const sendSMS = async (message) => {
-//   console.log('Sending SMS');
-//   const apiUrl = 'https://e1dypr.api.infobip.com/sms/2/text/advanced';
-//   const authorizationToken = 'App ece5a5a8f136c21a74bf2657d89ef5dc-85888b0f-5329-4d8f-9c63-762c92741934';
-
-//   const postData = {
-//     messages: [
-//       {
-//         destinations: [
-//           {
-//             to: '27721371977',
-//           },
-//           {
-//             to: '27670962825',
-//           },
-//           {
-//             to: '27730693340',
-//           },
-//         ],
-//         from: 'InfoSMS',
-//         text: message,
-//       },
-//     ],
-//   };
-
-//   try {
-//     const response = await fetch(apiUrl, {
-//       method: 'POST',
-//       headers: {
-//         Authorization: authorizationToken,
-//         'Content-Type': 'application/json',
-//         Accept: 'application/json',
-//       },
-//       body: JSON.stringify(postData),
-//     });
-
-//     const responseData = await response.json();
-//     console.log('HTTP status code:', response.status);
-//     console.log(responseData);
-//   } catch (error) {
-//     console.error(error);
-//   }
-// };
-
-//Notifaction function
-Notifications.setNotificationHandler({
-  handleNotification: async () => ({
-    shouldShowAlert: true,
-    shouldPlaySound: true,
-    shouldSetBadge: true,
-  }),
-});
-
 
 export const NotificationService = () => {
   const [expoPushToken, setExpoPushToken] = useState('');
