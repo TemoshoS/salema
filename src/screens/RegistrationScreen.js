@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState ,useRef} from "react";
 import {
   Image,
   StyleSheet,
@@ -42,6 +42,13 @@ const RegistrationScreen = ({onLogin, onRegister,closeModal}) => {
   const navigation = useNavigation();
   const { registerUser} = authService()
 
+  // Refs for each input
+  const nameRef = useRef(null);
+  const emailRef = useRef(null);
+  const phoneRef = useRef(null);
+  const passwordRef = useRef(null);
+  const confirmPasswordRef = useRef(null);
+
   const handlePasswordChange = (text, isConfirmPassword = false) => {
     if (!isConfirmPassword) {
       // Handle changes for the "Password" field
@@ -71,89 +78,91 @@ const RegistrationScreen = ({onLogin, onRegister,closeModal}) => {
   };
 
   const handleRegister = async () => {
-   
-    setLoading(true)
-   // Reset previous validation errors and user exists message
-   setNameError(null);
-   setEmailError(null);
-   setPhoneNumberError(null);
-   setPasswordError(null);
-   setReenterPasswordError(null);
-   setUserExistsMessage('');
+    setLoading(true);
+    // Reset previous validation errors and user exists message
+    setNameError(null);
+    setEmailError(null);
+    setPhoneNumberError(null);
+    setPasswordError(null);
+    setReenterPasswordError(null);
+    setUserExistsMessage('');
+  
+    // Trim leading and trailing spaces
+    const trimmedName = name.trim();
+    const trimmedEmail = email.trim();
+    const trimmedPhone = phone.trim();
   
     // Validate all fields
-    if (!name || !email || !phone || !password || !reenterPassword) {
-      if (!name) setNameError("Name is required");
-      if (!email) setEmailError("Email is required");
-      if (!phone) setPhoneNumberError("Mobile number is required");
+    if (!trimmedName || !trimmedEmail || !trimmedPhone || !password || !reenterPassword) {
+      if (!trimmedName) setNameError("Name is required");
+      if (!trimmedEmail) setEmailError("Email is required");
+      if (!trimmedPhone) setPhoneNumberError("Mobile number is required");
       if (!password) setPasswordError("Password is required");
       if (!reenterPassword)
         setReenterPasswordError("Re-enter password is required");
-     
-        Toast.show({
+  
+      Toast.show({
         type: 'error',
         position: 'bottom',
         text1: 'Registration failed',
         text2: 'Please fill in the required fields',
-        visibilityTime: 3000,
+        visibilityTime: 6000,
       });
+      setLoading(false);
       return;
     }
-
+  
     // Check if the password and the confirm password match
     if (password !== reenterPassword) {
       setReenterPasswordError("Passwords do not match");
-      
+  
       Toast.show({
         type: 'error',
         position: 'bottom',
         text1: 'Registration Failed',
-        text2: 'Password do not match',
-        visibilityTime: 3000,
-      })
+        text2: 'Password does not match',
+        visibilityTime: 6000,
+      });
+      setLoading(false);
       return;
     }
-
-      // Password strength validation
-      const passwordRegex =
-        /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*\W)(?!.*\s).{8,}$/;
-      if (!password.match(passwordRegex)) {
-        setPasswordError(
-          "Password must contain at least 8 characters, 1 number, 1 uppercase letter, 1 lowercase letter, and 1 special character"
-        );
-
-        Toast.show({
-          type: 'error',
-          position: 'bottom',
-          text1: 'Registration failed',
-          text2: 'Password doesnt meet the requirements',
-          visibilityTime: 3000
-        });
-        return;
-      }
-
   
-    
+    // Password strength validation
+    const passwordRegex =
+      /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*\W)(?!.*\s).{8,}$/;
+    if (!password.match(passwordRegex)) {
+      setPasswordError(
+        "Password must contain at least 8 characters, 1 number, 1 uppercase letter, 1 lowercase letter, and 1 special character"
+      );
+  
+      Toast.show({
+        type: 'error',
+        position: 'bottom',
+        text1: 'Registration failed',
+        text2: 'Password doesn’t meet the requirements',
+        visibilityTime: 3000,
+      });
+      setLoading(false);
+      return;
+    }
   
     try {
-      
-
-       await registerUser(email, password, name, phone);
+      // Register the user with trimmed values
+      await registerUser(trimmedEmail, password, trimmedName, trimmedPhone);
   
-      closeModal()
+      closeModal();
       setLoading(false);
-
+  
+      // Clear fields
       setName('');
       setEmail('');
       setPhoneNumber('');
       setPassword('');
       setReenterPassword('');
-  
     } catch (error) {
-      
       if (error.code === "auth/email-already-in-use") {
         setEmailError("Email is already in use");
-
+  
         Toast.show({
           type: 'error',
           text1: 'Registration Failed',
@@ -169,7 +178,7 @@ const RegistrationScreen = ({onLogin, onRegister,closeModal}) => {
           text2: 'Invalid Email',
           visibilityTime: 3000,
         });
-      }else{
+      } else {
         Toast.show({
           type: 'error',
           position: 'bottom',
@@ -179,7 +188,9 @@ const RegistrationScreen = ({onLogin, onRegister,closeModal}) => {
         });
       }
     }
+    setLoading(false);
   };
+  
   
   
   
@@ -203,32 +214,42 @@ const RegistrationScreen = ({onLogin, onRegister,closeModal}) => {
         <View style={styles.formContent}>
           <Text style={styles.title}>Signup</Text>
           <View>
-            <InputText
+          <InputText
+              ref={nameRef}
               style={styles.input}
-              placeholder="name & surname"
+              placeholder="Name & Surname"
               placeholderTextColor="white"
               onChangeText={(text) => setName(text)}
               label={"Full Name"}
+              onSubmitEditing={() => emailRef.current.focus()}
+              returnKeyType="next"
             />
             {nameError && <Text style={styles.errorText}>{nameError}</Text>}
           </View>
+          
           <View>
-            <InputText
+          <InputText
+              ref={emailRef}
               style={styles.input}
               placeholder="username@example.com"
               placeholderTextColor="white"
               onChangeText={(text) => setEmail(text)}
               label={"Email"}
+              onSubmitEditing={() => phoneRef.current.focus()}
+              returnKeyType="next"
             />
             {emailError && <Text style={styles.errorText}>{emailError}</Text>}
           </View>
           <View>
-            <InputText
+          <InputText
+              ref={phoneRef}
               style={styles.input}
               placeholder="0123456789"
               placeholderTextColor="white"
               onChangeText={(text) => setPhoneNumber(text)}
               label={"Number"}
+              onSubmitEditing={() => passwordRef.current.focus()}
+              returnKeyType="next"
             />
             {phoneError && <Text style={styles.errorText}>{phoneError}</Text>}
           </View>
@@ -236,11 +257,14 @@ const RegistrationScreen = ({onLogin, onRegister,closeModal}) => {
           <View>
           <View style={styles.TextInputGroup}>
               <InputText
+                ref={passwordRef}
                 style={styles.input}
                 placeholder="Password123@"
                 onChangeText={(text) => handlePasswordChange(text)}
                 secureTextEntry={!showPassword}
                 label={"Password"}
+                onSubmitEditing={() => confirmPasswordRef.current.focus()}
+                returnKeyType="next"
               />
               <TouchableOpacity
                 style={styles.floatIcon}
@@ -258,12 +282,15 @@ const RegistrationScreen = ({onLogin, onRegister,closeModal}) => {
             {passwordError && <Text style={styles.errorText}>{passwordError}</Text>}
           </View>
           <View>
-            <InputText
+          <InputText
+              ref={confirmPasswordRef}
               style={styles.input}
               placeholder="Matching Password"
-              onChangeText={(text) => handlePasswordChange(text, true)} // Pass true to indicate it's the Confirm Password field
+              onChangeText={(text) => handlePasswordChange(text, true)}
               secureTextEntry={!showPassword}
               label={"Confirm Password"}
+              onSubmitEditing={handleRegister}
+              returnKeyType="done"
             />
             {reenterPasswordError && (
               <Text style={styles.errorText}>{reenterPasswordError}</Text>
@@ -280,9 +307,16 @@ const RegistrationScreen = ({onLogin, onRegister,closeModal}) => {
             )}
           </View>
 
-          
-          <TouchableOpacity onPress={() => handleRegister()} style={styles.registerButton}>
-              <Text>CREATE ACCOUNT</Text>
+          <TouchableOpacity style={styles.registerButton} onPress={handleRegister}>
+            {loading ? (
+              <Modal transparent={true} visible={loading}>
+              <View style={styles.modalContainer}>
+                <ActivityIndicator size="small" color="blue" />
+              </View>
+            </Modal>
+            ) : (
+              <Text style={styles.buttonText}>CREATE ACCOUNT</Text>
+            )}
           </TouchableOpacity>
 
           <View style={styles.loginNav}>
@@ -522,6 +556,12 @@ const styles = StyleSheet.create({
     margin:8,
     width: 48,
     height: 48,
+  },
+    modalContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
   },
 
 });

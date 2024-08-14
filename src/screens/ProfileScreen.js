@@ -14,6 +14,7 @@ const ProfileScreen = () => {
   const [userDetails, setUserDetails] = useState(null);
   const [isDirty, setIsDirty] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState("");
   const {
     registerUser,
     loginUser,
@@ -85,12 +86,14 @@ const ProfileScreen = () => {
   const handleInputChange = (field, text) => {
     setUserDetails({ ...userDetails, [field]: text });
     setIsDirty(true);
-    Toast.show({
-      type: "error",
-      text1: "Error Updating Profile",
-      text2: "An error occurred. Please try again later.",
-      visibilityTime: 3000,
-    });
+
+    if (field === "emergencyMessage") {
+      if (text.trim() === "") {
+        setError("Emergency message cannot be empty."); // Set error if input is empty
+      } else {
+        setError(""); // Clear error if input is valid
+      }
+    }
   };
 
   const handleSignOut = async () => {
@@ -190,7 +193,7 @@ const ProfileScreen = () => {
             />
 
              <Text style={styles.title}>Custom Emergency Message </Text>
-            <Input
+             <Input
               placeholder="Emergency Message"
               containerStyle={styles.inputContainer}
               inputStyle={styles.input}
@@ -199,6 +202,10 @@ const ProfileScreen = () => {
                 handleInputChange("emergencyMessage", text)
               }
             />
+               {error ? (
+              <Text style={styles.errorText}>{error}</Text> 
+            ) : null}
+
             {isDirty && (
               <Button
                 title={isLoading ? "Updating..." : "Update Profile"}
@@ -213,7 +220,7 @@ const ProfileScreen = () => {
             </TouchableOpacity> */}
 
             <TouchableOpacity onPress={handleMissingScreen}>
-              <Text style={styles.changePasswordText}>Missing</Text>
+              <Text style={styles.changePasswordText}>Missing People</Text>
             </TouchableOpacity>
 
             <TouchableOpacity onPress={handleAboutScreen}>

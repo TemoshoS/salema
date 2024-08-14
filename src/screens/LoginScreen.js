@@ -1,35 +1,36 @@
-import React, { useEffect, useState } from "react";
+import React, { useState, useRef } from "react";
 import { StyleSheet, Text, View, TouchableOpacity, Alert, ActivityIndicator } from "react-native";
-import { useNavigation } from "@react-navigation/native";
-import { NavigationContainer } from '@react-navigation/native';
-import { createStackNavigator, CardStyleInterpolators } from '@react-navigation/stack';
-import Button from "../components/Button";
-// input InputText || Component
 import InputText from "../components/InputText";
 import authService from "../services/authService";
-import { Ionicons } from '@expo/vector-icons';
-import Toast from 'react-native-toast-message';
 import { FontAwesome } from '@expo/vector-icons';
+import Toast from 'react-native-toast-message';
 
-const LoginScreen = ({ onRegister, onLogin, onForgotPass, closeModal, openRegister, }) => {
+const LoginScreen = ({ onRegister, onLogin, onForgotPass, closeModal, openRegister }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loginAttempts, setLoginAttempts] = useState(0);
   const [showPassword, setShowPassword] = useState(false);
-  const { registerUser, loginUser, resetPassword, signOutUser, checkUserLoggedIn, user } = authService()
-  const [loading, setLoading] = useState(false)
-  
+  const { loginUser } = authService();
+  const [loading, setLoading] = useState(false);
+
+  const nameRef = useRef(null);
+  const passwordRef = useRef(null);
+
   const handleLogin = async () => {
+    // Trim leading and trailing spaces from email and password
+    const trimmedEmail = email.trim();
+    const trimmedPassword = password.trim();
+
     try {
-      setLoading(true)
-      const user = await loginUser(email, password)
+      setLoading(true);
+      const user = await loginUser(trimmedEmail, trimmedPassword);
       if (user) {
         console.log(user.email + 'login page line 26');
-        closeModal()
+        closeModal();
       }
       setLoading(false);
 
-        Toast.show({
+      Toast.show({
         type: 'success',
         text1: 'Login Successful',
         visibilityTime: 3000, 
@@ -39,30 +40,25 @@ const LoginScreen = ({ onRegister, onLogin, onForgotPass, closeModal, openRegist
       Alert.alert(error.message);
       console.log(error);
       setLoginAttempts(loginAttempts + 1);
-      setLoading(false)
+      setLoading(false);
       
       Toast.show({
         type: 'error',
-        text1: 'Inccorect email or password',
-        text2: 'Please try again ',
+        text1: 'Incorrect email or password',
+        text2: 'Please try again',
         visibilityTime: 3000,
-      })
-    
+      });
 
       // Check if login attempts exceed the limit (e.g., 3)
       if (loginAttempts >= 3) {
-        // Block the user or perform any other action (e.g., show a message)
-        Alert.alert('Login attempts exceeded. Your account is   locked.');
+        Alert.alert('Login attempts exceeded. Your account is locked.');
       }
     }
   };
 
-
-  // Handle Forgot password button click
   const handleForgotPassword = () => {
-    onForgotPass()
-  }
-
+    onForgotPass();
+  };
 
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword);
@@ -71,17 +67,17 @@ const LoginScreen = ({ onRegister, onLogin, onForgotPass, closeModal, openRegist
   return (
     <View style={styles.container}>
       <TouchableOpacity style={styles.closeIcon} onPress={() => closeModal()}>
-      <FontAwesome name="times" size={24} color="white" />
+        <FontAwesome name="times" size={24} color="white" />
       </TouchableOpacity>
       {loading ? (
         <ActivityIndicator size="large" color="#0000ff" />
       ) : (
         <View style={styles.loginForm}>
-
           <View style={styles.formContent}>
             <Text style={styles.title}>Sign In</Text>
 
             <InputText
+              ref={nameRef}
               value={email}
               onChangeText={(text) => setEmail(text)}
               style={styles.input}
@@ -89,9 +85,12 @@ const LoginScreen = ({ onRegister, onLogin, onForgotPass, closeModal, openRegist
               placeholderTextColor="#f2f2f2"
               label={"Email"}
               autoCompleteType="email"
+              onSubmitEditing={() => passwordRef.current.focus()}
+              returnKeyType="next"
             />
- <View style={styles.passwordInputContainer}>
+            <View style={styles.passwordInputContainer}>
               <InputText
+                ref={passwordRef}
                 value={password}
                 onChangeText={(text) => setPassword(text)}
                 style={styles.passwordInput}
@@ -99,6 +98,7 @@ const LoginScreen = ({ onRegister, onLogin, onForgotPass, closeModal, openRegist
                 secureTextEntry={!showPassword} 
                 placeholderTextColor="#f2f2f2"
                 label={"Password"}
+                returnKeyType="done"
               />
               <TouchableOpacity style={styles.togglePasswordButton} onPress={togglePasswordVisibility}>
                 <FontAwesome name={showPassword ? "eye-slash" : "eye"} size={24} color="white" />
@@ -111,7 +111,6 @@ const LoginScreen = ({ onRegister, onLogin, onForgotPass, closeModal, openRegist
           </TouchableOpacity>
 
           <View style={styles.linksContainer}>
-            {/* NAVIGATION LINKS */}
             <TouchableOpacity style={styles.Fbutton} onPress={() => handleForgotPassword()}>
               <Text style={{ color: "#FFF" }}>Forgot password</Text>
             </TouchableOpacity>
@@ -121,8 +120,7 @@ const LoginScreen = ({ onRegister, onLogin, onForgotPass, closeModal, openRegist
             </TouchableOpacity>
           </View>
         </View>
-      )
-      }
+      )}
     </View>
   );
 };
@@ -155,13 +153,11 @@ const styles = StyleSheet.create({
     alignSelf: "center",
     marginHorizontal: 8,
   },
-
   formContent: {
     alignItems: "center",
     gap: 20,
     padding: 6,
     justifyContent: 'center',
-   
   },
   input: {
     width: 100,
@@ -187,7 +183,6 @@ const styles = StyleSheet.create({
   passwordInputContainer: {
     flexDirection: "row",
     alignItems: "center",
-
   },
   passwordInput: {
     flex: 1,
@@ -199,8 +194,6 @@ const styles = StyleSheet.create({
     position: "absolute",
     right: 10,
   },
-
- 
   linksContainer: {
     flexDirection: "row",
     gap: 100,
@@ -213,11 +206,6 @@ const styles = StyleSheet.create({
     color: "black",
     fontWeight: "bold",
     margin: 5,
-  },
-  togglePasswordButton: {
-    position: "absolute",
-    right: 10,
-    top: 20,
   },
   errorMessage: {
     color: "red",
@@ -237,8 +225,6 @@ const styles = StyleSheet.create({
     bottom: 0,
     backgroundColor: "rgba(0, 0, 0, 0.601)",
   },
-
-  // //////////////////////
   textContent: {
     paddingHorizontal: 0,
     wordWrap: "break-word",
@@ -249,18 +235,17 @@ const styles = StyleSheet.create({
     gap: 6,
   },
   closeIcon: {
-    alignContent:'flex-end',
-    alignSelf:'flex-end',
-    justifyContent:"flex-end",
-    margin:8,
+    alignContent: 'flex-end',
+    alignSelf: 'flex-end',
+    justifyContent: "flex-end",
+    margin: 8,
     width: 48,
     height: 48,
   },
-  Fbutton:{
+  Fbutton: {
     height: 48,
   },
-  Rbutton:{
-   height: 48,
+  Rbutton: {
+    height: 48,
   }
-
 });

@@ -1,15 +1,16 @@
-import React, { useState } from "react";
+import React, { useState, forwardRef } from "react";
 import { StyleSheet, TextInput, View, Text } from "react-native";
 
-export default function InputText({
+const InputText = forwardRef(({
   value,
   onChangeText,
   placeholder,
-  // placeholderTextColor,
   label,
   secureTextEntry,
-}) {
-  // check if the user is placing input
+  onSubmitEditing,
+  returnKeyType,
+}, ref) => {
+  // Check if the user is focusing on input
   const [isFocused, setIsFocused] = useState(false);
 
   return (
@@ -22,6 +23,7 @@ export default function InputText({
         ]}
       >
         <TextInput
+          ref={ref}
           value={value}
           onChangeText={onChangeText}
           style={[styles.input, isFocused && styles.inputFocused]}
@@ -30,11 +32,13 @@ export default function InputText({
           onFocus={() => setIsFocused(true)}
           onBlur={() => setIsFocused(false)}
           secureTextEntry={secureTextEntry}
+          onSubmitEditing={onSubmitEditing}
+          returnKeyType={returnKeyType}
         />
       </View>
     </View>
   );
-}
+});
 
 const styles = StyleSheet.create({
   input: {
@@ -51,7 +55,6 @@ const styles = StyleSheet.create({
     width: 320,
     borderBottomWidth: 0.8,
     borderColor: "white",
-    // backgroundColor: "#ffffff4d", // Adjust the opacity here
     color: "#f2f2f2",
     marginBottom: 8,
   },
@@ -64,3 +67,5 @@ const styles = StyleSheet.create({
     marginBottom: 4,
   },
 });
+
+export default InputText;

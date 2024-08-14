@@ -22,14 +22,10 @@
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/iconSalema.png"
-       
-        
       },
       "package": "com.salema",
-      "runtimeVersion": "1.0.0",
-      "notification": {
-        "icon": "./assets/iconSalema.png"
-      }
+      "runtimeVersion": "1.0.0"
+      
     },
     "web": {
       "favicon": "./assets/splash.png"
@@ -41,6 +37,9 @@
       "eas": {
         "projectId": "99d4a2b7-6728-4f70-8aa7-3a97bc03e7a9"
       }
-    }
+    },
+    "plugins": [
+      "expo-font"
+    ]
   }
 }

@@ -38,7 +38,7 @@ import { FontAwesome } from '@expo/vector-icons';
 import { Platform } from "react-native";
 import LoginScreen from "./LoginScreen";
 import RegistrationScreen from "./RegistrationScreen";
-import { initializeAuthState} from "../services/homeServices";
+import { initializeAuthState } from "../services/homeServices";
 
 import { ShakeEventExpo, sendSMS } from "../services/ShakeTrigger";
 import getLocationPermission from "../services/geolocation";
@@ -52,9 +52,9 @@ import PhoneInput from "react-native-phone-number-input";
 const LandingScreen = ({ navigation, visible }) => {
 
 
-  
+
   const { checkUserLoggedIn, user } = authService()
-  
+
   const [phone, setPhone] = useState('');
   const phoneInput = useRef(null);
 
@@ -73,7 +73,7 @@ const LandingScreen = ({ navigation, visible }) => {
   const [phoneError, setPhoneError] = useState(null);
   const [relationshipError, setRelationshipError] = useState(null);
   const [isShakeHandled, setIsShakeHandled] = useState(false);
-  const [statusImageSource, setStatusImageSource] = useState(require('../../assets/inactiveIcon.png')); 
+  const [statusImageSource, setStatusImageSource] = useState(require('../../assets/inactiveIcon.png'));
   const [location, setLocation] = useState(null);
   const [locationModalVisible, setLocationModalVisible] = useState(false);
   const [shakeStatusModalVisible, setShakeStatusModalVisible] = useState(false);
@@ -100,7 +100,18 @@ const LandingScreen = ({ navigation, visible }) => {
   const [modalData, setModalData] = useState(null);
   const [contactIdToRemove, setContactIdToRemove] = useState(null);
 
+  const nameRef = useRef(null);
+  const phoneRef = useRef(null);
+  const relationshipRef = useRef(null);
+
+  const nameUpdateRef = useRef(null);
+  const phoneUpdateRef = useRef(null);
+  const relationshipUpdateRef = useRef(null);
+
+
   const [loading, setLoading] = useState(false)
+  const [loadingUpdate, setLoadingUpdate] = useState(false)
+  const [loadingAdd, setLoadingAdd] = useState(false)
   useEffect(() => {
 
     initializeAuth();
@@ -144,10 +155,10 @@ const LandingScreen = ({ navigation, visible }) => {
 
       if (user != null) {
         setCurrentUser(user);
-       // console.log("There is a user", user);
+        // console.log("There is a user", user);
       } else {
         setContacts([]);
-       // console.log("Not logged in user");
+        // console.log("Not logged in user");
       }
     } catch (error) {
       console.error("Error during authentication initialization:", error);
@@ -229,78 +240,92 @@ const LandingScreen = ({ navigation, visible }) => {
 
   const handleAddContact = async () => {
     try {
-      if (!currentUser) {
-        // Alert user to sign in or create an account to see the contact list
-        Alert.alert(
-          "Not Signed In",
-          "Please sign in or register to add a contact.",
-          [
-            {
-              text: "OK",
-              onPress: () => {
-                // Time the warning message before redirecting the user
-                setTimeout(() => {
-                  navigation.navigate("LandingPage"); //navigate to the screen where they can sign in
-                }, 2000); // Delay for 2 seconds (2k is in milliseconds)
-              },
-            },
-          ]
-        );
+        setLoadingAdd(true);
 
-        return;
-      }
+        if (!currentUser) {
+            // Alert user to sign in or create an account to see the contact list
+            Alert.alert(
+                "Not Signed In",
+                "Please sign in or register to add a contact.",
+                [
+                    {
+                        text: "OK",
+                        onPress: () => {
+                            setTimeout(() => {
+                                navigation.navigate("LandingPage");
+                            }, 2000);
+                        },
+                    },
+                ]
+            );
+            setLoadingAdd(false);
+            return;
+        }
 
-      if (!newContactData.name) {
-        setNameError("Please enter Name");
-        return;
-      } else {
-        setNameError(null);
-      }
+        // Trim spaces from the name and phone number
+        const trimmedName = newContactData.name.trim();
+        const trimmedPhoneNumber = newContactData.phoneNumber.trim();
+        const trimmedRelationship = newContactData.relationship.trim();
 
-      if (!newContactData.phoneNumber) {
-        setPhoneError("Please enter Phone number");
-        return;
-      }
+        if (!trimmedName) {
+            setNameError("Please enter Name");
+            setLoadingAdd(false);
+            return;
+        } else {
+            setNameError(null);
+        }
 
-      const isValid = phoneInput.current?.isValidNumber(newContactData.phoneNumber);
-      if (!isValid) {
-        setPhoneError("Invalid phone number");
-        return;
-      } else {
-        setPhoneError(null);
-      }
+        if (!trimmedPhoneNumber) {
+            setPhoneError("Please enter Phone number");
+            setLoadingAdd(false);
+            return;
+        }
 
-      if (!newContactData.relationship) {
-        setRelationshipError("Please enter Relationship");
-        return;
-      } else {
-        setRelationshipError(null);
-      }
+        const isValid = phoneInput.current?.isValidNumber(trimmedPhoneNumber);
+        if (!isValid) {
+            setPhoneError("Invalid phone number");
+            setLoadingAdd(false);
+            return;
+        } else {
+            setPhoneError(null);
+        }
 
-      const contactWithUserId = {
-        ...newContactData,
-        userId: currentUser.uid,
-      };
+        if (!trimmedRelationship) {
+            setRelationshipError("Please enter Relationship");
+            setLoadingAdd(false);
+            return;
+        } else {
+            setRelationshipError(null);
+        }
 
-      await addContact(contactWithUserId).then(() => {
-        setLoading(false)
-      });
+        const contactWithUserId = {
+            ...newContactData,
+            name: trimmedName,
+            phoneNumber: trimmedPhoneNumber,
+            relationship: trimmedRelationship,
+            userId: currentUser.uid,
+        };
 
-      Toast.show({
-        type: 'success',
-        text1: 'Contact Added',
-        visibilityTime: 3000,
-      });
+        await addContact(contactWithUserId).then(() => {
+            setLoading(false);
+        });
 
+        Toast.show({
+            type: 'success',
+            text1: 'Contact Added',
+            visibilityTime: 3000,
+        });
 
-      fetchContacts().then(() => {
-
-      });
-      hideAddContactModal();
+        fetchContacts().then(() => {});
+        hideAddContactModal();
     } catch (error) {
-      console.error("Error adding contact: ", error);
+        console.error("Error adding contact: ", error);
+    } finally {
+        setLoadingAdd(false);
     }
-  };
+};
+
+  
 
   const selectContactForUpdate = (contact) => {
     setUpdatedContactData({
@@ -323,54 +348,61 @@ const LandingScreen = ({ navigation, visible }) => {
 
   const handleUpdateContact = async () => {
     try {
-      
+      setLoadingUpdate(true);
       console.log(modalData.id);
-
+  
       if (!modalData.id) {
         console.error("Selected contact has no valid ID");
+        setLoading(false);
         return;
       }
-
+  
       if (!modalData) {
         console.error("No updated data provided");
+        setLoadingUpdate(false);
         return;
       }
+  
       if (!modalData.name) {
         setNameError('Please enter Name');
+        setLoadingUpdate(false);
         return;
-      }
-      else {
+      } else {
         setNameError(null);
       }
+  
       if (!modalData.phoneNumber) {
         setPhoneError('Please enter Phone number');
+        setLoading(false);
         return;
-      }
-      {
+      } else {
         setPhoneError(null);
       }
-
+  
       if (!modalData.relationship) {
         setRelationshipError('Please enter Relationship');
+        setLoadingUpdate(false);
         return;
       } else {
         setRelationshipError(null);
       }
-
-
+  
       await updateContact(modalData.id, modalData);
       fetchContacts();
       hideUpdateModal();
       setConfirmationVisible(false);
       Toast.show({
         type: 'success',
-        text1: 'Succesfully update updated the emergency contact',
-        visibilityTime: 3000
-      })
+        text1: 'Successfully updated the emergency contact',
+        visibilityTime: 3000,
+      });
     } catch (error) {
       console.error("Error updating contact: ", error);
+    } finally {
+      setLoadingUpdate(false);
     }
   };
+  
 
   const showSignupModal = () => {
     setLoginModalVisible(false);
@@ -610,7 +642,7 @@ const LandingScreen = ({ navigation, visible }) => {
               </View>
             )}
 
-            
+
             {/* Update Contact Modal */}
             <Modal
               transparent={true}
@@ -715,8 +747,8 @@ const LandingScreen = ({ navigation, visible }) => {
             >
               <View style={styles.overlay} />
               <View style={styles.modalContainer}>
-              <TouchableOpacity style={styles.closeIcon} onPress={() => setUpdateModalVisible(false)}>
-              <FontAwesome name="times" size={24} color="white" />
+                <TouchableOpacity style={styles.closeIcon} onPress={() => setUpdateModalVisible(false)}>
+                  <FontAwesome name="times" size={24} color="white" />
                 </TouchableOpacity>
                 <View style={styles.modalCard}>
                   <Text style={styles.trustedContact}>Edit Contact</Text>
@@ -724,6 +756,7 @@ const LandingScreen = ({ navigation, visible }) => {
                     {modalData && (
                       <View>
                         <InputText
+                          ref={nameUpdateRef}
                           style={styles.input}
                           placeholder="Name"
                           value={modalData.name}
@@ -733,8 +766,11 @@ const LandingScreen = ({ navigation, visible }) => {
                               name: text,
                             })
                           }}
+                          onSubmitEditing={() => phoneUpdateRef.current.focus()}
+                          returnKeyType="next"
                         />
                         <InputText
+                          ref={phoneUpdateRef}
                           style={styles.input}
                           placeholder="Phone Number"
                           value={modalData.phoneNumber}
@@ -744,8 +780,11 @@ const LandingScreen = ({ navigation, visible }) => {
                               phoneNumber: text,
                             })
                           }
+                          onSubmitEditing={() => relationshipUpdateRef.current.focus()}
+                          returnKeyType="next"
                         />
                         <InputText
+                          ref={relationshipUpdateRef}
                           style={styles.input}
                           placeholder="Relationship"
                           value={modalData.relationship}
@@ -755,6 +794,7 @@ const LandingScreen = ({ navigation, visible }) => {
                               relationship: text,
                             })
                           }
+                          returnKeyType="done"
                         />
                         {/* list available contacts */}
                         <ScrollView
@@ -794,9 +834,12 @@ const LandingScreen = ({ navigation, visible }) => {
                         </ScrollView>
 
 
-                          <TouchableOpacity style={styles.addContactButton} onPress={() => handleUpdateContact()}>
-                            <Text>Update</Text>
-                          </TouchableOpacity>
+                        <TouchableOpacity style={styles.addContactButton} onPress={() => handleUpdateContact()}>
+
+                          {loadingUpdate?(<ActivityIndicator size={30} color="black" />):(<Text>Update</Text>)}
+                          
+                          
+                        </TouchableOpacity>
                       </View>
                     )}
                   </View>
@@ -806,69 +849,70 @@ const LandingScreen = ({ navigation, visible }) => {
 
             {/* Add Contact Modal */}
             <Modal
-  animationType="slide"
-  transparent={true}
-  visible={isAddContactModalVisible}
-  onRequestClose={hideAddContactModal}
->
-  <View style={styles.overlay} />
-  <View style={styles.modalContainer}>
-    <TouchableOpacity style={styles.closeIcon} onPress={() => setAddContactModalVisible(false)}>
-      <FontAwesome name="times" size={24} color="white" />
-    </TouchableOpacity>
-    <View style={styles.modalCard}>
-      <Text style={styles.trustedContact}>Add New Contact</Text>
-      <View style={styles.inputContainer}>
-        <InputText
-          label={"Name"}
-          placeholder="Name"
-          autoFocus
-          value={newContactData.name}
-          onChangeText={(text) =>
-            setNewContactData({ ...newContactData, name: text })
-          }
-          style={styles.input}
-        />
-        {nameError && <Text style={styles.errorText}>{nameError}</Text>}
-      </View>
+              animationType="slide"
+              transparent={true}
+              visible={isAddContactModalVisible}
+              onRequestClose={hideAddContactModal}
+            >
+              <View style={styles.overlay} />
+              <View style={styles.modalContainer}>
+                <TouchableOpacity style={styles.closeIcon} onPress={() => setAddContactModalVisible(false)}>
+                  <FontAwesome name="times" size={24} color="white" />
+                </TouchableOpacity>
+                <View style={styles.modalCard}>
+                  <Text style={styles.trustedContact}>Add New Contact</Text>
+                  <View style={styles.inputContainer}>
+                    <InputText
+                      label={"Name"}
+                      placeholder="Name"
+                      autoFocus
+                      value={newContactData.name}
+                      onChangeText={(text) =>
+                        setNewContactData({ ...newContactData, name: text })
+                      }
+                      style={styles.input}
+                    />
+                    {nameError && <Text style={styles.errorText}>{nameError}</Text>}
+                  </View>
 
-      <View style={styles.inputContainer}>
-        <PhoneInput
-          ref={phoneInput}
-          defaultValue={phone}
-          defaultCode="ZA"
-          layout="first"
-          onChangeFormattedText={(text) => {
-            validatePhoneNumber(text);
-            setPhone(text);
-          }}
-          withShadow
-          
-        />
-        {phoneError ? <Text style={{ color: 'red' }}>{phoneError}</Text> : null}
-      </View>
+                  <View style={styles.inputContainer}>
+                    <PhoneInput
+                      ref={phoneInput}
+                      defaultValue={phone}
+                      defaultCode="ZA"
+                      layout="first"
+                      onChangeFormattedText={(text) => {
+                        validatePhoneNumber(text);
+                        setPhone(text);
+                      }}
+                      withShadow
 
-      <View style={styles.inputContainer}>
-        <InputText
-          label={"Relationship"}
-          placeholder="Relationship"
-          value={newContactData.relationship}
-          onChangeText={(text) =>
-            setNewContactData({ ...newContactData, relationship: text })
-          }
-          style={styles.input}
-        />
-        {relationshipError && (
-          <Text style={styles.errorText}>{relationshipError}</Text>
-        )}
-      </View>
+                    />
+                    {phoneError ? <Text style={{ color: 'red' }}>{phoneError}</Text> : null}
+                  </View>
 
-      <TouchableOpacity style={styles.addContactButton} onPress={handleAddContact}>
-        <Text>Add Contact</Text>
-      </TouchableOpacity>
-    </View>
-  </View>
-</Modal>
+                  <View style={styles.inputContainer}>
+                    <InputText
+                      label={"Relationship"}
+                      placeholder="Relationship"
+                      value={newContactData.relationship}
+                      onChangeText={(text) =>
+                        setNewContactData({ ...newContactData, relationship: text })
+                      }
+                      style={styles.input}
+                    />
+                    {relationshipError && (
+                      <Text style={styles.errorText}>{relationshipError}</Text>
+                    )}
+                  </View>
+
+                  <TouchableOpacity style={styles.addContactButton} onPress={handleAddContact}>
+                    {loadingAdd? (<ActivityIndicator size="small" color="black" />):(<Text>Add Contact</Text>)}
+                    
+                  </TouchableOpacity>
+                </View>
+              </View>
+            </Modal>
 
 
             {/* View Contacts Pseudo Bottom Sheet */}
@@ -958,7 +1002,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
   },
-  
+
   bottomSheet: {
     position: 'absolute',
     bottom: 0,
@@ -1100,7 +1144,7 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
   inputContainer: {
-    width: '100%', 
+    width: '100%',
     marginBottom: 20,
   },
   input: {
@@ -1119,12 +1163,12 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     paddingHorizontal: 10,
   },
-  
+
   phoneInputText: {
     color: "black",
     height: 20,
-    
-    
+
+
   },
   buttonGroup: {
     width: "100%",
@@ -1364,7 +1408,7 @@ const styles = StyleSheet.create({
     justifyContent: "flex-end",
     margin: 8,
     height: 48,
-    
+
   },
 });
 

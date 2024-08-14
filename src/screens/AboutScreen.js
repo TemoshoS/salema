@@ -9,6 +9,7 @@ import {
   ScrollView,
 } from "react-native";
 
+
 // import AppBar from "../components/Appbar";
 
 const AboutScreen = () => {
@@ -24,8 +25,14 @@ const AboutScreen = () => {
 
   // Function to open the WhatsApp chat
   const handleWhatsAppPress = () => {
-    Linking.openURL("https://wa.me/your-phone-number");
+    const phoneNumber = "+27671276191";
+    const url = `https://wa.me/${phoneNumber}`;
+    
+    Linking.openURL(url).catch((err) => {
+      console.error("Failed to open WhatsApp:", err);
+    });
   };
+
   const handleExternalLink = () => {
     Linking.openURL("#");
   };
