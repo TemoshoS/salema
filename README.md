@@ -42,7 +42,7 @@ GPS Location Sharing: The system will automatically include the user's current G
 
 * [Firebase](https://firebase.google.com)
 * [React Native Expo](https://docs.expo.dev)
-* [API SMS Portal](https://www.infobip.com/docs/api)
+* [API SMS Portal](https://www.twilio.com/docs/
   
 ## Getting Started
 
@@ -58,7 +58,7 @@ This is an example of how to list things you need to use the software and how to
 
 ### Installation
 
-1. Get a SMS API Key at [https://example.com](https://example.com)
+1. Get a SMS API Key at (https://www.twilio.com)
 2. Installing
    ```sh
    npm install -g expo-cli
