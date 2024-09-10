@@ -12,8 +12,8 @@ const sendSms = async (to, from, body) => {
             formData,
             {
                 auth: {
-                    username: '',
-                    password: ''
+                    username: ' ',
+                    password: ' '
                 },
                 headers: {
                     'Content-Type': 'application/x-www-form-urlencoded'

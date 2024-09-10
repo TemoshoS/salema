@@ -11,20 +11,30 @@
     },
     "preview2": {
       "android": {
-        "gradleCommand": ":app:assembleRelease"
+        "gradleCommand": ":app:assembleRelease",
+        "buildType": "apk"
       },
       "channel": "preview2"
     },
     "preview3": {
       "developmentClient": true,
-      "channel": "preview3"
+      "channel": "preview3",
+      "android": {
+        "buildType": "apk"
+      }
     },
     "preview4": {
       "distribution": "internal",
-      "channel": "preview4"
+      "channel": "preview4",
+      "android": {
+        "buildType": "apk"
+      }
     },
     "production": {
-      "channel": "production"
+      "channel": "production",
+      "android": {
+        "buildType": "apk"
+      }
     }
   }
 }

@@ -546,11 +546,11 @@ const LandingScreen = ({ navigation, visible }) => {
       <GestureHandlerRootView style={{ flex: 1 }}>
         <BottomSheetModalProvider>
           <View style={styles.container}>
-            {/* Backhground image */}
+            
             <Image
-              source={require("../../assets/iSalema.png")}
+              source={require("../../assets/no.png")}
               style={styles.logoImg}
-              accessibilityLabel="logo"
+              
             />
             <Text style={{ color: "gray", fontSize: 16 }}>Your safety just a shake away</Text>
             {/* Staus image */}

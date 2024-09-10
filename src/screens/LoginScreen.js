@@ -1,5 +1,5 @@
 import React, { useState, useRef } from "react";
-import { StyleSheet, Text, View, TouchableOpacity, Alert, ActivityIndicator } from "react-native";
+import { StyleSheet, Text, View, TouchableOpacity, ActivityIndicator } from "react-native";
 import InputText from "../components/InputText";
 import authService from "../services/authService";
 import { FontAwesome } from '@expo/vector-icons';
@@ -8,7 +8,6 @@ import Toast from 'react-native-toast-message';
 const LoginScreen = ({ onRegister, onLogin, onForgotPass, closeModal, openRegister }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [loginAttempts, setLoginAttempts] = useState(0);
   const [showPassword, setShowPassword] = useState(false);
   const { loginUser } = authService();
   const [loading, setLoading] = useState(false);
@@ -25,34 +24,64 @@ const LoginScreen = ({ onRegister, onLogin, onForgotPass, closeModal, openRegist
       setLoading(true);
       const user = await loginUser(trimmedEmail, trimmedPassword);
       if (user) {
-        console.log(user.email + 'login page line 26');
         closeModal();
+        Toast.show({
+          type: 'success',
+          text1: 'Login Successful',
+          visibilityTime: 3000, 
+        });
       }
       setLoading(false);
-
-      Toast.show({
-        type: 'success',
-        text1: 'Login Successful',
-        visibilityTime: 3000, 
-      });
-
     } catch (error) {
-      Alert.alert(error.message);
-      console.log(error);
-      setLoginAttempts(loginAttempts + 1);
       setLoading(false);
-      
+
+      // Check if it's a network error
+      if (error.message === 'Network Error') {
+        Toast.show({
+          type: 'error',
+          text1: 'Network Error',
+          text2: 'Please check your internet connection.',
+          visibilityTime: 6000,
+          text1Style: { color: 'red' }, // Text color for the title
+          text2Style: { color: 'red' }, // Text color for the message
+        });
+      }
+      // Handle authentication errors (like invalid credentials)
+      else if (error.code === 'auth/invalid-credential') {
+        Toast.show({
+          type: 'error',
+          text1: 'Login Failed',
+          text2: 'Incorrect email or password. Please try again.',
+          visibilityTime: 6000,
+          text1Style: { color: 'red' },
+          text2Style: { color: 'red' },
+          
+        });
+      }
+      // Handle too many login attempts (auth/too-many-requests)
+    else if (error.code === 'auth/too-many-requests') {
       Toast.show({
         type: 'error',
-        text1: 'Incorrect email or password',
-        text2: 'Please try again',
-        visibilityTime: 3000,
+        text1: 'Account Locked',
+        text2: 'Too many failed login attempts. Please reset your password or try again later.',
+        visibilityTime: 6000,
+        text1Style: { color: 'red' },
+        text2Style: { color: 'red' },
+        style: { height: 100, paddingVertical: 20 },
       });
-
-      // Check if login attempts exceed the limit (e.g., 3)
-      if (loginAttempts >= 3) {
-        Alert.alert('Login attempts exceeded. Your account is locked.');
+    }
+      // Handle other errors (fallback)
+      else {
+        Toast.show({
+          type: 'error',
+          text1: 'Error',
+          text2: 'Something went wrong. Please try again later.',
+          visibilityTime: 6000,
+          text1Style: { color: 'red' },
+          text2Style: { color: 'red' },
+        });
       }
+      
     }
   };
 
@@ -69,6 +98,7 @@ const LoginScreen = ({ onRegister, onLogin, onForgotPass, closeModal, openRegist
       <TouchableOpacity style={styles.closeIcon} onPress={() => closeModal()}>
         <FontAwesome name="times" size={24} color="white" />
       </TouchableOpacity>
+
       {loading ? (
         <ActivityIndicator size="large" color="#0000ff" />
       ) : (
@@ -88,6 +118,7 @@ const LoginScreen = ({ onRegister, onLogin, onForgotPass, closeModal, openRegist
               onSubmitEditing={() => passwordRef.current.focus()}
               returnKeyType="next"
             />
+
             <View style={styles.passwordInputContainer}>
               <InputText
                 ref={passwordRef}
@@ -95,7 +126,7 @@ const LoginScreen = ({ onRegister, onLogin, onForgotPass, closeModal, openRegist
                 onChangeText={(text) => setPassword(text)}
                 style={styles.passwordInput}
                 placeholder="password"
-                secureTextEntry={!showPassword} 
+                secureTextEntry={!showPassword}
                 placeholderTextColor="#f2f2f2"
                 label={"Password"}
                 returnKeyType="done"
@@ -121,11 +152,15 @@ const LoginScreen = ({ onRegister, onLogin, onForgotPass, closeModal, openRegist
           </View>
         </View>
       )}
+
+      <Toast />
     </View>
   );
 };
 
 export default LoginScreen;
+
+
 
 const styles = StyleSheet.create({
   container: {

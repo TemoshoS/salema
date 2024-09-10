@@ -1,5 +1,5 @@
-import React, { useEffect, useState , useRef} from 'react';
-import { View, Text, TextInput, StyleSheet, Image, Modal, TouchableOpacity, FlatList, ScrollView, Share} from 'react-native';
+import React, { useEffect, useState, useRef } from 'react';
+import { View, Text, TextInput, StyleSheet, Image, Modal, TouchableOpacity, FlatList, ScrollView, Share } from 'react-native';
 import { FontAwesome } from '@expo/vector-icons';
 import { getPeople, addPerson, addCommentToPerson } from '../services/missingService';
 import * as ImagePicker from 'expo-image-picker';
@@ -56,7 +56,7 @@ const MissingScreen = () => {
   const [commentLoading, setCommentLoading] = useState(false);
   const [zoomImageVisible, setZoomImageVisible] = useState(false);
   const [zoomImageUrl, setZoomImageUrl] = useState('');
-  
+
 
   const nameInputRef = useRef(null);
   const ageInputRef = useRef(null);
@@ -95,37 +95,37 @@ const MissingScreen = () => {
         setPopupMessage('Please select a person and enter a comment or select an image.');
         return;
       }
-  
+
       // Get the username of the current user
       const username = user?.displayName || 'Anonymous';
-  
+
       await addCommentToPerson(selectedPerson.id, comment, commentImage, username);
-  
+
       const updatedPersons = missingPersons.map((person) =>
         person.id === selectedPerson.id
           ? { ...person, comments: [{ text: comment, image: commentImage, username }, ...(person.comments || [])] }
           : person
       );
-  
+
       setMissingPersons(updatedPersons);
-  
+
       setSelectedPerson({
         ...selectedPerson,
         comments: [{ text: comment, image: commentImage, username }, ...(selectedPerson.comments || [])],
       });
-  
+
       setCommentModalVisible(false);
       setComment('');
       setCommentImage(null);
-  
+
       setPopupMessage('Comment added successfully!');
     } catch (error) {
       setPopupMessage(error.message);
-    } finally{
+    } finally {
       setCommentLoading(false);
     }
   };
-  
+
 
 
   const handleShare = async (names, lastSeen, age, image, contacts) => {
@@ -155,7 +155,7 @@ const MissingScreen = () => {
 
     try {
       setLoading(true);
-      if (!newPerson.names || !newPerson.age || !newPerson.lastSeen || !newPerson.contacts|| !images ) {
+      if (!newPerson.names || !newPerson.age || !newPerson.lastSeen || !newPerson.contacts || !images) {
         setPopupMessage('Please fill in all the fields and select an image.');
         return;
       }
@@ -180,9 +180,9 @@ const MissingScreen = () => {
     } catch (error) {
       setPopupMessage(error.message);
     }
-   finally {
-    setLoading(false); 
-  }
+    finally {
+      setLoading(false);
+    }
   };
 
 
@@ -203,7 +203,6 @@ const MissingScreen = () => {
       let result = await ImagePicker.launchImageLibraryAsync({
         mediaTypes: ImagePicker.MediaTypeOptions.Images,
         allowsEditing: true,
-        aspect: [4, 3],
         quality: 1,
       });
 
@@ -221,7 +220,6 @@ const MissingScreen = () => {
       let result = await ImagePicker.launchImageLibraryAsync({
         mediaTypes: ImagePicker.MediaTypeOptions.Images,
         allowsEditing: true,
-        aspect: [4, 3],
         quality: 1,
       });
 
@@ -247,22 +245,21 @@ const MissingScreen = () => {
 
   const handleZoomImage = (imageUrl) => {
     if (imageUrl) {
-      console.log("Zoom Image URL: ", imageUrl); 
       setZoomImageUrl(imageUrl);
       setZoomImageVisible(true);
     } else {
       setPopupMessage('No image URL provided.');
     }
   };
-  
-  
-  
+
+
+
 
   const handlePray = (person) => {
     const message = `Sending heartfelt prayers for ${person.names}. May they be found safe and sound.`;
     setPopupMessage(message);
   };
-  
+
 
   const renderItem = ({ item }) => (
     <TouchableOpacity
@@ -270,10 +267,10 @@ const MissingScreen = () => {
       onPress={() => setSelectedPerson(item)}
     >
       <View style={styles.imageContainer}>
-      <TouchableOpacity onPress={() => handleZoomImage(item.image)}>
-        <Image source={{ uri: item.image }} style={styles.image} />
-      </TouchableOpacity>
-        <Text style={styles.overlayText}>Missing Person</Text>
+        <TouchableOpacity onPress={() => handleZoomImage(item.image)}>
+          <Image source={{ uri: item.image }} style={styles.image} />
+        </TouchableOpacity>
+
       </View>
       <View style={styles.detailsContainer}>
         <Text style={styles.names}>{item.names}, {item.age} years old</Text>
@@ -282,7 +279,7 @@ const MissingScreen = () => {
         <Text style={styles.posted}>Posted By: {item.postedBy}</Text>
         <View style={styles.buttonContainer}>
           <TouchableOpacity style={styles.buttonPost} onPress={() => handlePray(item)}>
-          <MaterialCommunityIcons name="hands-pray" size={24} color="#36454F" />
+            <MaterialCommunityIcons name="hands-pray" size={24} color="#36454F" />
           </TouchableOpacity>
           <TouchableOpacity style={styles.buttonPost} onPress={() => handleComment(item)}>
             <FontAwesome name="comment" size={24} color="#36454F" />
@@ -291,7 +288,7 @@ const MissingScreen = () => {
             <FontAwesome name="share" size={24} color="#36454F" />
           </TouchableOpacity>
         </View>
-        
+
       </View>
     </TouchableOpacity>
   );
@@ -325,63 +322,63 @@ const MissingScreen = () => {
         />
       ) : (
         <View style={{ flex: 1 }}>
-        <TouchableOpacity
-  style={styles.button}
-  onPress={() => {
-    setSelectedPerson(null);
-    resetCommentModal();
-  }}
->
-  <Text style={styles.buttonText}>Back to List</Text>
-</TouchableOpacity>
+          <TouchableOpacity
+            style={styles.button}
+            onPress={() => {
+              setSelectedPerson(null);
+              resetCommentModal();
+            }}
+          >
+            <Text style={styles.buttonText}>Back to List</Text>
+          </TouchableOpacity>
 
-<ScrollView style={styles.commentContainer}>
-  {selectedPerson.comments?.reverse().map((comment, index) => (
-    <View key={index} style={styles.comment}>
-      <View style={styles.commentC}>
-      <Text style={styles.commentUser}>{comment.username}: </Text>
-      <Text>{comment.text}</Text>
-      </View>
+          <ScrollView style={styles.commentContainer}>
+            {selectedPerson.comments?.reverse().map((comment, index) => (
+              <View key={index} style={styles.comment}>
+                <View style={styles.commentC}>
+                  <Text style={styles.commentUser}>{comment.username}: </Text>
+                  <Text>{comment.text}</Text>
+                </View>
 
-      <TouchableOpacity onPress={() => handleZoomImage(comment.image)}>
-  {comment.image && (
-    <Image source={{ uri: comment.image }} style={styles.commentImage} />
-  )}
-</TouchableOpacity>
-
-
-    </View>
-  ))}
-</ScrollView>
+                <TouchableOpacity onPress={() => handleZoomImage(comment.image)}>
+                  {comment.image && (
+                    <Image source={{ uri: comment.image }} style={styles.commentImage} />
+                  )}
+                </TouchableOpacity>
 
 
-<View style={styles.addCommentContainer}>
-  <View style={styles.inputContainer}>
-    <TextInput
-      style={styles.textArea}
-      placeholder="Add a comment"
-      placeholderTextColor="gray"
-      value={comment}
-      onChangeText={(text) => setComment(text)}
-      multiline
-      numberOfLines={4}
-      textAlignVertical="top"
-    />
-    <TouchableOpacity style={styles.button} onPress={handleAddComment}>
-    <Feather name="send" size={24} color="#36454F" />
-      {commentLoading && <MaterialIndicator color='#3c78e9' size={30}/>}
-    </TouchableOpacity>
-  </View>
-  <TouchableOpacity style={styles.button} onPress={pickCommentImage}>
-  <FontAwesome name="image" size={20} color="#36454F" />
-  </TouchableOpacity>
-  {commentImage && (
-    <Image source={{ uri: commentImage }} style={styles.commentImage} />
-  )}
-</View>
+              </View>
+            ))}
+          </ScrollView>
 
 
-      </View>
+          <View style={styles.addCommentContainer}>
+            <View style={styles.inputContainer}>
+              <TextInput
+                style={styles.textArea}
+                placeholder="Add a comment"
+                placeholderTextColor="gray"
+                value={comment}
+                onChangeText={(text) => setComment(text)}
+                multiline
+                numberOfLines={4}
+                textAlignVertical="top"
+              />
+              <TouchableOpacity style={styles.button} onPress={handleAddComment}>
+                <Feather name="send" size={24} color="#36454F" />
+                {commentLoading && <MaterialIndicator color='#3c78e9' size={30} />}
+              </TouchableOpacity>
+            </View>
+            <TouchableOpacity style={styles.button} onPress={pickCommentImage}>
+              <FontAwesome name="image" size={20} color="#36454F" />
+            </TouchableOpacity>
+            {commentImage && (
+              <Image source={{ uri: commentImage }} style={styles.commentImage} />
+            )}
+          </View>
+
+
+        </View>
       )}
       <Modal
         animationType="slide"
@@ -396,7 +393,7 @@ const MissingScreen = () => {
           <View style={styles.modalView}>
             <Text style={styles.modalTitle}>Add Missing Person</Text>
             <ScrollView>
-            <TextInput
+              <TextInput
                 ref={nameInputRef}
                 style={styles.input}
                 placeholder="Names"
@@ -421,13 +418,13 @@ const MissingScreen = () => {
                 ref={lastSeenInputRef}
                 style={styles.input}
                 placeholderTextColor='white'
-                placeholder="Last Seen"
+                placeholder="Description"
                 value={newPerson.lastSeen}
                 onChangeText={(text) => setNewPerson({ ...newPerson, lastSeen: text })}
                 returnKeyType="next"
                 onSubmitEditing={() => focusNextField(contactsInputRef)}
               />
-             <TextInput
+              <TextInput
                 ref={contactsInputRef}
                 style={styles.input}
                 placeholder="Contacts"
@@ -439,21 +436,21 @@ const MissingScreen = () => {
                 onSubmitEditing={pickImage}
               />
               <TouchableOpacity style={styles.imagePickerButton} onPress={pickImage}>
-              <FontAwesome name="image" size={20} color="#36454F" />
+                <FontAwesome name="image" size={20} color="#36454F" />
               </TouchableOpacity>
               {images && <Image source={{ uri: images }} style={styles.selectedImage} />}
 
               <View style={styles.addCancelContainer}>
-              <TouchableOpacity style={styles.button} onPress={handleAddPerson} disabled={loading}>
-              {loading ? <BallIndicator size={30} color="blue" /> : <Text style={styles.buttonText}>Add Person</Text>}
-            </TouchableOpacity>
+                <TouchableOpacity style={styles.button} onPress={handleAddPerson} disabled={loading}>
+                  {loading ? <BallIndicator size={30} color="blue" /> : <Text style={styles.buttonText}>Add Person</Text>}
+                </TouchableOpacity>
 
-              <TouchableOpacity style={styles.modalCButton} onPress={() => {
-                setAddPersonModalVisible(false);
-                resetNewPersonModal();
-              }}>
-                <Text style={styles.modalCButtonText}>Cancel</Text>
-              </TouchableOpacity>
+                <TouchableOpacity style={styles.modalCButton} onPress={() => {
+                  setAddPersonModalVisible(false);
+                  resetNewPersonModal();
+                }}>
+                  <Text style={styles.modalCButtonText}>Cancel</Text>
+                </TouchableOpacity>
               </View>
             </ScrollView>
           </View>
@@ -462,20 +459,20 @@ const MissingScreen = () => {
 
       <Popup message={popupMessage} onClose={() => setPopupMessage('')} />
 
-        {/* Zoom Image Modal */}
-        <Modal
-  visible={zoomImageVisible}
-  transparent={true}
-  onRequestClose={() => setZoomImageVisible(false)}
->
-  
-    {zoomImageUrl ? (
-      <ImageViewer imageUrls={[{ url: zoomImageUrl }]} />
-    ) : (
-      <Text>No image to display</Text>
-    )}
-  
-</Modal>
+      {/* Zoom Image Modal */}
+      <Modal
+        visible={zoomImageVisible}
+        transparent={true}
+        onRequestClose={() => setZoomImageVisible(false)}
+      >
+
+        {zoomImageUrl ? (
+          <ImageViewer imageUrls={[{ url: zoomImageUrl }]} />
+        ) : (
+          <Text>No image to display</Text>
+        )}
+
+      </Modal>
 
 
 
@@ -506,7 +503,7 @@ const styles = StyleSheet.create({
   overlayText: {
     position: 'absolute',
     top: 35,
-    left: -5, 
+    left: -5,
     textShadowColor: 'rgba(0, 0, 0, 0.75)',
     color: '#fff',
     padding: 5,
@@ -517,7 +514,7 @@ const styles = StyleSheet.create({
     textShadowRadius: 10,
     transform: [{ rotate: '-45deg' }],
     textAlign: 'center',
-    
+
   },
   detailsContainer: {
     padding: 10,
@@ -559,11 +556,11 @@ const styles = StyleSheet.create({
     padding: 10,
     backgroundColor: '#fff',
   },
-  commentC :{
-    flexDirection: 'row', 
-   
+  commentC: {
+    flexDirection: 'row',
+
   },
-  commentUser:{
+  commentUser: {
     fontWeight: 'bold',
   },
   addCommentContainer: {
@@ -611,7 +608,7 @@ const styles = StyleSheet.create({
     color: '#002E15',
     fontWeight: 'bold',
 
-   
+
   },
   modalZoom: {
     flex: 1,
@@ -619,7 +616,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: 'rgba(0,0,0,0.5)',
   },
-  
+
   modalContainer: {
     flex: 1,
     justifyContent: 'center',
@@ -642,7 +639,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     marginBottom: 10,
     color: '#fff',
-    
+
   },
   input: {
     borderBottomWidth: 1,
@@ -650,8 +647,8 @@ const styles = StyleSheet.create({
     color: 'white',
     padding: 10,
     marginBottom: 10,
-    
-    
+
+
   },
   imagePickerButton: {
     backgroundColor: "#C8FFD7",
@@ -671,12 +668,12 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   addCancelContainer: {
-    flexDirection: 'row', 
-    justifyContent: 'space-between', 
-    alignItems: 'center', 
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
     padding: 10,
-   
-    
+
+
   },
   modalButton: {
     backgroundColor: "#C8FFD7",

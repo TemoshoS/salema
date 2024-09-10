@@ -4,10 +4,10 @@
     "slug": "salema",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/iconSalema.png",
+    "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
     "splash": {
-      "image": "./assets/iconSalema.png",
+      "image": "./assets/icon.png",
       "resizeMode": "contain"
     },
     "assetBundlePatterns": [
@@ -21,7 +21,7 @@
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/iconSalema.png"
+        "foregroundImage": "./assets/icon.png"
       },
       "package": "com.salema",
       "runtimeVersion": "1.0.0"
