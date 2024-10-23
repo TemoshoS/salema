@@ -1,4 +1,4 @@
-import { collection, getDocs, addDoc, updateDoc, doc, arrayUnion } from "firebase/firestore";
+import { collection, getDocs, addDoc,getDoc,deleteDoc, updateDoc, doc, arrayUnion } from "firebase/firestore";
 import { db, storage } from "./firebaseService";
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 
@@ -47,4 +47,37 @@ async function addCommentToPerson(personId, comment, imageUri, username) {
   }
 }
 
-export { getPeople, addPerson, addCommentToPerson };
+async function deletePerson(personId) {
+  try {
+    const missingRef = doc(db, 'missing', personId);
+    await deleteDoc(missingRef);
+  } catch (error) {
+    console.error('Error deleting missing person:', error);
+    throw new Error('Could not delete person');
+  }
+}
+
+async function deleteCommentFromPerson(personId, commentIndex) {
+  try {
+    const personDocRef = doc(db, 'missing', personId);
+    const docSnap = await getDoc(personDocRef);
+
+    if (!docSnap.exists()) {
+      throw new Error('Person not found');
+    }
+
+    const comments = docSnap.data().comments || [];
+    if (commentIndex >= comments.length) {
+      throw new Error('Invalid comment index');
+    }
+
+    comments.splice(commentIndex, 1);
+    
+    await updateDoc(personDocRef, { comments });
+  } catch (error) {
+    console.error('Error deleting comment:', error);
+    throw new Error('Could not delete comment');
+  }
+}
+
+export { getPeople, addPerson, addCommentToPerson, deletePerson, deleteCommentFromPerson };

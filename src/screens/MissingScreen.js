@@ -1,22 +1,20 @@
 import React, { useEffect, useState, useRef } from 'react';
-import { View, Text, TextInput, StyleSheet, Image, Modal, TouchableOpacity, FlatList, ScrollView, Share } from 'react-native';
-import { FontAwesome } from '@expo/vector-icons';
-import { getPeople, addPerson, addCommentToPerson } from '../services/missingService';
+import { View, Text, TextInput, StyleSheet, Image, Modal, TouchableOpacity, FlatList, ScrollView, Share, Alert } from 'react-native';
+import { getPeople, addPerson, addCommentToPerson, deletePerson, deleteCommentFromPerson } from '../services/missingService';
 import * as ImagePicker from 'expo-image-picker';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { storage } from '../services/firebaseService';
 import authService from "../services/authService";
-import { FontAwesome5 } from '@expo/vector-icons';
+import FontAwesome from 'react-native-vector-icons/FontAwesome';
+import Feather from 'react-native-vector-icons/Feather';
 import * as Notifications from 'expo-notifications';
 import ImageViewer from 'react-native-image-zoom-viewer';
-import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
-import Feather from '@expo/vector-icons/Feather';
-
-
+import { auth } from '../services/firebaseService';
 import {
   BallIndicator,
   MaterialIndicator,
 } from 'react-native-indicators';
+import { BannerAd, BannerAdSize, TestIds } from 'react-native-google-mobile-ads';
 
 
 
@@ -43,7 +41,7 @@ const Popup = ({ message, onClose }) => {
 const MissingScreen = () => {
   const { checkUserLoggedIn, user } = authService();
   const [missingPersons, setMissingPersons] = useState([]);
-  const [newPerson, setNewPerson] = useState({ names: '', age: '', lastSeen: '', image: '', contacts: '' });
+  const [newPerson, setNewPerson] = useState({ names: '', age: '', lastSeen: '', description: '', image: '', contacts: '' });
   const [addPersonModalVisible, setAddPersonModalVisible] = useState(false);
   const [commentModalVisible, setCommentModalVisible] = useState(false);
   const [images, setImage] = useState(null);
@@ -62,6 +60,10 @@ const MissingScreen = () => {
   const ageInputRef = useRef(null);
   const lastSeenInputRef = useRef(null);
   const contactsInputRef = useRef(null);
+
+  const userP = auth.currentUser;
+  const userId = userP ? userP.uid : null;
+  const isAdmin = userP ? userP.email === 'mansalema@admin.co' : false;
 
   useEffect(() => {
     const fetchData = async () => {
@@ -131,7 +133,7 @@ const MissingScreen = () => {
   const handleShare = async (names, lastSeen, age, image, contacts) => {
     try {
       const result = await Share.share({
-        message: `Help find ${names}! Last seen: ${lastSeen}, Age: ${age}, Contacts: ${contacts}, Picture: ${image}`,
+        message: `Help find ${names}! Last seen: ${lastSeen},Description: ${description}, Age: ${age}, Contacts: ${contacts}, Picture: ${image}`,
       });
       if (result.action === Share.sharedAction) {
         if (result.activityType) {
@@ -155,7 +157,7 @@ const MissingScreen = () => {
 
     try {
       setLoading(true);
-      if (!newPerson.names || !newPerson.age || !newPerson.lastSeen || !newPerson.contacts || !images) {
+      if (!newPerson.names || !newPerson.age || !newPerson.lastSeen || !newPerson.description || !newPerson.contacts || !images) {
         setPopupMessage('Please fill in all the fields and select an image.');
         return;
       }
@@ -184,6 +186,78 @@ const MissingScreen = () => {
       setLoading(false);
     }
   };
+
+  const handleDelete = async (missingId) => {
+    Alert.alert(
+      "Confirm Deletion",
+      "Are you sure you want to delete this missing person?",
+      [
+        {
+          text: "Cancel",
+          onPress: () => console.log("Deletion cancelled"),
+          style: "cancel",
+        },
+        {
+          text: "Delete",
+          onPress: async () => {
+            console.log('Deleting missing person with ID:', missingId);
+            try {
+              await deletePerson(missingId);
+              setPopupMessage('Missing person deleted successfully');
+
+              // Refresh the missing persons list
+              const updatedPersons = await getPeople();
+              setMissingPersons(updatedPersons);
+            } catch (error) {
+              setPopupMessage(error.message);
+            }
+          },
+        },
+      ],
+      { cancelable: false }
+    );
+  };
+
+
+  const handleDeleteComment = async (commentIndex) => {
+    if (!selectedPerson) return;
+
+    Alert.alert(
+      "Confirm Deletion",
+      "Are you sure you want to delete this comment?",
+      [
+        {
+          text: "Cancel",
+          onPress: () => console.log("Comment deletion cancelled"),
+          style: "cancel",
+        },
+        {
+          text: "Delete",
+          onPress: async () => {
+            try {
+              await deleteCommentFromPerson(selectedPerson.id, commentIndex);
+              const updatedComments = selectedPerson.comments.filter((_, index) => index !== commentIndex);
+              const updatedPerson = { ...selectedPerson, comments: updatedComments };
+              setSelectedPerson(updatedPerson);
+              setMissingPersons((prev) =>
+                prev.map((person) =>
+                  person.id === selectedPerson.id ? updatedPerson : person
+                )
+              );
+
+              setPopupMessage('Comment deleted successfully');
+              console.log('Comment deleted successfully');
+            } catch (error) {
+              console.error('Error deleting comment:', error);
+              setPopupMessage(error.message);
+            }
+          },
+        },
+      ],
+      { cancelable: false }
+    );
+  };
+
 
 
   const sendSuccessNotification = async (message) => {
@@ -233,7 +307,7 @@ const MissingScreen = () => {
 
 
   const resetNewPersonModal = () => {
-    setNewPerson({ names: '', age: '', lastSeen: '', image: '', contacts: '' });
+    setNewPerson({ names: '', age: '', lastSeen: '', description: '', image: '', contacts: '' });
     setImage(null);
   };
 
@@ -270,27 +344,34 @@ const MissingScreen = () => {
         <TouchableOpacity onPress={() => handleZoomImage(item.image)}>
           <Image source={{ uri: item.image }} style={styles.image} />
         </TouchableOpacity>
-
       </View>
       <View style={styles.detailsContainer}>
         <Text style={styles.names}>{item.names}, {item.age} years old</Text>
-        <Text style={styles.lastSeen}>{item.lastSeen}</Text>
-        <Text style={styles.contacts}>Contacts: {item.contacts}</Text>
+        <View style={styles.subDetails}>
+          <Text style={styles.lastSeen}>{item.lastSeen}</Text>
+          <Text style={styles.contacts}>{item.contacts}</Text>
+        </View>
+        <Text style={styles.description}>{item.description}</Text>
         <Text style={styles.posted}>Posted By: {item.postedBy}</Text>
         <View style={styles.buttonContainer}>
-          <TouchableOpacity style={styles.buttonPost} onPress={() => handlePray(item)}>
-            <MaterialCommunityIcons name="hands-pray" size={24} color="#36454F" />
-          </TouchableOpacity>
+
+          {isAdmin && (
+            <TouchableOpacity style={styles.buttonPost} onPress={() => handleDelete(item.id)}>
+              <FontAwesome name="trash" size={24} color="#20C997" />
+            </TouchableOpacity>
+          )}
+
           <TouchableOpacity style={styles.buttonPost} onPress={() => handleComment(item)}>
-            <FontAwesome name="comment" size={24} color="#36454F" />
+            <FontAwesome name="comment" size={24} color="#20C997" />
           </TouchableOpacity>
-          <TouchableOpacity style={styles.buttonPost} onPress={() => handleShare(item.names, item.lastSeen, item.age, item.image, item.contacts)}>
-            <FontAwesome name="share" size={24} color="#36454F" />
+          <TouchableOpacity style={styles.buttonPost} onPress={() => handleShare(item.names, item.lastSeen, item.description, item.age, item.image, item.contacts)}>
+            <FontAwesome name="share" size={24} color="#20C997" />
           </TouchableOpacity>
         </View>
-
       </View>
     </TouchableOpacity>
+
+
   );
 
   const parseTimestamp = (timestamp) => {
@@ -314,71 +395,78 @@ const MissingScreen = () => {
           keyExtractor={(item) => item.id}
           ListHeaderComponent={
             <View style={styles.addButtonContainer}>
-              <TouchableOpacity style={styles.addButton} onPress={() => setAddPersonModalVisible(true)}>
+              <TouchableOpacity
+                style={styles.addButton}
+                onPress={() => setAddPersonModalVisible(true)}
+                activeOpacity={0.8}
+              >
                 <Text style={styles.addButtonText}>Add Missing Person</Text>
               </TouchableOpacity>
             </View>
           }
         />
       ) : (
-        <View style={{ flex: 1 }}>
+        <View style={{ flex: 1, backgroundColor: '#f8f9fa' }}>
           <TouchableOpacity
-            style={styles.button}
+            style={styles.backButton}
             onPress={() => {
               setSelectedPerson(null);
               resetCommentModal();
             }}
           >
-            <Text style={styles.buttonText}>Back to List</Text>
+            <Text style={styles.backButtonText}>Back to List</Text>
           </TouchableOpacity>
 
           <ScrollView style={styles.commentContainer}>
             {selectedPerson.comments?.reverse().map((comment, index) => (
               <View key={index} style={styles.comment}>
-                <View style={styles.commentC}>
+                <View style={styles.commentContent}>
                   <Text style={styles.commentUser}>{comment.username}: </Text>
-                  <Text>{comment.text}</Text>
+                  <Text style={styles.commentText}>{comment.text}</Text>
                 </View>
-
+                {isAdmin && (
+                  <TouchableOpacity style={styles.deleteButton} onPress={() => handleDeleteComment(index)}>
+                    <FontAwesome name="trash" size={20} color="#ffffff" />
+                  </TouchableOpacity>
+                )}
                 <TouchableOpacity onPress={() => handleZoomImage(comment.image)}>
                   {comment.image && (
                     <Image source={{ uri: comment.image }} style={styles.commentImage} />
                   )}
                 </TouchableOpacity>
-
-
               </View>
             ))}
           </ScrollView>
 
-
           <View style={styles.addCommentContainer}>
-            <View style={styles.inputContainer}>
-              <TextInput
-                style={styles.textArea}
-                placeholder="Add a comment"
-                placeholderTextColor="gray"
-                value={comment}
-                onChangeText={(text) => setComment(text)}
-                multiline
-                numberOfLines={4}
-                textAlignVertical="top"
-              />
-              <TouchableOpacity style={styles.button} onPress={handleAddComment}>
-                <Feather name="send" size={24} color="#36454F" />
-                {commentLoading && <MaterialIndicator color='#3c78e9' size={30} />}
-              </TouchableOpacity>
-            </View>
-            <TouchableOpacity style={styles.button} onPress={pickCommentImage}>
-              <FontAwesome name="image" size={20} color="#36454F" />
-            </TouchableOpacity>
-            {commentImage && (
-              <Image source={{ uri: commentImage }} style={styles.commentImage} />
-            )}
-          </View>
-
+  <View style={styles.inputContainer}>
+    <TextInput
+      style={styles.textArea}
+      placeholder="Add a comment"
+      placeholderTextColor="gray"
+      value={comment}
+      onChangeText={(text) => setComment(text)}
+      multiline
+      numberOfLines={4}
+      textAlignVertical="top"
+    />
+    <View style={styles.buttonContainer}>
+      <TouchableOpacity style={styles.sendButton} onPress={handleAddComment}>
+        <Feather name="send" size={24} color="#ffffff" />
+        {commentLoading && <MaterialIndicator color='white' size={30} />}
+      </TouchableOpacity>
+      <TouchableOpacity style={styles.imageButton} onPress={pickCommentImage}>
+        <FontAwesome name="image" size={20} color="#ffffff" />
+      </TouchableOpacity>
+    </View>
+  </View>
+  {commentImage && (
+    <Image source={{ uri: commentImage }} style={styles.commentImage} />
+  )}
+</View>
 
         </View>
+
       )}
       <Modal
         animationType="slide"
@@ -418,12 +506,24 @@ const MissingScreen = () => {
                 ref={lastSeenInputRef}
                 style={styles.input}
                 placeholderTextColor='white'
-                placeholder="Description"
+                placeholder="Last Seen"
                 value={newPerson.lastSeen}
                 onChangeText={(text) => setNewPerson({ ...newPerson, lastSeen: text })}
                 returnKeyType="next"
                 onSubmitEditing={() => focusNextField(contactsInputRef)}
               />
+
+              <TextInput
+                ref={lastSeenInputRef}
+                style={styles.input}
+                placeholderTextColor='white'
+                placeholder="Description"
+                value={newPerson.description}
+                onChangeText={(text) => setNewPerson({ ...newPerson, description: text })}
+                returnKeyType="next"
+                onSubmitEditing={() => focusNextField(contactsInputRef)}
+              />
+
               <TextInput
                 ref={contactsInputRef}
                 style={styles.input}
@@ -488,17 +588,28 @@ const styles = StyleSheet.create({
   },
   card: {
     backgroundColor: '#fff',
-    margin: 10,
-    borderRadius: 10,
+    marginVertical: 10,
+    marginHorizontal: 20,
+    borderRadius: 20,
     overflow: 'hidden',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 5,
     elevation: 5,
+    borderWidth: 1,
+    borderColor: '#e0e0e0',
   },
   imageContainer: {
     position: 'relative',
+    borderBottomWidth: 1,
+    borderColor: '#e0e0e0',
   },
   image: {
     width: '100%',
-    height: 200,
+    height: 180,
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
   },
   overlayText: {
     position: 'absolute',
@@ -517,72 +628,167 @@ const styles = StyleSheet.create({
 
   },
   detailsContainer: {
-    padding: 10,
+    padding: 15,
+    backgroundColor: '#f9f9f9',
   },
   names: {
-    fontSize: 18,
+    fontSize: 22,
     fontWeight: 'bold',
+    color: '#2B4162',
+    textAlign: 'center',
+    marginBottom: 5,
+    letterSpacing: 1,
+  },
+  subDetails: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
     marginTop: 10,
-    color: '#333',
+    paddingHorizontal: 10,
   },
   lastSeen: {
     fontSize: 16,
-    color: '#777',
-    marginTop: 5,
+    color: '#FF5C57',
+    fontWeight: '600',
+    textAlign: 'right',
   },
   contacts: {
+    fontSize: 15,
+    color: '#555',
+    fontWeight: '500',
+  },
+  description: {
     fontSize: 16,
-    color: '#777',
-    marginTop: 5,
+    color: '#555',
+    marginVertical: 10,
+    textAlign: 'justify',
+    lineHeight: 22,
   },
   posted: {
-    fontSize: 16,
-    color: '#777',
-    marginTop: 5,
+    fontSize: 14,
+    color: '#888',
+    textAlign: 'center',
+    marginTop: 10,
+    fontStyle: 'italic',
+    letterSpacing: 0.5,
   },
   buttonContainer: {
     flexDirection: 'row',
     justifyContent: 'space-around',
+    marginTop: 15,
     padding: 10,
+    borderTopWidth: 1,
+    borderColor: '#e0e0e0',
   },
   buttonPost: {
-    backgroundColor: '#fff',
+    backgroundColor: '#f0f0f0',
     padding: 10,
-    borderRadius: 10,
-    elevation: 5,
+    borderRadius: 30,
+    elevation: 2,
+    width: 50,
+    height: 50,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  backButton: {
+    padding: 15,
+    backgroundColor: '#D3D3D3',
+    borderRadius: 5,
+    alignItems: 'center',
+    marginVertical: 10,
+  },
+  backButtonText: {
+    color: '#ffffff',
+    fontWeight: 'bold',
+    fontSize: 16,
   },
   commentContainer: {
-    flex: 1,
     padding: 10,
-    backgroundColor: '#fff',
+    backgroundColor: '#ffffff',
+    borderRadius: 8,
+    elevation: 3,
+    marginBottom: 10,
   },
-  commentC: {
+  comment: {
+    backgroundColor: '#f1f1f1',
+    borderRadius: 10,
+    padding: 10,
+    marginVertical: 5,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.3,
+    shadowRadius: 4,
+    elevation: 1,
+  },
+  commentContent: {
     flexDirection: 'row',
-
+    alignItems: 'center',
   },
   commentUser: {
     fontWeight: 'bold',
+    color: '#36454F',
+  }, commentText: {
+    color: '#333',
+    marginLeft: 5,
   },
-  addCommentContainer: {
-    padding: 10,
-    backgroundColor: '#f0f0f0',
-    borderTopWidth: 1,
-    borderTopColor: '#ddd',
+  deleteButton: {
+    backgroundColor: '#ff4d4d',
+    borderRadius: 5,
+    padding: 5,
+    marginLeft: 'auto',
   },
-  inputContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 10,
-  },
-  textArea: {
-    flex: 1,
-    backgroundColor: 'white',
-    borderRadius: 10,
-    padding: 10,
-    marginRight: 10,
-    color: 'gray',
-    height: 100,
-  },
+    commentImage: {
+      width: 100,
+      height: 100,
+      borderRadius: 10,
+      marginTop: 5,
+      alignSelf: 'flex-start',
+    },
+    addCommentContainer: {
+      flexDirection: 'row',
+      alignItems: 'flex-start',  
+      padding: 10,
+      backgroundColor: '#D3D3D3',
+      borderRadius: 10,
+    },
+    inputContainer: {
+      flex: 1,
+      marginRight: 10,
+    },
+    textArea: {
+      backgroundColor: '#ffffff',
+      borderRadius: 5,
+      padding: 10,
+      height: 60,
+      borderColor: '#ccc',
+      borderWidth: 1,
+    },
+    buttonContainer: {
+      flexDirection: 'row',
+      alignItems: 'center', 
+      marginTop: 10,       
+    },
+    sendButton: {
+      
+      borderRadius: 5,
+      padding: 10,
+      marginRight: 5,
+      alignItems: 'center',
+    },
+    imageButton: {
+      
+      borderRadius: 5,
+      padding: 10,
+    },
+    commentImage: {
+      width: 100,
+      height: 100,
+      borderRadius: 10,
+      marginTop: 5,
+      alignSelf: 'flex-start',
+    },
   button: {
     backgroundColor: "#C8FFD7",
     borderRadius: 10,
@@ -599,16 +805,24 @@ const styles = StyleSheet.create({
     padding: 10,
   },
   addButton: {
-    backgroundColor: '#C8FFD7',
-    padding: 15,
-    borderRadius: 5,
+    backgroundColor: '#002E15',
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderRadius: 30,
     alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 5 },
+    shadowOpacity: 0.3,
+    shadowRadius: 10,
+    elevation: 8,
+    marginVertical: 20
   },
   addButtonText: {
-    color: '#002E15',
+    color: '#fff',
+    fontSize: 18,
     fontWeight: 'bold',
-
-
+    letterSpacing: 1,
+    textTransform: 'uppercase'
   },
   modalZoom: {
     flex: 1,

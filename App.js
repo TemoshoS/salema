@@ -10,6 +10,7 @@ import LandingScreen from './src/screens/LandingScreen';
 import Toast from 'react-native-toast-message';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { StatusBar } from 'expo-status-bar';
+import 'expo-dev-client';
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();

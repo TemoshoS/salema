@@ -1,4 +1,4 @@
-package com.maduane.salema
+package com.salema
 
 import android.os.Build
 import android.os.Bundle

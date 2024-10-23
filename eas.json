@@ -3,6 +3,12 @@
     "version": ">= 9.1.0"
   },
   "build": {
+    "development": {
+      "android": {
+        "buildType": "apk"
+      },
+      "channel": "development"
+    },
     "preview": {
       "android": {
         "buildType": "apk"

@@ -85,10 +85,10 @@ android {
 
     namespace 'com.maduane.salema'
     defaultConfig {
-        applicationId 'com.maduane.salema'
+        applicationId 'com.salema'
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 7
+        versionCode 1
         versionName "1.0.0"
     }
     signingConfigs {

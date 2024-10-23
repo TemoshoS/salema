@@ -1,4 +1,4 @@
-package com.maduane.salema
+package com.salema
 
 import android.app.Application
 import android.content.res.Configuration

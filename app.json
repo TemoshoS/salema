@@ -25,7 +25,6 @@
       },
       "package": "com.salema",
       "runtimeVersion": "1.0.0"
-      
     },
     "web": {
       "favicon": "./assets/splash.png"
@@ -38,8 +37,15 @@
         "projectId": "99d4a2b7-6728-4f70-8aa7-3a97bc03e7a9"
       }
     },
-    "plugins": [
-      "expo-font"
+   "plugins": [
+      "expo-font",
+      [
+        "react-native-google-mobile-ads",
+        {
+          "androidAppId": "ca-app-pub-4992087692850250~2551567483",
+          "iosAppId": "ca-app-pub-4992087692850250~2551567483"
+        }
+      ]
     ]
   }
 }

@@ -7,8 +7,8 @@ const app = express();
 app.use(bodyParser.json());
 app.use(cors());
 
-const accountSid = ' '; 
-const authToken = ' '; 
+const accountSid = ''; 
+const authToken = ''; 
 const client = twilio(accountSid, authToken);
 
 app.post('/send-sms', async (req, res) => {

@@ -67,7 +67,7 @@ export class ShakeEventExpo {
 const sendShakeDetectedSms = async (location, userName) => {
   try {
     const message = `Hi, it's ${userName}. I'm in danger and need help. My location: https://www.google.com/maps?q=${location.coords.latitude},${location.coords.longitude}`;
-    const from = ' ';
+    const from = '';
 
     const numbers = await getPhoneNumbersForCurrentUser();
     const promises = numbers.map(async (to) => {
