@@ -14,7 +14,7 @@ import {
   BallIndicator,
   MaterialIndicator,
 } from 'react-native-indicators';
-import { BannerAd, BannerAdSize, TestIds } from 'react-native-google-mobile-ads';
+
 
 
 
