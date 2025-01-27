@@ -8,12 +8,12 @@ const sendSms = async (to, from, body) => {
         formData.append('Body', body);
 
         const response = await axios.post(
-            'https://api.twilio.com/2010-04-01/Accounts/AC6b343086f68fd3d6f29a2ce22e231a6a/Messages.json',
+            'https://api.twilio.com/2010-04-01/Accounts//Messages.json',
             formData,
             {
                 auth: {
-                    username: 'AC6b343086f68fd3d6f29a2ce22e231a6a',
-                    password: '72ac52527caa5d2a2f5cadc774984686'
+                    username: '',
+                    password: ''
                 },
                 headers: {
                     'Content-Type': 'application/x-www-form-urlencoded'
