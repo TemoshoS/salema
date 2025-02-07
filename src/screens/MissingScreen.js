@@ -135,7 +135,7 @@ const MissingScreen = () => {
   const handleShare = async (names, lastSeen, age, image, description,contacts) => {
     try {
       const result = await Share.share({
-        message: `Help find ${names}! Last seen: ${lastSeen},Description: ${description}, Age: ${age}, Contacts: ${contacts}, Picture: ${image}`,
+        message: `Help find ${names}! Last seen: ${lastSeen},Age: ${age}, Contacts: ${contacts}, Picture: ${image}`,
       });
       if (result.action === Share.sharedAction) {
         if (result.activityType) {
