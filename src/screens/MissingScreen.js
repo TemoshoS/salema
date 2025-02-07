@@ -18,6 +18,8 @@ import {
 
 
 
+
+
 const Popup = ({ message, onClose }) => {
   return (
     <Modal
@@ -130,7 +132,7 @@ const MissingScreen = () => {
 
 
 
-  const handleShare = async (names, lastSeen, age, image, contacts) => {
+  const handleShare = async (names, lastSeen, age, image, description,contacts) => {
     try {
       const result = await Share.share({
         message: `Help find ${names}! Last seen: ${lastSeen},Description: ${description}, Age: ${age}, Contacts: ${contacts}, Picture: ${image}`,
@@ -336,10 +338,7 @@ const MissingScreen = () => {
 
 
   const renderItem = ({ item }) => (
-    <TouchableOpacity
-      style={styles.card}
-      onPress={() => setSelectedPerson(item)}
-    >
+    <TouchableOpacity style={styles.card} onPress={() => setSelectedPerson(item)}>
       <View style={styles.imageContainer}>
         <TouchableOpacity onPress={() => handleZoomImage(item.image)}>
           <Image source={{ uri: item.image }} style={styles.image} />
@@ -349,29 +348,30 @@ const MissingScreen = () => {
         <Text style={styles.names}>{item.names}, {item.age} years old</Text>
         <View style={styles.subDetails}>
           <Text style={styles.lastSeen}>{item.lastSeen}</Text>
-          <Text style={styles.contacts}>{item.contacts}</Text>
+          
         </View>
+        <Text style={styles.contacts}>{item.contacts}</Text>
         <Text style={styles.description}>{item.description}</Text>
         <Text style={styles.posted}>Posted By: {item.postedBy}</Text>
-        <View style={styles.buttonContainer}>
-
-          {isAdmin && (
-            <TouchableOpacity style={styles.buttonPost} onPress={() => handleDelete(item.id)}>
-              <FontAwesome name="trash" size={24} color="#20C997" />
+        
+        {/* Wrapper View for Centering */}
+        <View style={styles.buttonWrapper}>
+          <View style={styles.buttonContainer}>
+            {isAdmin && (
+              <TouchableOpacity style={styles.buttonPost} onPress={() => handleDelete(item.id)}>
+                <FontAwesome name="trash" size={24} color="#20C997" />
+              </TouchableOpacity>
+            )}
+            <TouchableOpacity style={styles.buttonPost} onPress={() => handleComment(item)}>
+              <FontAwesome name="comment" size={24} color="#20C997" />
             </TouchableOpacity>
-          )}
-
-          <TouchableOpacity style={styles.buttonPost} onPress={() => handleComment(item)}>
-            <FontAwesome name="comment" size={24} color="#20C997" />
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.buttonPost} onPress={() => handleShare(item.names, item.lastSeen, item.description, item.age, item.image, item.contacts)}>
-            <FontAwesome name="share" size={24} color="#20C997" />
-          </TouchableOpacity>
+            <TouchableOpacity style={styles.buttonPost} onPress={() => handleShare(item.names, item.lastSeen, item.description, item.age, item.image, item.contacts)}>
+              <FontAwesome name="share" size={24} color="#20C997" />
+            </TouchableOpacity>
+          </View>
         </View>
       </View>
     </TouchableOpacity>
-
-
   );
 
   const parseTimestamp = (timestamp) => {
@@ -388,6 +388,7 @@ const MissingScreen = () => {
 
   return (
     <View style={{ flex: 1 }}>
+     
       {!selectedPerson ? (
         <FlatList
           data={missingPersons}
@@ -400,7 +401,7 @@ const MissingScreen = () => {
                 onPress={() => setAddPersonModalVisible(true)}
                 activeOpacity={0.8}
               >
-                <Text style={styles.addButtonText}>Add Missing Person</Text>
+                <Text style={styles.addButtonText}> Person</Text>
               </TouchableOpacity>
             </View>
           }
@@ -575,8 +576,6 @@ const MissingScreen = () => {
       </Modal>
 
 
-
-
     </View>
   );
 };
@@ -671,13 +670,18 @@ const styles = StyleSheet.create({
     fontStyle: 'italic',
     letterSpacing: 0.5,
   },
+  buttonWrapper: {
+    alignItems: 'center', // Center the button container horizontally within its parent
+    width: '100%',
+  },
   buttonContainer: {
     flexDirection: 'row',
-    justifyContent: 'space-around',
-    marginTop: 15,
-    padding: 10,
+    justifyContent: 'center', // Center the buttons as a group
+    alignItems: 'center',
+    paddingVertical: 10,
     borderTopWidth: 1,
     borderColor: '#e0e0e0',
+    maxWidth: 250, // Limits width for better control
   },
   buttonPost: {
     backgroundColor: '#f0f0f0',
@@ -688,6 +692,7 @@ const styles = StyleSheet.create({
     height: 50,
     justifyContent: 'center',
     alignItems: 'center',
+    marginHorizontal: 10, // Adds space between buttons
   },
   backButton: {
     padding: 15,

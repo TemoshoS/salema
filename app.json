@@ -15,36 +15,40 @@
       "**/*"
     ],
     "ios": {
-      "supportsTablet": true,
-      "runtimeVersion": {
-        "policy": "appVersion"
-      }
-    },
+  "supportsTablet": true,
+  "runtimeVersion": "1.0.0",  
+  "bundleIdentifier": "com.salema"
+},
+
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/icon.png"
       },
       "package": "com.salema",
       "runtimeVersion": "1.0.0"
+      
     },
     "web": {
       "favicon": "./assets/splash.png"
     },
     "updates": {
+      "enabled": false,
       "url": "https://u.expo.dev/99d4a2b7-6728-4f70-8aa7-3a97bc03e7a9"
     },
     "extra": {
       "eas": {
-        "projectId": "99d4a2b7-6728-4f70-8aa7-3a97bc03e7a9"
+        "projectId": "99d4a2b7-6728-4f70-8aa7-3a97bc03e7a9",
+        "enabled": false
       }
     },
-   "plugins": [
+    "plugins": [
       "expo-font",
       [
         "react-native-google-mobile-ads",
         {
           "androidAppId": "ca-app-pub-4992087692850250~2551567483",
           "iosAppId": "ca-app-pub-4992087692850250~2551567483"
+          
         }
       ]
     ]

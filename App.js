@@ -10,7 +10,10 @@ import LandingScreen from './src/screens/LandingScreen';
 import Toast from 'react-native-toast-message';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { StatusBar } from 'expo-status-bar';
-import 'expo-dev-client';
+import 'setimmediate';
+
+
+
 
 
 const Stack = createStackNavigator();
@@ -21,7 +24,7 @@ export default function App() {
     
     return (
          <GestureHandlerRootView style={{ flex: 1 }}>
-
+ 
       <NavigationContainer>
          <Stack.Navigator initialRouteName='LandingPage'>
       
@@ -68,7 +71,10 @@ export default function App() {
        <Toast ref={(ref) => Toast.setRef(ref)} />
       </NavigationContainer>
       <StatusBar style="auto" hidden={false} />
+     
+
       </GestureHandlerRootView>
+      
 
     );
   
